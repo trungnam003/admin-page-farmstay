@@ -1,0 +1,117 @@
+<div>
+    <nav id="sidebar">
+        <div id="dismiss">
+            <i class="fas fa-arrow-left"></i>
+        </div>
+
+        <div class="sidebar-header">
+            <h3>Admin<br>FarmStay</h3>
+            
+        </div>
+
+        <ul class="list-unstyled components">
+            {{!-- <p>Menu</p> --}}
+            {{!-- active --}}
+            <li class=""> 
+                <a href="/">Home</a>
+                {{!-- <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home</a>
+                <ul class="collapse list-unstyled" id="homeSubmenu">
+                    <li>
+                        <a href="#">Home 1</a>
+                    </li>
+                    <li>
+                        <a href="#">Home 2</a>
+                    </li>
+                    <li>
+                        <a href="#">Home 3</a>
+                    </li>
+                </ul> --}}
+            </li>
+            <li>
+                <a href="#pageSubmenuMusic" data-toggle="collapse" aria-expanded="false">Music API</a> 
+                <ul class="collapse list-unstyled" id="pageSubmenuMusic">
+                    <li>
+                        <a href="/music/list">List</a>
+                    </li>
+                    <li>
+                        <a href="/music/create">Create</a>
+                    </li>
+                    <li>
+                        <a href="/music/stream/online">Stream</a>
+                    </li>
+                </ul>
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">Pages</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu">
+                    <li>
+                        <a href="#">Page 1</a>
+                    </li>
+                    <li>
+                        <a href="#">Page 2</a>
+                    </li>
+                    <li>
+                        <a href="#">Page 3</a>
+                    </li>
+                </ul>
+            </li>
+           
+            
+            {{!-- <li>
+                <a href="#">Portfolio</a>
+            </li>
+            <li>
+                <a href="#">Contact</a>
+            </li> --}}
+            
+                
+        </ul>
+
+        {{!-- <ul class="list-unstyled CTAs">
+            <li>
+                <a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a>
+            </li>
+            <li>
+                <a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to article</a>
+            </li>
+        </ul> --}}
+    </nav>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+
+            <button type="button" id="sidebarCollapse" class="btn btn-success">
+                <i class="fas fa-align-left"></i>
+                <span></span>
+            </button>
+            <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-align-justify"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Page</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Page</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Page</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Page</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0" method="GET" action="/search">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                </form>
+                <div class="nav-item">
+                        <a style="color: #fff;" class="nav-link" href="/auth/login">Login</a>
+                </div>
+            </div>
+            
+        </div>
+        
+    </nav>
+    <div class="overlay"></div>
+</div>
+<div style="margin-top: 60px;">

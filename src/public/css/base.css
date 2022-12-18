@@ -1,0 +1,31 @@
+:root{
+    --white-color: #fff;
+    --black-color: #000;
+    --text-color: #333;
+    --primary-color: #007500;
+    --green-color-soft: #baffba;
+    
+    /* --navbar: 32px;
+    --header: 120px;
+    --header-with-search: calc(var(--header) - var(--navbar)); */
+}
+
+*{
+    box-sizing: inherit;
+}
+
+html{
+    /* 62.5% 16px = 10px */
+    /* font-size: 100%; */
+    line-height: 1.6rem;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+
+p {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: #999;
+}
