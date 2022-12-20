@@ -36,13 +36,25 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      token: {
-        allowNull: true,
-        type: Sequelize.TEXT
+      status: {
+        type:Sequelize.STRING(16),
+        defaultValue: 'pending'
+      },
+      isActive: {
+        type:Sequelize.BOOLEAN,
+        defaultValue: false
       },
       refeshToken: {
         allowNull: true,
         type: Sequelize.TEXT
+      },
+      avatar_disk:{
+        type:Sequelize.STRING(512),
+        allowNull: true
+      },
+      avatar_url:{
+        type:Sequelize.STRING(512),
+        allowNull: true
       },
       createdAt: {
         allowNull: false,

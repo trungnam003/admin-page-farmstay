@@ -3,7 +3,7 @@ const jwtStrategy = require('passport-jwt').Strategy
 const localStrategy = require('passport-local').Strategy
 const {ExtractJwt} = require('passport-jwt')
 require('dotenv').config();
-const {AdminUser} = require('../models')
+const {AdminUser, protectedAdmin} = require('../models')
 const { Buffer } = require('node:buffer');
 var uuid = require('uuid');
 const uuidBuffer = require('uuid-buffer');
@@ -12,27 +12,36 @@ const jwt = require('jsonwebtoken')
 
 const cookieExtractor = function(req) {
     let token = null;
+    
     if (req && req.cookies) token = req.cookies['jwt'];
     return token;
 };
+
 async function passportConfig(passport){
     passport.use(new jwtStrategy({
         jwtFromRequest: cookieExtractor,
         secretOrKey: process.env.JWT_SECRET_KEY
     }, async (payload, done)=>{
         try {
+            
             const id = Buffer.from(uuid.parse(payload.sub, Buffer.alloc(16)), Buffer.alloc(16))
             const user = await AdminUser.findOne({
                 where:{userId: id},
-                
+                attributes: ['userId', 'userUUID', 'email', 'username', 'avatar_url'],
+                include:[
+                    {
+                        model: protectedAdmin,
+                        as: 'protected',
+                        attributes: ['isSuperAdmin'],
+                    }]
             });
             if(user===null){
-                done(new HttpError(401), false);
+                return done(new HttpError(401, "Tài khoản không tồn tại"), false);
             }else{
-                done(null,user);
+                return done(null,user);
             }
         } catch (error) {
-            done(new HttpError404(), false);
+            done(new HttpError(500), false);
         }
     }
     ));
@@ -42,19 +51,21 @@ async function passportConfig(passport){
         try {
             const user = await AdminUser.findOne({
                 where:{email: email},
+                attributes: ['userId', 'userUUID', 'email', 'username', 'hashpassword'],
             });
             if(!user){
-                return done(null, false);
+                return done(new HttpError(401, 'Tài khoản không tồn tại'), false);
             }else{
                 const isAuth = await user.validatePassword(password);
                 if(isAuth){
-                    return done(null, user)
+                    return done(null, user.toJSON())
                 }else{
-                    return done(null, false)
+                    return done(new HttpError(401, 'Sai mật khẩu'), false)
                 }
             }
+            
         } catch (error) {
-            return done(null, false)
+            return done(new HttpError(500), false)
         }
         
     }))

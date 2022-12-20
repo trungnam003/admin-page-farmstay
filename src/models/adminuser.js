@@ -16,14 +16,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      AdminUser.hasOne(models.protectedAdmin, {foreignKey: {name: 'adminId'}, as: 'protected'})
     }
+
+    
   }
   AdminUser.init({
     userId: {
       type:'BINARY(16)',
       primaryKey: true,
       allowNull: false,
-      defaultValue: Buffer.from(uuid.parse(uuid.v4(), Buffer.alloc(16)), Buffer.alloc(16)),
+      // defaultValue: Buffer.from(uuid.parse(uuid.v4(), Buffer.alloc(16)), Buffer.alloc(16)),
     
       
     },
@@ -57,10 +60,28 @@ module.exports = (sequelize, DataTypes) => {
     hashpassword: {
       type:DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: {
+          args: [2,10],
+          msg: "Mật khẩu quá ngắn"
+        }
+      }
     },
-    token: {
-      type:DataTypes.TEXT,
-      allowNull: true,
+    avatar_disk:{
+      type:DataTypes.STRING(512),
+      allowNull: true
+    },
+    avatar_url:{
+      type:DataTypes.STRING(512),
+      allowNull: true
+    },
+    status: {
+      type:DataTypes.STRING(16),
+      defaultValue: 'pending'
+    },
+    isActive: {
+      type:DataTypes.BOOLEAN,
+      defaultValue: false
     },
     refeshToken: {
       type:DataTypes.TEXT,
@@ -79,5 +100,9 @@ module.exports = (sequelize, DataTypes) => {
       throw new HttpError(500)
     }
   }
+  AdminUser.addHook('beforeCreate', async(user, options)=>{
+    const salt = await bcrypt.genSalt(10);
+    user.hashpassword = await bcrypt.hash(user.hashpassword, salt);
+  })
   return AdminUser;
 };

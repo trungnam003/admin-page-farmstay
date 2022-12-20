@@ -20,7 +20,9 @@ const PORT = process.env.PORT || 3000;
 const ErrorMiddlewares = require('./middlewares/errors')
 const router = require('./routers')
 const {HttpError, HttpError404} = require('./utils/errors')
-require('./config/passport.config')(passport)
+require('./config/passport.config')(passport);
+
+
 
 const main = async()=>{
     // Use middleware library
@@ -35,15 +37,16 @@ const main = async()=>{
         session({
             store: new RedisStore({ client: redisClient }),
             secret: 'secret',
-            resave: true,
+            resave: false,
             saveUninitialized: true,
+            cookie: {maxAge: 15000, secure: false}
         })
     );
 
 
     app.use(flash())
-    app.use(passport.initialize());
-    app.use(passport.session());
+    // app.use(passport.initialize());
+    // app.use(passport.session());
     // Setup handlebars
     app.engine(
     '.hbs',
@@ -72,6 +75,7 @@ const main = async()=>{
     try {
         await sequelize.authenticate();
         console.log("Connect MySql OK ^^");
+        require('./utils/createSuperAdmin')
     } catch (error) {
         console.log("Connect MySql FAIL :(");
     }

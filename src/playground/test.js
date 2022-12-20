@@ -1,5 +1,5 @@
 
-const {sequelize, AdminUser} = require('../models')
+const {sequelize, AdminUser, protectedAdmin} = require('../models')
 
 async function  connect(){
     try {
@@ -30,7 +30,6 @@ async function abc(){
     console.log(value2[0].uuidBin)
 }
 
-//AdminUser.create({username: 'TrungNam123', email:'hehe@gmail.com', hashpassword: '12222h2gh'}).then(v=>console.log(v)).catch()
 
 var ByteBuffer = require("bytebuffer");
 const { Buffer } = require('node:buffer');
@@ -53,12 +52,80 @@ var uuid = require('uuid');
 //     console.log(uuidBuffer.toString(zz))
 // }).catch()
 
-AdminUser.findOne({
-    where: {
-        userId: Buffer.from(uuid.parse('1bb14e4e-9fc3-49e5-beb8-c2575c3e2933', Buffer.alloc(16)), Buffer.alloc(16))
+// AdminUser.findOne({
+//     where: {
+//         userId: Buffer.from(uuid.parse('1bb14e4e-9fc3-49e5-beb8-c2575c3e2933', Buffer.alloc(16)), Buffer.alloc(16))
+//     }
+// }).then(v=>{
+//     const zz = v.toJSON()
+//     console.log(zz)
+//     console.log(uuidBuffer.toString(zz.userId))
+// }).catch()
+
+//AdminUser.create({userId: Buffer.from(uuid.parse(uuid.v4(), Buffer.alloc(16)), Buffer.alloc(16)),username: 'trungnam123', email:'hehe@gmail.com', hashpassword: '1234'}).then(v=>console.log(v)).catch()
+// AdminUser.findOne({
+//     where: {email: 'hehe@gmail.com'}
+// }).then(v=>{
+//     console.log(v.userId)
+//     protectedAdmin.create({
+//         adminId: v.userId, isSuperAdmin: true
+//     }).then(v=>console.log(v)).catch()
+// })
+
+// AdminUser.findOne({
+//         where: {email: 'hehe@gmail.com'},
+//         include:[
+//             {
+//                 model: protectedAdmin,
+//                 as: 'protected',
+//             }]
+// }).then(v=>{
+//         console.log(v.toJSON())
+// })
+
+
+(async function(){
+    try {
+
+        const user = await AdminUser.findOne({
+        where: {email: 'th2tntrungnam@gmail.com'},
+        include:[
+            {
+                model: protectedAdmin,
+                as: 'protected',
+            }]
+        })
+
+        console.log(user.protected)
+        // if(user){
+        //     throw new Error('111')
+        //     return;
+        // }else{
+        //     const id = Buffer.from(uuid.parse(uuid.v4(), Buffer.alloc(16)), Buffer.alloc(16))
+        //     const superAdmin = {
+        //         userId: id,
+        //         username: 'trungnam1611',
+        //         email:'thtntrungnam@gmail.com',
+        //         hashpassword: '123',
+        //         protected: {
+        //             adminId: id,
+        //             isSuperAdmin: true,
+        //         }
+        //     }
+
+        //     await AdminUser.create(superAdmin, {
+        //         include: [
+        //             {
+        //                 model: protectedAdmin,
+        //                 as: 'protected',
+        //             }
+        //         ]
+        //     })
+        // }
+        
+    } catch (error) {
+        console.log(error)
+        process.exit()
     }
-}).then(v=>{
-    const zz = v.toJSON()
-    console.log(zz)
-    console.log(uuidBuffer.toString(zz.userId))
-}).catch()
+    
+})();

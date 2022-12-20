@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      protectedAdmin.belongsTo(models.AdminUser, {foreignKey: {name: 'adminId'}, targetKey :'userUUID', as: 'protected'})
     }
   }
   protectedAdmin.init({
