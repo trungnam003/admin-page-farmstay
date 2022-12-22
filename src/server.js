@@ -13,7 +13,6 @@ const session = require('express-session');
 const Redis = require("ioredis")
 const RedisStore = require("connect-redis")(session)
 
-
 const redisClient = new Redis()
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,8 +21,6 @@ const ErrorMiddlewares = require('./middlewares/errors')
 const router = require('./routers')
 const {HttpError, HttpError404} = require('./utils/errors')
 require('./config/passport.config')(passport);
-
-
 
 const main = async()=>{
     // Use middleware library
@@ -63,10 +60,11 @@ const main = async()=>{
     app.set('view engine', '.hbs');
     app.set('views', path.join(__dirname, 'resources', 'views'));
 
+    
     // use router
     app.use(router);
 
-    app.get('*', function(req, res, next){
+    app.all('*', function(req, res, next){
         next(new HttpError404())
     });
 

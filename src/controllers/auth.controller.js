@@ -1,30 +1,25 @@
 const {AdminUser} = require('../models')
 const {HttpError, HttpError404} = require('../utils/errors')
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
 require('dotenv').config();
 const { Buffer } = require('node:buffer');
 const uuid = require('uuid');
-// const {uploadImage} = require('../middlewares/uploads/upload.image')
-// const multer = require("multer");
-// const {public_path} = require('../path_file')
-// const fs = require('node:fs/promises');
-// const path = require("path");
+
 class AuthController{
-    /* [GET] */
+    /* [GET] render login page */
     renderLogin(req, res, next){
         res.locals.noRenderHeader = true
         res.render('pages/site/login', {'error_msg': req.flash('error_msg')})
     }
 
-    /* [GET] */
+    /* [GET] render register page */
     renderRegister(req, res, next){
         res.locals.noRenderHeader = true
         res.render('pages/site/register')
         
     }
 
-    /* [POST] */
+    /* [POST] handle register */
     async registerAdmin(req, res, next){
         try {
             const {email, password, username} = req.body;
@@ -41,7 +36,7 @@ class AuthController{
         
     }
 
-    /* [POST] */
+    /* [POST] tạo JWT sau khi được middleware passport-local xử lí và xác thực thành công */
     async loginAdmin(req, res, next){
         try {
             const {userUUID} = req.user;

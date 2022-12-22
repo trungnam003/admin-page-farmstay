@@ -11,14 +11,63 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      const {provinces, districts, wards} = models;
+
+      administrative_units.hasMany(provinces, {
+        foreignKey: {name: 'administrative_unit_id'},
+        sourceKey: 'id',
+        as: 'provinces' 
+      })
+
+      administrative_units.hasMany(districts, {
+        foreignKey: {name: 'administrative_unit_id'},
+        sourceKey: 'id',
+        as: 'districts' 
+      })
+
+      administrative_units.hasMany(wards, {
+        foreignKey: {name: 'administrative_unit_id'},
+        sourceKey: 'id',
+        as: 'wards' 
+      })
+
     }
   }
   administrative_units.init({
-    id: DataTypes.INTEGER,
-    name: DataTypes.STRING
+    id:{
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      allowNull: false,
+      unique: true
+    },
+    full_name :{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    full_name_en :{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    short_name  :{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    short_name_en  :{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    code_name:{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    code_name_en:{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   }, {
     sequelize,
     modelName: 'administrative_units',
+    timestamps: false
   });
   return administrative_units;
 };

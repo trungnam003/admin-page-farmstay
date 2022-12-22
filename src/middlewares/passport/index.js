@@ -7,6 +7,7 @@ const { Buffer } = require('node:buffer');
 var uuid = require('uuid');
 const uuidBuffer = require('uuid-buffer');
 const {HttpError, HttpError404} = require('../../utils/errors')
+
 const cookieExtractor = function(req) {
     let token = null;
     if (req && req.cookies) token = req.cookies['jwt'];

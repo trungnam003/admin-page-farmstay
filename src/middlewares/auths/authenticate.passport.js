@@ -1,6 +1,7 @@
 const passport = require('passport')
 const {HttpError, HttpError404} = require('../../utils/errors')
 
+// Xác thực người dùng bằng JWT cookie
 module.exports.passportJWT = async (req, res, next)=>{
     passport.authenticate('jwt', {session:false}, (err, user, msg)=>{
         
@@ -22,6 +23,7 @@ module.exports.passportJWT = async (req, res, next)=>{
     })(req, res, next);
 }
 
+// Xác thực người dùng khi login
 module.exports.passportLocal = async (req,res,next)=>{
     passport.authenticate('local', {session: false}, (err, user, msg)=>{
         if(err || !user){

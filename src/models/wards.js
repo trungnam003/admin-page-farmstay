@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class administrative_regions extends Model {
+  class wards extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,27 +11,46 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {provinces} = models;
+      const {administrative_units, districts} = models
 
-      administrative_regions.hasMany(provinces, {
-        foreignKey: {name: 'administrative_region_id'},
-        sourceKey: 'id',
-        as: 'provinces'
-      })
+      wards.belongsTo(administrative_units, {
+        foreignKey:{
+          name: "administrative_unit_id"
+        },
+        targetKey: 'id',
+        as: 'administrative_unit'
+      });
+
+      wards.belongsTo(districts, {
+        foreignKey:{
+          name: "district_code"
+        },
+        targetKey: 'code',
+        as: 'district',
+      });
+
     }
   }
-  administrative_regions.init({
-    id:{
-      type: DataTypes.INTEGER,
+  wards.init({
+    code:{
+      type: DataTypes.STRING(20),
       primaryKey: true,
       allowNull: false,
       unique: true
     },
-    name:{
+    name  :{
       type: DataTypes.STRING,
       allowNull: false,
     },
-    name_en:{
+    name_en  :{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    full_name :{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    full_name_en :{
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -39,14 +58,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    code_name_en:{
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
   }, {
     sequelize,
-    modelName: 'administrative_regions',
+    modelName: 'wards',
     timestamps: false
   });
-  return administrative_regions;
+  return wards;
 };

@@ -9,7 +9,7 @@ var uuid = require('uuid');
 const uuidBuffer = require('uuid-buffer');
 const {HttpError, HttpError404} = require('../utils/errors')
 const jwt = require('jsonwebtoken')
-
+// cài đặt passport jwt xác thực người dùng bằng cookie
 const cookieExtractor = function(req) {
     let token = null;
     

@@ -6,23 +6,42 @@ const fs = require('node:fs/promises');
 const path = require("path");
 const {HttpError, HttpError404} = require('../utils/errors')
 class UserController{
+    /**
+     * [GET] render page user detail 
+     * @param {*} req Request
+     * @param {*} res Response
+     * @param {*} next NextFunction
+     * 
+     */
     getDetail(req, res, next){
         const {email, username, isActive, status, avatar_url,protectedAdmin} = req.user
         const isSuperAdmin = protectedAdmin === null ? false:true;
         res.render('pages/users/me', {email, username, isActive, status, avatar_url, isSuperAdmin})
     }
 
+    /**
+     * [GET] render page upload avatar
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     renderUploadAvatar(req, res, next){
         res.render('pages/users/upload_avatar')
     }
 
+    /**
+     * [POST] Xử lí form upload avatar xử lí ảnh, lưu ảnh local và database
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     async uploadAvatar(req, res, next){
         
         const user = req.user;
         
         const uploadImg = uploadImage('avatar',user.username);
         uploadImg(req, res, async(err)=>{
-            
+            // Sau khi gọi middleware của multer mới truy cập đến form kiểu multipart/form-data
             if(!req.file){
                 return next(new HttpError(400))
             }

@@ -30,19 +30,5 @@ Router
     next(new HttpError(405))
 })
 
-// Router.route('/test')
-// .get(
-//     passportJWT, authorization,
-//     async (req, res, next)=>{
-        
-//         res.json(req.user)
-//     }
-// )
-// Router.route('/up')
-// .post(
-//     passportJWT,
-//     AuthController.uploadAvatar
-// )
-
 
 module.exports = Router

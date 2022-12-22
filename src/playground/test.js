@@ -1,5 +1,5 @@
 
-const {sequelize, AdminUser, protectedAdmin} = require('../models')
+const {sequelize, AdminUser, protectedAdmin, administrative_regions, administrative_units, provinces} = require('../models')
 
 async function  connect(){
     try {
@@ -88,15 +88,15 @@ var uuid = require('uuid');
     try {
 
         const user = await AdminUser.findOne({
-        where: {email: 'th2tntrungnam@gmail.com'},
+        where: {email: 'thtntrungnam@gmail.com'},
         include:[
             {
                 model: protectedAdmin,
-                as: 'protected',
+                as: 'protectedAdmin',
             }]
         })
 
-        console.log(user.protected)
+        console.log(user.toJSON())
         // if(user){
         //     throw new Error('111')
         //     return;

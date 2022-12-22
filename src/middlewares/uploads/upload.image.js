@@ -1,6 +1,7 @@
 const multer = require("multer");
 const mkdirp = require('mkdirp');
 
+// type là tên body request tải lên
 function uploadImage(type = '', imageName = ''){
 
     const made = mkdirp.sync(`./src/public/uploads/${type}`)
@@ -16,8 +17,10 @@ function uploadImage(type = '', imageName = ''){
     //     }
     // })
 
+    // lưu vào memoryStorage
     const storage = multer.memoryStorage()
     
+    // lọc file ảnh
     const fileFilter = function(req, file, cb){
         const extFiles = ['.png', '.jpg']
         const ext = "."+file.originalname.split('.').at(-1);
@@ -30,6 +33,7 @@ function uploadImage(type = '', imageName = ''){
     }
     
     const upload_Image = multer({storage: storage, fileFilter: fileFilter, limits: {fileSize: 5000000}})
+    // trả về middleware tải ảnh lên
     return upload_Image.single(type)
 }
 
