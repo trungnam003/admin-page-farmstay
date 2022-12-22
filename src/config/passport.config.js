@@ -13,7 +13,10 @@ const jwt = require('jsonwebtoken')
 const cookieExtractor = function(req) {
     let token = null;
     
-    if (req && req.cookies) token = req.cookies['jwt'];
+    if (req && req.cookies){
+        token = req.cookies['jwt'];
+        
+    } 
     return token;
 };
 
@@ -27,11 +30,11 @@ async function passportConfig(passport){
             const id = Buffer.from(uuid.parse(payload.sub, Buffer.alloc(16)), Buffer.alloc(16))
             const user = await AdminUser.findOne({
                 where:{userId: id},
-                attributes: ['userId', 'userUUID', 'email', 'username', 'avatar_url'],
+                attributes: ['userId', 'userUUID', 'email', 'username', 'avatar_url', 'status', 'isActive'],
                 include:[
                     {
                         model: protectedAdmin,
-                        as: 'protected',
+                        as: 'protectedAdmin',
                         attributes: ['isSuperAdmin'],
                     }]
             });
@@ -58,7 +61,7 @@ async function passportConfig(passport){
             }else{
                 const isAuth = await user.validatePassword(password);
                 if(isAuth){
-                    return done(null, user.toJSON())
+                    return done(null, user)
                 }else{
                     return done(new HttpError(401, 'Sai mật khẩu'), false)
                 }

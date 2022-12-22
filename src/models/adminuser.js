@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      AdminUser.hasOne(models.protectedAdmin, {foreignKey: {name: 'adminId'}, as: 'protected'})
+      AdminUser.hasOne(models.protectedAdmin, {foreignKey: {name: 'adminId'}, as: 'protectedAdmin'})
     }
 
     

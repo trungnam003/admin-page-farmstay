@@ -13,6 +13,7 @@ const session = require('express-session');
 const Redis = require("ioredis")
 const RedisStore = require("connect-redis")(session)
 
+
 const redisClient = new Redis()
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +33,7 @@ const main = async()=>{
     app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
     app.use(methodOverride('_method'));
     app.use(express.static(path.join(__dirname, 'public')));
-
+    
     app.use(
         session({
             store: new RedisStore({ client: redisClient }),

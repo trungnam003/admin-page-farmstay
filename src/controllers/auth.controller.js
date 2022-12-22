@@ -5,11 +5,11 @@ const bcrypt = require('bcrypt')
 require('dotenv').config();
 const { Buffer } = require('node:buffer');
 const uuid = require('uuid');
-const {uploadImage} = require('../middlewares/uploads/upload.image')
-const multer = require("multer");
-const {public_path} = require('../path_file')
-const fs = require('node:fs/promises');
-const path = require("path");
+// const {uploadImage} = require('../middlewares/uploads/upload.image')
+// const multer = require("multer");
+// const {public_path} = require('../path_file')
+// const fs = require('node:fs/promises');
+// const path = require("path");
 class AuthController{
     /* [GET] */
     renderLogin(req, res, next){
@@ -48,7 +48,7 @@ class AuthController{
             const JWT = jwt.sign({
                 iss: 'farmstay_admin',
                 sub: userUUID,
-            }, process.env.JWT_SECRET_KEY, {expiresIn: 60*60*2})
+            }, process.env.JWT_SECRET_KEY, {expiresIn: 60*60*24})
             
             res.cookie('jwt', JWT);
             res.status(200).redirect('/')
@@ -68,40 +68,39 @@ class AuthController{
         
     }
 
-    async uploadAvatar(req, res, next){
-        const user = req.user;
+    // async uploadAvatar(req, res, next){
+    //     const user = req.user;
         
-        if(user.avatar_url){
-            const filename_avatar = user.avatar_url.split('/').at(-1)
-            const pathImg = path.join(public_path, 'uploads', 'avatar', filename_avatar)
-            console.log("\n\nhhh",pathImg)
-            try {
-                await fs.unlink(pathImg);
-            } catch (error) {
+    //     if(user.avatar_url){
+    //         const filename_avatar = user.avatar_url.split('/').at(-1)
+    //         const pathImg = path.join(public_path, 'uploads', 'avatar', filename_avatar)
+    //         try {
+    //             await fs.unlink(pathImg);
+    //         } catch (error) {
                 
-            }
-        }
-        const uploadImg = uploadImage('avatar',user.username);
-        uploadImg(req, res, async(err)=>{
+    //         }
+    //     }
+    //     const uploadImg = uploadImage('avatar',user.username);
+    //     uploadImg(req, res, async(err)=>{
                 
-            if (err instanceof multer.MulterError) {
-                res.status(403).json(err)
-            } else if (err) {
-                res.status(400).json(err)
-            } else{
-                try {
-                    const {host} = req.headers
-                    const {filename} = req.file
-                    user.avatar_url = host+"/uploads/avatar/"+filename
-                    await user.save();
-                    res.status(200).json(user)
-                } catch (error) {
+    //         if (err instanceof multer.MulterError) {
+    //             res.status(403).json(err)
+    //         } else if (err) {
+    //             res.status(400).json(err)
+    //         } else{
+    //             try {
+    //                 const {filename} = req.file
+    //                 console.log(req.file)
+    //                 user.avatar_url = "/uploads/avatar/"+filename
+    //                 await user.save();
+    //                 res.status(200).json(user)
+    //             } catch (error) {
                     
-                }
+    //             }
                 
-            }
-        })
-    }
+    //         }
+    //     })
+    // }
 }
 
 module.exports = new AuthController()

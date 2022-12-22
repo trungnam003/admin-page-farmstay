@@ -5,16 +5,18 @@ function uploadImage(type = '', imageName = ''){
 
     const made = mkdirp.sync(`./src/public/uploads/${type}`)
 
-    const storage = multer.diskStorage({
-        destination: function(req, file, cb){
-            cb(null, `./src/public/uploads/${type}`)
-        },
-        filename: function(req, file, cb){
-            const uniqueSuffix = Date.now() + '-' + imageName
-            const path = uniqueSuffix+'-'+file.fieldname+'.'+file.originalname.split('.').at(-1)
-            cb(null,  path)
-        }
-    })
+    // const storage = multer.diskStorage({
+    //     destination: function(req, file, cb){
+    //         cb(null, `./src/public/uploads/${type}`)
+    //     },
+    //     filename: function(req, file, cb){
+    //         const uniqueSuffix = Date.now() + '-' + imageName
+    //         const path = uniqueSuffix+'-'+file.fieldname+'.'+file.originalname.split('.').at(-1)
+    //         cb(null,  path)
+    //     }
+    // })
+
+    const storage = multer.memoryStorage()
     
     const fileFilter = function(req, file, cb){
         const extFiles = ['.png', '.jpg']
@@ -27,7 +29,7 @@ function uploadImage(type = '', imageName = ''){
         }
     }
     
-    const upload_Image = multer({storage: storage, fileFilter: fileFilter, limits: {fileSize: 132721}})
+    const upload_Image = multer({storage: storage, fileFilter: fileFilter, limits: {fileSize: 5000000}})
     return upload_Image.single(type)
 }
 

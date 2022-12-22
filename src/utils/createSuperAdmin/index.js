@@ -10,7 +10,7 @@
         include:[
             {
                 model: protectedAdmin,
-                as: 'protected',
+                as: 'protectedAdmin',
             }]
         })
         if(user){
@@ -25,7 +25,7 @@
                 hashpassword: '123',
                 isActive: true,
                 status: 'approved',
-                protected: {
+                protectedAdmin: {
                     adminId: id,
                     isSuperAdmin: true,
                 }
@@ -35,7 +35,7 @@
                 include: [
                     {
                         model: protectedAdmin,
-                        as: 'protected',
+                        as: 'protectedAdmin',
                     }
                 ]
             })
