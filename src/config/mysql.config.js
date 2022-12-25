@@ -1,17 +1,18 @@
 require('dotenv').config();
 
-const user = process.env.USER_DB;
-const password = process.env.PASSWORD_DB; 
-const db_name = process.env.DATABASE_NAME;
-const host = process.env.HOST;
-const dialect = process.env.DIALECT;
+const user = process.env.MYSQL_USER_DB;
+const password = process.env.MYSQL_PASSWORD_DB; 
+const db_name = process.env.MYSQL_DATABASE_NAME;
+const host = process.env.MYSQL_HOST;
+const dialect = process.env.MYSQL_DIALECT;
 const config = {
   "development": {
     "username": user,
     "password": password,
     "database": db_name,
     "host": host,
-    "dialect": dialect
+    "dialect": dialect,
+    "port": 3306
   },
   "test": {
     "username": "root",

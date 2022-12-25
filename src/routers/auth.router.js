@@ -1,14 +1,13 @@
-const Router = require("express").Router();
-const AuthController = require('../controllers/auth.controller')
-const {HttpError, HttpError404} = require('../utils/errors')
-const {passportJWT, passportLocal} = require('../middlewares/auths/authenticate.passport')
-const {authorization} = require('../middlewares/auths/authorization')
+const Router                        = require("express").Router();
+const AuthController                = require('../controllers/auth.controller')
+const {HttpError, HttpError404}     = require('../utils/errors')
+const {authenticateLocal} = require('../middlewares/auths/authenticate.local')
 
 Router
 .route('/login')
 .get(AuthController.renderLogin)
 .post(
-    passportLocal,
+    authenticateLocal,
     AuthController.loginAdmin
 )
 .all((req, res, next)=>{
@@ -29,6 +28,8 @@ Router
 .all((req, res, next)=>{
     next(new HttpError(405))
 })
+
+
 
 
 module.exports = Router

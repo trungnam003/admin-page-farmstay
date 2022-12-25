@@ -1,9 +1,9 @@
-const {uploadImage} = require('../middlewares/uploads/upload.image')
-const multer = require("multer");
-const sharp = require('sharp')
-const {public_path} = require('../path_file')
-const fs = require('node:fs/promises');
-const path = require("path");
+const {uploadImage}             = require('../middlewares/uploads/upload.image')
+const multer                    = require("multer");
+const sharp                     = require('sharp')
+const {public_path}             = require('../path_file')
+const fs                        = require('node:fs/promises');
+const path                      = require("path");
 const {HttpError, HttpError404} = require('../utils/errors')
 class UserController{
     /**

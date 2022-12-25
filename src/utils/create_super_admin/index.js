@@ -1,5 +1,5 @@
 (async function(){
-    const {sequelize, AdminUser, protectedAdmin} = require('../../models')
+    const {sequelize, AdminUser, protectedAdmin} = require('../../models/mysql')
     const { Buffer } = require('node:buffer');
     const uuidBuffer = require('uuid-buffer');
     var uuid = require('uuid');

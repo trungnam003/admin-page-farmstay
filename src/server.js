@@ -1,34 +1,40 @@
-const express = require('express');
-const {sequelize} = require('./models');
-const morgan = require('morgan');
+const express               = require('express');
+const {sequelize}           = require('./models/mysql');
+const mongodb               = require('./config/mongodb.config')
+const morgan                = require('morgan');
+const {engine}              = require('express-handlebars');
+const cookieParser          = require('cookie-parser');
+const path                  = require('path');
+const methodOverride        = require('method-override');
+const { createServer }      = require('http');
+const flash                 = require('connect-flash');
+const session               = require('express-session');
+const Redis                 = require("ioredis")
+const RedisStore            = require("connect-redis")(session)
+
+const ErrorMiddlewares      = require('./middlewares/errors')
+const router                = require('./routers')
+const {HttpError, 
+    HttpError404}           = require('./utils/errors')
+
 require('dotenv').config();
-const {engine} = require('express-handlebars');
-const cookieParser = require('cookie-parser');
-const path = require('path');
-const methodOverride = require('method-override');
-const { createServer } = require('http');
-const passport = require('passport')
-const flash = require('connect-flash');
-const session = require('express-session');
-const Redis = require("ioredis")
-const RedisStore = require("connect-redis")(session)
 
 const redisClient = new Redis()
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const ErrorMiddlewares = require('./middlewares/errors')
-const router = require('./routers')
-const {HttpError, HttpError404} = require('./utils/errors')
-require('./config/passport.config')(passport);
-
 const main = async()=>{
     // Use middleware library
     app.use(morgan('dev'));
+    
     app.use(express.urlencoded({extended: true,}));
+
     app.use(express.json());
+
     app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
+
     app.use(methodOverride('_method'));
+
     app.use(express.static(path.join(__dirname, 'public')));
     
     app.use(
@@ -43,8 +49,7 @@ const main = async()=>{
 
 
     app.use(flash())
-    // app.use(passport.initialize());
-    // app.use(passport.session());
+    
     // Setup handlebars
     app.engine(
     '.hbs',
@@ -74,11 +79,17 @@ const main = async()=>{
     try {
         await sequelize.authenticate();
         console.log("Connect MySql OK ^^");
-        require('./utils/createSuperAdmin')
+        // require('./utils/create_super_admin')
     } catch (error) {
         console.log("Connect MySql FAIL :(");
     }
-
+    try {
+        await mongodb.connect();
+        console.log("Connect MongoDB OK ^^");
+    } catch (error) {
+        console.log("Connect MongoDB FAIL :(");
+    }
+    
     const httpServer = createServer(app)
 
     await new Promise(resolve =>httpServer.listen(PORT, '0.0.0.0', undefined, ()=>{

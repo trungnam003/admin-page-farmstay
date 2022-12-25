@@ -3,7 +3,7 @@ const { Buffer } = require('node:buffer');
 var uuid = require('uuid');
 const uuidBuffer = require('uuid-buffer');
 const bcrypt = require('bcrypt')
-const {HttpError, HttpError404} = require('../utils/errors')
+const {HttpError, HttpError404} = require('../../utils/errors')
 const {
   Model
 } = require('sequelize');
@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         is: {
-          args: /^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/i,
+          args: /^[A-Za-z][A-Za-z0-9]*(?=[a-zA-Z0-9._]{3,120}$)(?!.*[_.]{2})[^_.].*[^_.]$/i,
           msg: "Username không hợp lệ"
         }
       }
@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         len: {
-          args: [2,10],
+          args: [2,100],
           msg: "Mật khẩu quá ngắn"
         }
       }

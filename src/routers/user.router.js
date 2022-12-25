@@ -1,32 +1,34 @@
-const Router = require("express").Router();
-const UserController = require('../controllers/user.controller')
-const {HttpError, HttpError404} = require('../utils/errors')
-const {passportJWT, passportLocal} = require('../middlewares/auths/authenticate.passport')
-const {authorization} = require('../middlewares/auths/authorization')
+const Router                        = require("express").Router();
+const UserController                = require('../controllers/user.controller')
+const {HttpError, HttpError404}     = require('../utils/errors')
+const {authorization}               = require('../middlewares/auths/authorization')
+const {authenticateJWT}             = require('../middlewares/auths/authenticate.jwt')
 
 Router
 .route('/me')
 .get(
-    passportJWT,
+    authenticateJWT,
     UserController.getDetail
 )
 .all((req, res, next)=>{
     next(new HttpError(405))
-})
+});
+
 
 Router
 .route('/me/edit/upload-avatar')
 .get(
-    passportJWT,
+    authenticateJWT,
     UserController.renderUploadAvatar
 )
 .post(
-    passportJWT,
+    authenticateJWT,
     UserController.uploadAvatar
 )
 .all((req, res, next)=>{
     next(new HttpError(405))
-})
+}
+);
 
 
 module.exports = Router;

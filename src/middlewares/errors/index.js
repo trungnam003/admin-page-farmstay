@@ -14,10 +14,19 @@
   
 // });
 const {HttpError, HttpError404} = require('../../utils/errors')
-  
+const jwt = require('jsonwebtoken')
+
+function handleJWT(err, req, res, next){
+  if (err instanceof jwt.JsonWebTokenError || err instanceof jwt.NotBeforeError){
+    next(new HttpError(401))
+  }
+  next(err);
+
+}
 function handleHttpErrorDefault(err, req, res, next){
     if(err instanceof HttpError){
       if(err.statusCode == 401){
+        req.flash('error_msg', err.messageResponse)
         res.status(302).redirect('/auth/login')
         return;
       }
@@ -25,11 +34,11 @@ function handleHttpErrorDefault(err, req, res, next){
       res.status(err.statusCode).render(`pages/errors/${err.statusCode+'_'+err.nameError}`,);
       return;
     }else{
-      next(err);
+      res.status(500).json("err")
       return;
     }
-    res.status(500).json("err")
+    
 }
 
-const listArrayHandleError = [handleHttpErrorDefault, ];
+const listArrayHandleError = [handleJWT,handleHttpErrorDefault, ];
 module.exports = listArrayHandleError

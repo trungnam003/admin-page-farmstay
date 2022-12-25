@@ -1,9 +1,9 @@
-const {AdminUser} = require('../models')
-const {HttpError, HttpError404} = require('../utils/errors')
-const jwt = require('jsonwebtoken')
-require('dotenv').config();
-const { Buffer } = require('node:buffer');
-const uuid = require('uuid');
+const {AdminUser, protectedAdmin}       = require('../models/mysql')
+const {HttpError, HttpError404}         = require('../utils/errors')
+const jwt                               = require('jsonwebtoken')
+                                        require('dotenv').config();
+const { Buffer }                        = require('node:buffer');
+const uuid                              = require('uuid');
 
 class AuthController{
     /* [GET] render login page */
@@ -39,20 +39,31 @@ class AuthController{
     /* [POST] tạo JWT sau khi được middleware passport-local xử lí và xác thực thành công */
     async loginAdmin(req, res, next){
         try {
-            const {userUUID} = req.user;
-            const JWT = jwt.sign({
-                iss: 'farmstay_admin',
-                sub: userUUID,
-            }, process.env.JWT_SECRET_KEY, {expiresIn: 60*60*24})
             
-            res.cookie('jwt', JWT);
+            const {user}=req
+            const {userUUID} =user
+            
+            const JWT = jwt.sign({
+                sub: userUUID,
+            }, process.env.JWT_SECRET_KEY, {expiresIn: 60*30, issuer: 'farmstay_admin'})
+
+            const REFESH_JWT = jwt.sign({
+                sub: userUUID,
+            }, process.env.JWT_REFESH_SECRET_KEY, {expiresIn: 60*60*24, issuer: 'farmstay_admin'})
+
+            user.refeshToken = REFESH_JWT;
+            await user.save();
+            res.cookie('jwt',JWT);
+            res.cookie('jwt_refesh',REFESH_JWT);
             res.status(200).redirect('/')
 
         } catch (error) {
-            next(new HttpError(500))
+            console.log(error)
+            next(new HttpError(400))
         }
-        
     }
+
+
 
     async logout(req, res, next){
         
