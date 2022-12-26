@@ -3,6 +3,14 @@ const DashboardController = require('../controllers/dashboard.controller')
 const {HttpError, HttpError404} = require('../utils/errors')
 const {validateOneParam, validateManyParam, validateOneBody, validateManyBody} = require('../middlewares/validates')
 
+Router
+.route('/test')
+.put((req, res, next)=>{
+    res.json("HEELOOOO")
+})
+.all((req, res, next)=>{
+    next(new HttpError(405))
+})
 
 Router
 .route('/test/:username')

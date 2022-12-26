@@ -1,10 +1,17 @@
-const {uploadImage}             = require('../middlewares/uploads/upload.image')
-const multer                    = require("multer");
-const sharp                     = require('sharp')
-const {public_path}             = require('../path_file')
-const fs                        = require('node:fs/promises');
-const path                      = require("path");
-const {HttpError, HttpError404} = require('../utils/errors')
+const {uploadImage}                     = require('../middlewares/uploads/upload.image')
+const multer                            = require("multer");
+const sharp                             = require('sharp')
+const {public_path}                     = require('../path_file')
+const fs                                = require('node:fs/promises');
+const path                              = require("path");
+const {HttpError, HttpError404}         = require('../utils/errors')
+const {AdminUser, }                     = require('../models/mysql')
+const {sendMail}                        = require('../services/nodemailer.service')
+const {htmlContentEmail}                = require('../services/email.temp')
+const CryptoJS                          = require("crypto-js");
+const AES                               = require("crypto-js/aes");
+                                        require('dotenv').config();
+
 class UserController{
     /**
      * [GET] render page user detail 
@@ -67,6 +74,7 @@ class UserController{
                     .toFile('./src/public/uploads/avatar/'+filename)
                     
                     if(user.avatar_url){
+                        
                         const filename_avatar = user.avatar_url.split('/').at(-1)
                         const pathImg = path.join(public_path, 'uploads', 'avatar', filename_avatar)
                         try {
@@ -79,11 +87,80 @@ class UserController{
                     await user.save();
                     res.status(200).redirect('/user/me')
                 } catch (error) {
-                    next(HttpError(500))
+                    next(new HttpError(500))
                 }
                 
             }
         })
+    }
+
+    /**
+     * [GET] Controller Active User using email
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     * @returns 
+     */
+    async active(req, res, next){
+        // Encrypt
+        const {user} = req;
+        if(user.isActive){
+            return res.status(200).redirect('/')
+        }else{
+            const {email} = user
+            let payload = {
+                email: email,
+                exp: Date.now()+10*60*1000,
+            }
+            payload =  JSON.stringify(payload);
+            let ciphertext = AES.encrypt(payload, process.env.EMAIL_VERIFY_SECRET_KEY).toString();
+            ciphertext = encodeURIComponent(ciphertext);
+
+            let html = htmlContentEmail(`http://192.168.56.101:8888/user/me/active/${ciphertext}?_method=PUT`)
+            await sendMail(req.user.email,"Kích hoạt tài khoản AdminFarmstay", html);
+            
+            res.status(200).render('pages/site/active_user')
+        }
+        
+    }
+    /**
+     * [PUT] Controller verify mail active
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     * @returns 
+     */
+    async verifyActive(req, res, next){
+
+        try {
+            let {token} = req.params
+            token = decodeURIComponent(token);
+            const bytes  = AES.decrypt(token, process.env.EMAIL_VERIFY_SECRET_KEY);
+            
+            let payload = bytes.toString(CryptoJS.enc.Utf8);
+
+            if(payload==""){
+                return next(new HttpError(400))
+            }
+
+            const {email, exp} = JSON.parse(payload)
+            if(exp<=Date.now()){
+                res.status(410).send('Token đã hết hạn');
+            }else{
+                const user = await AdminUser.findOne({where: {email}});
+                if(user){
+                    user.isActive = true;
+                    await user.save();
+                    res.redirect('/')
+                }else{
+                    return next(new HttpError(400))
+                }
+               
+            }
+            
+        } catch (error) {
+            next(new HttpError(400))
+        }
     }
 }
 

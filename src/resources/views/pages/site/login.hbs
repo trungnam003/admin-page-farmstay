@@ -14,7 +14,7 @@
 
                 <form class = "mt-4" style = "font-size: 16px;" id="form-login" method="POST">
                   <p style="color: black; text-align: center; font-weight: 550;">Đăng nhập vào Admin Page</p>
-                  <div class="form-outline mb-4">
+                  <div class="form-outline mb-1">
                     <label class="form-label" for="form2Example11">Email</label>
                     <input name="email" type="email" id="form2Example11" class="form-control"
                       placeholder="Email" required />
@@ -22,20 +22,20 @@
                   </div>
                
 
-                  <div class="form-outline mb-4">
+                  <div class="form-outline mb-1">
                     <label class="form-label" for="form2Example22">Mật khẩu</label>
-                    <input name="password" type="password" id="form2Example22" class="form-control" placeholder = "Password" required/>
+                    <input name="password" id="password" type="password" class="form-control" placeholder = "Password" required onblur="validatePassword()"/>
                     
                   </div>
 
-                  <div class="text-center pt-1 mb-5 pb-1">
+                  <div class="text-center pt-1 mb-1 pb-1">
                     <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" form="form-login" type="submit" style = "font-size: 14px; padding: 12px;">LOGIN</button>
                     <a class="text-muted" href="#!">Forgot password?</a>
                     <br>
                     <a class="text-primary" href="/auth/register">Đăng kí tài khoản</a>
                   </div>
-                  <div class="text-center pt-1 mb-5 pb-1">
-                    <p class="text-danger font-italic" style="height: 28px;"> {{error_msg}} </p>
+                  <div class="text-center pt-1 mb-1 pb-1">
+                    <p id = "warning-input" class="text-danger font-italic" style="height: 28px; font-size: 14px"> {{error_msg}} </p>
                   </div>
                 </form>
 

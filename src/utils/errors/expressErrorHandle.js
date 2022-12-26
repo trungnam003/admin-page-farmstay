@@ -36,4 +36,19 @@ class HttpError404 extends HttpError{
         super(statusCode, _msg);
     }
 }
-module.exports ={ HttpError, HttpError404}
+
+class HttpError401 extends HttpError{
+    constructor(msg) {
+        const statusCode = 401;
+        const _msg = msg??STATUS_CODES[statusCode].replaceAll('_', ' ');
+        super(statusCode, _msg);
+    }
+}
+class HttpError409 extends HttpError{
+    constructor(msg) {
+        const statusCode = 409;
+        const _msg = msg??STATUS_CODES[statusCode].replaceAll('_', ' ');
+        super(statusCode, _msg);
+    }
+}
+module.exports ={ HttpError, HttpError404, HttpError409, HttpError401}

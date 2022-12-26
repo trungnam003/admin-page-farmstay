@@ -89,7 +89,18 @@
                 <p class="mb-0">Active</p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">{{isActive}}</p>
+              {{#if isActive}}
+                <p class="text-muted mb-0">{{isActive}}
+                
+                </p>
+              {{else}}
+                
+                  <p class="text-muted mb-0">{{isActive}} - Active here: <a href="/user/me/active"class="btn btn-link">link</a></p>
+                
+                
+                
+              {{/if}}
+                
               </div>
             </div>
             <hr>

@@ -1,4 +1,4 @@
 const STATUS_CODES = require('./statusCode')
-const {HttpError, HttpError404} = require('./expressErrorHandle')
+const {HttpError, HttpError404, HttpError401, HttpError409} = require('./expressErrorHandle')
 
-module.exports = {STATUS_CODES, HttpError, HttpError404};
+module.exports = {STATUS_CODES, HttpError, HttpError404,  HttpError401, HttpError409};

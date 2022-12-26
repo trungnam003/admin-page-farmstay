@@ -30,5 +30,26 @@ Router
 }
 );
 
+Router
+.route('/me/active/:token')
+.put(
+    UserController.verifyActive
+)
+.all((req, res, next)=>{
+    next(new HttpError(405))
+}
+);
+
+Router
+.route('/me/active')
+.get(
+    authenticateJWT,
+    UserController.active
+)
+.all((req, res, next)=>{
+    next(new HttpError(405))
+}
+);
+
 
 module.exports = Router;
