@@ -21,9 +21,9 @@ class UserController{
      * 
      */
     getDetail(req, res, next){
-        const {email, username, isActive, status, avatar_url,protectedAdmin} = req.user
-        const isSuperAdmin = protectedAdmin === null ? false:true;
-        res.render('pages/users/me', {email, username, isActive, status, avatar_url, isSuperAdmin})
+        const {email, username, is_active, status, avatar_url,protected_admin} = req.user
+        const is_super_admin = protected_admin === null ? false:true;
+        res.render('pages/users/me', {email, username, is_active, status, avatar_url, is_super_admin})
     }
 
     /**
@@ -104,7 +104,7 @@ class UserController{
     async active(req, res, next){
         // Encrypt
         const {user} = req;
-        if(user.isActive){
+        if(user.is_active){
             return res.status(200).redirect('/')
         }else{
             const {email} = user
@@ -149,7 +149,7 @@ class UserController{
             }else{
                 const user = await AdminUser.findOne({where: {email}});
                 if(user){
-                    user.isActive = true;
+                    user.is_active = true;
                     await user.save();
                     res.redirect('/')
                 }else{

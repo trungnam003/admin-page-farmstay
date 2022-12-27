@@ -79,7 +79,7 @@ const main = async()=>{
     try {
         await sequelize.authenticate();
         console.log("Connect MySql OK ^^");
-        // require('./utils/create_super_admin')
+        require('./utils/create_super_admin')
     } catch (error) {
         console.log("Connect MySql FAIL :(");
     }

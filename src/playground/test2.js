@@ -1,26 +1,26 @@
 
-const {sequelize, AdminUser, protectedAdmin, administrative_regions, administrative_units, provinces, districts, wards} = require('../models')
+const {sequelize, AdminUser, protectedAdmin, AdministrativeRegion, AdministrativeUnit, Province, District, Ward} = require('../models/mysql')
 
-provinces.findOne({
+Province.findOne({
     where: {code_name:'soc_trang'},
     include: [
         {
-            model: administrative_regions,
+            model: AdministrativeRegion,
             as: 'administrative_region',
             attributes: ['name']
         },
         {
-            model: administrative_units,
+            model: AdministrativeUnit,
             as: 'administrative_unit',
             attributes: ['full_name']
         },
         {
-            model: districts,
+            model: District,
             as: 'districts',
             attributes: ['name'],
             include: [
                 {
-                    model: wards,
+                    model: Ward,
                     as: 'wards',
                     attributes: ['name'],
                 }

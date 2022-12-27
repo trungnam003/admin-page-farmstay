@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class wards extends Model {
+  class Ward extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {administrative_units, districts} = models
+      const {AdministrativeUnit, District} = models
 
-      wards.belongsTo(administrative_units, {
+      Ward.belongsTo(AdministrativeUnit, {
         foreignKey:{
           name: "administrative_unit_id"
         },
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         as: 'administrative_unit'
       });
 
-      wards.belongsTo(districts, {
+      Ward.belongsTo(District, {
         foreignKey:{
           name: "district_code"
         },
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
 
     }
   }
-  wards.init({
+  Ward.init({
     code:{
       type: DataTypes.STRING(20),
       primaryKey: true,
@@ -60,8 +60,9 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'wards',
+    modelName: 'Ward',
+    tableName: 'wards',
     timestamps: false
   });
-  return wards;
+  return Ward;
 };

@@ -2,19 +2,17 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('protectedAdmins', {
-      adminId: {
+    await queryInterface.createTable('protected_admins', {
+      admin_id: {
         type: 'BINARY(16)',
         allowNull: false,
         primaryKey: true,
         references: {
-          model: 'AdminUsers',
-          key: 'userId'
+          model: 'admin_users',
+          key: 'user_id'
         },
-        
-        
       },
-      isSuperAdmin: {
+      is_super_admin: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
       },
@@ -29,6 +27,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('protectedAdmins');
+    await queryInterface.dropTable('protected_admins');
   }
 };

@@ -1,5 +1,5 @@
 (async function(){
-    const {sequelize, AdminUser, protectedAdmin} = require('../../models/mysql')
+    const {sequelize, AdminUser, ProtectedAdmin} = require('../../models/mysql')
     const { Buffer } = require('node:buffer');
     const uuidBuffer = require('uuid-buffer');
     var uuid = require('uuid');
@@ -9,8 +9,8 @@
         where: {email: 'thtntrungnam@gmail.com'},
         include:[
             {
-                model: protectedAdmin,
-                as: 'protectedAdmin',
+                model: ProtectedAdmin,
+                as: 'protected_admin',
             }]
         })
         if(user){
@@ -19,23 +19,23 @@
         }else{
             const id = Buffer.from(uuid.parse(uuid.v4(), Buffer.alloc(16)), Buffer.alloc(16))
             const superAdmin = {
-                userId: id,
+                user_id: id,
                 username: 'trungnam1611',
                 email:'thtntrungnam@gmail.com',
-                hashpassword: '123',
-                isActive: true,
+                hashed_password: '123',
+                is_active: true,
                 status: 'approved',
-                protectedAdmin: {
-                    adminId: id,
-                    isSuperAdmin: true,
+                protected_admin: {
+                    admin_id: id,
+                    is_super_admin: true,
                 }
             }
 
             await AdminUser.create(superAdmin, {
                 include: [
                     {
-                        model: protectedAdmin,
-                        as: 'protectedAdmin',
+                        model: ProtectedAdmin,
+                        as: 'protected_admin',
                     }
                 ]
             })

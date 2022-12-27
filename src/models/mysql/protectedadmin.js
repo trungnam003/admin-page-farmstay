@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class protectedAdmin extends Model {
+  class ProtectedAdmin extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,19 +11,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      protectedAdmin.belongsTo(models.AdminUser, {foreignKey: {name: 'adminId'}, targetKey :'userId', as: 'protectedAdmin'})
+      ProtectedAdmin.belongsTo(models.AdminUser, {foreignKey: {name: 'admin_id'}, targetKey :'user_id', as: 'protected_admin'})
     }
   }
-  protectedAdmin.init({
-    adminId: {
+  ProtectedAdmin.init({
+    admin_id: {
       type:'BINARY(16)',
       primaryKey: true,
       allowNull: false,
     },
-    isSuperAdmin: {type: DataTypes.BOOLEAN, allowNull: false,}
+    is_super_admin: {type: DataTypes.BOOLEAN, allowNull: false,}
   }, {
     sequelize,
-    modelName: 'protectedAdmin',
+    modelName: 'ProtectedAdmin',
+    tableName: 'protected_admins'
   });
-  return protectedAdmin;
+  return ProtectedAdmin;
 };

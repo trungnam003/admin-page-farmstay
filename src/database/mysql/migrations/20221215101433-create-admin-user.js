@@ -2,8 +2,8 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('AdminUsers', {
-      userId: {
+    await queryInterface.createTable('admin_users', {
+      user_id: {
         allowNull: false,
         primaryKey: true,
         type: 'binary(16)',
@@ -32,7 +32,7 @@ module.exports = {
         },
         unique: true
       },
-      hashpassword: {
+      hashed_password: {
         allowNull: false,
         type: Sequelize.STRING
       },
@@ -40,18 +40,15 @@ module.exports = {
         type:Sequelize.STRING(16),
         defaultValue: 'pending'
       },
-      isActive: {
+      is_active: {
         type:Sequelize.BOOLEAN,
         defaultValue: false
       },
-      refeshToken: {
+      refesh_token: {
         allowNull: true,
         type: Sequelize.TEXT
       },
-      avatar_disk:{
-        type:Sequelize.STRING(512),
-        allowNull: true
-      },
+      
       avatar_url:{
         type:Sequelize.STRING(512),
         allowNull: true
@@ -67,6 +64,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('AdminUsers');
+    await queryInterface.dropTable('admin_users');
   }
 };

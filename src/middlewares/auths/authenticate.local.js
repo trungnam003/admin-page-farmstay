@@ -7,7 +7,7 @@ async function authenticateLocal(req, res, next){
         const {email, password} = req.body;
         const user = await AdminUser.findOne({
             where:{email: email},
-            attributes: ['userId', 'userUUID', 'email', 'username', 'hashpassword'],
+            attributes: ['user_id', 'user_uuid', 'email', 'username', 'hashed_password', 'refesh_token'],
         });
         if(!user){
             

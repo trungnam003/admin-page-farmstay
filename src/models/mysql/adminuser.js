@@ -16,13 +16,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      AdminUser.hasOne(models.protectedAdmin, {foreignKey: {name: 'adminId'},sourceKey :'userId', as: 'protectedAdmin'})
+      AdminUser.hasOne(models.ProtectedAdmin, {foreignKey: {name: 'admin_id'},sourceKey :'user_id', as: 'protected_admin'})
     }
 
     
   }
   AdminUser.init({
-    userId: {
+    user_id: {
       type:'BINARY(16)',
       primaryKey: true,
       allowNull: false,
@@ -30,10 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     
       
     },
-    userUUID:{
+    user_uuid:{
       type: DataTypes.VIRTUAL,
       get() {
-        const id = uuidBuffer.toString(this.userId)
+        const id = uuidBuffer.toString(this.user_id)
         return id;
       },
     },
@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    hashpassword: {
+    hashed_password: {
       type:DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -67,42 +67,46 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    avatar_disk:{
-      type:DataTypes.STRING(512),
-      allowNull: true
-    },
     avatar_url:{
       type:DataTypes.STRING(512),
       allowNull: true
     },
     status: {
       type:DataTypes.STRING(16),
-      defaultValue: 'pending'
+      defaultValue: 'pending',
+      validate: {
+        isIn: {
+          args: [['pending', 'approved']],
+          msg: "Giá trị phải là pending hoặc approved"
+        },
+      }
+
     },
-    isActive: {
+    is_active: {
       type:DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
+      
     },
-    refeshToken: {
+    refesh_token: {
       type:DataTypes.TEXT,
       allowNull: true,
     },
   }, {
     sequelize,
     modelName: 'AdminUser',
-    
+    tableName: 'admin_users'
   });
   AdminUser.prototype.validatePassword = async function(password){
     try {
-      const isAuth = await bcrypt.compare(password, this.hashpassword)
+      const isAuth = await bcrypt.compare(password, this.hashed_password)
       return isAuth;
     } catch (error) {
       throw new HttpError(500)
     }
   }
-  AdminUser.addHook('beforeCreate', async(user, options)=>{
+  AdminUser.addHook('beforeCreate', async function(user, options){
     const salt = await bcrypt.genSalt(10);
-    user.hashpassword = await bcrypt.hash(user.hashpassword, salt);
+    user.hashed_password = await bcrypt.hash(user.hashed_password, salt);
   })
   return AdminUser;
 };

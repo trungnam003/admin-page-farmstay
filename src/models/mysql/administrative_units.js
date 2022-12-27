@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class administrative_units extends Model {
+  class AdministrativeUnit extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,21 +11,21 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {provinces, districts, wards} = models;
+      const {Province, District, Ward} = models;
 
-      administrative_units.hasMany(provinces, {
+      AdministrativeUnit.hasMany(Province, {
         foreignKey: {name: 'administrative_unit_id'},
         sourceKey: 'id',
         as: 'provinces' 
       })
 
-      administrative_units.hasMany(districts, {
+      AdministrativeUnit.hasMany(District, {
         foreignKey: {name: 'administrative_unit_id'},
         sourceKey: 'id',
         as: 'districts' 
       })
 
-      administrative_units.hasMany(wards, {
+      AdministrativeUnit.hasMany(Ward, {
         foreignKey: {name: 'administrative_unit_id'},
         sourceKey: 'id',
         as: 'wards' 
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
 
     }
   }
-  administrative_units.init({
+  AdministrativeUnit.init({
     id:{
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -66,8 +66,9 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'administrative_units',
+    modelName: 'AdministrativeUnit',
+    tableName: 'administrative_units',
     timestamps: false
   });
-  return administrative_units;
+  return AdministrativeUnit;
 };

@@ -1,4 +1,4 @@
-const {AdminUser, protectedAdmin}       = require('../../models/mysql')
+const {AdminUser, ProtectedAdmin}       = require('../../models/mysql')
 const {HttpError, HttpError404}         = require('../../utils/errors')
 const jwt                               = require('jsonwebtoken')
                                         require('dotenv').config();
@@ -34,13 +34,13 @@ const verify = async function(req, res, next){
     
     const id = Buffer.from(uuid.parse(payload.sub, Buffer.alloc(16)), Buffer.alloc(16))
     const user = await AdminUser.findOne({
-        where:{userId: id},
-        attributes: ['userId', 'userUUID', 'email', 'username', 'avatar_url', 'status', 'isActive'],
+        where:{user_id: id},
+        attributes: ['user_id', 'user_uuid', 'email', 'username', 'avatar_url', 'status', 'is_active'],
         include:[
             {
-                model: protectedAdmin,
-                as: 'protectedAdmin',
-                attributes: ['isSuperAdmin'],
+                model: ProtectedAdmin,
+                as: 'protected_admin',
+                attributes: ['is_super_admin'],
             }]
     });
     
@@ -82,13 +82,13 @@ const refesh = async function(req, res, next){
             const id = Buffer.from(uuid.parse(sub, Buffer.alloc(16)), Buffer.alloc(16))
             
             const user = await AdminUser.findOne({
-                where:{userId: id},
-                attributes: ['userId', 'userUUID', 'email', 'username', 'avatar_url', 'status', 'isActive', 'refeshToken'],
+                where:{user_id: id},
+                attributes: ['user_id', 'user_uuid', 'email', 'username', 'avatar_url', 'status', 'is_active', 'refesh_token'],
                 include:[
                     {
-                        model: protectedAdmin,
-                        as: 'protectedAdmin',
-                        attributes: ['isSuperAdmin'],
+                        model: ProtectedAdmin,
+                        as: 'protected_admin',
+                        attributes: ['is_super_admin'],
                     }]
             });
             
@@ -96,7 +96,7 @@ const refesh = async function(req, res, next){
                 
                 req.user = user;
                 const JWT = jwt.sign({
-                    sub: user.userUUID,
+                    sub: user.user_uuid,
                 }, process.env.JWT_SECRET_KEY, {expiresIn: 60*30, issuer: 'farmstay_admin'})
                 res.clearCookie("jwt");
                 res.cookie('jwt',JWT);

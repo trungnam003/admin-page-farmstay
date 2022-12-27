@@ -1,4 +1,4 @@
-const {AdminUser, protectedAdmin}       = require('../models/mysql')
+const {AdminUser, ProtectedAdmin}       = require('../models/mysql')
 const {HttpError, HttpError404}         = require('../utils/errors')
 const jwt                               = require('jsonwebtoken')
                                         require('dotenv').config();
@@ -25,7 +25,7 @@ class AuthController{
             const {email, password, username} = req.body;
             const id = Buffer.from(uuid.parse(uuid.v4(), Buffer.alloc(16)), Buffer.alloc(16))
             const userCreated = await AdminUser.create({
-                userId : id, username, email, hashpassword : password,
+                user_id : id, username, email, hashed_password : password,
             })
             res.redirect('/auth/login')
         } catch (error) {
@@ -38,21 +38,21 @@ class AuthController{
         try {
             
             const {user}=req
-            const {userUUID} =user
+            const {user_uuid} =user
             
             const JWT = jwt.sign({
-                sub: userUUID,
+                sub: user_uuid,
             }, process.env.JWT_SECRET_KEY, {expiresIn: 60*30, issuer: 'farmstay_admin'})
 
             let REFESH_JWT;
-            if(user.refeshToken){
+            if(user.refesh_token==null){
                 REFESH_JWT = jwt.sign({
-                    sub: userUUID,
+                    sub: user_uuid,
                 }, process.env.JWT_REFESH_SECRET_KEY, {expiresIn: 60*60*24, issuer: 'farmstay_admin'})
-                user.refeshToken = REFESH_JWT;
+                user.refesh_token = REFESH_JWT;
                 await user.save();
             }else{
-                REFESH_JWT = user.refeshToken;
+                REFESH_JWT = user.refesh_token;
             }
             
             res.cookie('jwt',JWT);
