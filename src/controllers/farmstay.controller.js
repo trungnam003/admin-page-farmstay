@@ -7,6 +7,9 @@ const { QueryTypes, Op } = require('sequelize');
 const sharp                             = require('sharp');
 const mkdirp = require('mkdirp');
 const slug = require('slug')
+const PromiseBlueBird = require('bluebird');
+// global.Promise = Promise;
+
 class FarmstayController{
     async renderCreateFarmstay(req, res, next){
         try {
@@ -91,15 +94,20 @@ class FarmstayController{
                     const images_url = [];
                     const path = './src/public/uploads/farmstay'
                     mkdirp.sync(path)
-                    const promises =[];
+                    const IMAGES = []
                     for (let index = 0; index < files.length; index++) {
                         const {buffer, originalname, fieldname} = files[index];
-                        const uniqueSuffix = Date.now() + '-' + slug(farmstay_name, '_');
+                        const uniqueSuffix = Date.now()+ `(${index+1})` + '-' + slug(farmstay_name, '_');
                         const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
                         images_url.push(`/uploads/farmstay/${filename}`); 
-                        promises.push(sharp(buffer).toFile(`${path}/${filename}`))
+                        // promises.push(sharp(buffer).toFile(`${path}/${filename}`))
+                        IMAGES.push([buffer, filename])
                     }
-                    await Promise.all(promises)
+                    
+                    await PromiseBlueBird.map(IMAGES, async(image)=>{
+                        return sharp(image[0]).toFile(`${path}/${image[1]}`);
+                    });
+                    
                     
                     const FARMSTAY_ATTRS = {
                         uuid: generateBufferUUIDV4(),
