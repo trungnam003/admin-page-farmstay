@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {AdministrativeUnit, District} = models
+      const {AdministrativeUnit, District,FarmstayAddress} = models
 
       Ward.belongsTo(AdministrativeUnit, {
         foreignKey:{
@@ -27,6 +27,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         targetKey: 'code',
         as: 'district',
+      });
+
+      Ward.hasMany(FarmstayAddress, 
+        {foreignKey: {name: 'code_ward'},
+        sourceKey:'code', 
+        as:'farmstays'
       });
 
     }

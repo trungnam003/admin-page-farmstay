@@ -1,17 +1,20 @@
 {{!-- <link rel="stylesheet" href="/css/edit_image/all.css" crossorigin="anonymous"> --}}
 <link rel="stylesheet" href="/css/edit_image/cropper.css">
-<link rel="stylesheet" href="/css/edit_image/main.css">
-<form class="pt-4 pl-3 pr-3" name = "upload-form" method="POST" enctype="multipart/form-data" action="/user/me/edit/upload-avatar">
+<link rel="stylesheet" href="/css/edit_image/main_edit_image.css">
+
+
+<form id = "form-upload-avatar" class="pt-4 pl-3 pr-3" name = "upload-form" method="POST" enctype="multipart/form-data" action="/user/me/edit/upload-avatar">
   <div class="form-group" >
     <label for="exampleFormControlFile1">Tải ảnh của bạn</label>
 
     <label style="width: 96px" class="btn btn-primary btn-upload" for="inputImage" title="Upload image file">
-      <input name="avatar" type="file" class="sr-only" id="inputImage" name="file" accept="image/*">
+      <input name="avatar" type="file" class="sr-only" id="inputImage" accept="image/*">
       <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="Tải ảnh từ máy của bạn">
         <span class="fa fa-upload"></span>
       </span>
+      
     </label>
-
+    <span class="form-message"></span>
     {{!-- <input  name="avatar" type="file" class="" id="inputImage" name="file" accept="image/*"> --}}
     {{!-- <input name="avatar" type="file" class="form-control-file" id="exampleFormControlFile1" accept="image/*"> --}}
   </div>
@@ -541,3 +544,4 @@
 
 
 </div>
+{{> js}}

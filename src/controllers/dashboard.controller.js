@@ -1,7 +1,8 @@
-
+const {AdminUser, ProtectedAdmin}       = require('../models/mysql')
 
 class DashboardController{
-    renderDashboard(req, res, next){
+    async renderDashboard(req, res, next){
+        
         res.render('home')
     }
 }

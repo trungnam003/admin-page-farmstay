@@ -1,0 +1,300 @@
+<style>
+.main {
+background: #f1f1f1;
+min-height: 100vh;
+display: flex;
+justify-content: center;
+}
+.form {
+width: 360px;
+min-height: 100px;
+padding: 32px 24px;
+text-align: center;
+background: #fff;
+border-radius: 2px;
+margin: 24px;
+align-self: center;
+box-shadow: 0 2px 5px 0 rgba(51, 62, 73, 0.1);
+}
+.form .heading {
+font-size: 2rem;
+}
+.form .desc {
+text-align: center;
+color: #636d77;
+font-size: 1.6rem;
+font-weight: lighter;
+line-height: 2.4rem;
+margin-top: 16px;
+font-weight: 300;
+}
+
+.form-group {
+display: flex;
+margin-bottom: 16px;
+flex-direction: column;
+}
+
+.form-label,
+.form-message {
+text-align: left;
+}
+
+.form-label {
+font-weight: 700;
+padding-bottom: 6px;
+line-height: 1.8rem;
+
+}
+
+.form-control {
+height: 40px;
+padding: 8px 12px;
+border: 1px solid #b3b3b3;
+border-radius: 3px;
+outline: none;
+
+}
+
+.form-control:hover {
+border-color: #1dbfaf;
+}
+
+.form-group.invalid .form-control {
+border-color: #f33a58;
+}
+
+.form-group.invalid .form-message {
+color: #f33a58;
+}
+
+.form-message {
+font-size: 0.8rem;
+line-height: 1.6rem;
+padding: 4px 0 0;
+
+}
+
+.form-submit {
+outline: none;
+background-color: #1dbfaf;
+margin-top: 12px;
+padding: 12px 16px;
+font-weight: 600;
+color: #fff;
+border: none;
+width: 100%;
+font-size: 14px;
+border-radius: 8px;
+cursor: pointer;
+}
+
+.form-submit:hover {
+background-color: #1ac7b6;
+}
+
+.spacer {
+margin-top: 36px;
+}
+</style>
+<style>
+.img-test{
+    width: 600px;
+    height: 400px;
+    object-fit: cover;
+}
+</style>
+<div class="mt-4">
+    <form id='form-create-farmstay' method="post" enctype='multipart/form-data'>
+        <div class="alert alert-success" role="alert">
+            <h4  class="text-center text-success" >Tạo Farmstay</h4>
+        </div>
+       
+
+        <div class="form-group">
+            <label for="inputFarmstay">Tên Farmstay</label>
+            <input type="text" class="form-control" id="inputFarmstay" name='name_farmstay' placeholder="Nhập tên farmstay">
+            <span class="form-message"></span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="inputRentCost">Giá thuê/ngày</label>
+                <input type="text" class="form-control" id="inputRentCost" name='rent_cost' placeholder="Nhập giá thuê / ngày">
+                <span class="form-message"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputManager">Chọn người quản lý</label>
+                <select name="manager_id" id="inputManager" class="form-control">
+                <option value="" selected>Choose...</option>
+                {{#each managers}}
+                    <option value="{{this.id}}">{{this.name}}</option>
+                {{/each}}
+                </select>
+                <span class="form-message"></span>
+            </div>
+            
+        </div>
+
+        <div class="form-group">
+            <label for="inputDescription">Nhập mô tả</label>
+            <textarea type="text" class="form-control" id="inputDescription" name='description' placeholder="Nhập mô tả cho farmstay"></textarea>
+        </div>
+
+        <div class="alert alert-primary" role="alert">
+            <h6  class="text-center text-primary" >Nhập địa chỉ</h6>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="inputProvince ">Chọn tỉnh</label>
+                <select name='province_code' id="inputProvince" class="form-control">
+                <option value="" selected>Choose...</option>
+                {{#each provinces}}
+                    <option value="{{this.code}}">{{this.name}}</option>
+                {{/each}}
+                </select>
+                <span class="form-message"></span>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label for="inputDistrict">Chọn huyện</label>
+                <select name='district_code' id="inputDistrict" class="form-control" disabled>
+                <option selected>Choose...</option>
+                </select>
+                <span class="form-message"></span>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label for="inputWard">Chọn xã</label>
+                <select name='ward_code' id="inputWard" class="form-control" disabled>
+                <option selected>Choose...</option>
+                </select>
+                <span class="form-message"></span>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label for="inputAddress">Địa chỉ cụ thể</label>
+            <input type="text" class="form-control" id="inputAddress" name='address' placeholder="Nhập địa chỉ cụ thể">
+        </div>
+
+        
+        
+        <div class="form-group">
+            <label for="inputLinkGGMAP">Nhập link địa chỉ trên GoogleMap</label>
+            <input type="text" class="form-control" id="inputLinkGGMAP" name="link_ggmap">
+            
+        </div>
+        <div class="form-group">
+            <label for="inputLinkEmbeddedGGMAP">Nhập link nhúng trên GoogleMap</label>
+            <input type="text" class="form-control" id="inputLinkEmbeddedGGMAP" name="link_embedded_ggmap">
+            
+        </div>
+        <div class="form-group">
+            <a class = "text-primary"href="https://www.google.com/maps" target="_blank">Mở GoogleMap</a>
+        </div>
+        <div class="alert alert-primary" role="alert">
+            <h6  class="text-center text-primary" >Tải ảnh</h6>
+        </div>
+        
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+            Thêm ảnh
+        </button>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                
+                    <div id='image-view'>
+                    </div>
+                    
+                    <label for="formFileMultiple" class="form-label">Tải ảnh lên</label>
+                    <input name="farmstay" class="form-control" type="file" id="input_multi_image" onchange="readURL(this);"  accept="image/*" multiple/>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btn-get-image-list" type="button" class="btn btn-primary">Save changes</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="carouselExampleIndicators" class="carousel slide sr-only" data-ride="carousel">
+            
+            <div id="image-slide-view" class="carousel-inner">
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+        
+        <div class="alert alert-primary" role="alert">
+            <h6  class="text-center text-primary" >Chọn trang thiết bị</h6>
+        </div>
+        
+
+        <div class="form-group">
+            {{#each equipments}}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <img style="width: 60px;"src="/img/logo1.png" class="img-thumbnail" alt="Cinque Terre">
+                        <div class="input-group-text">
+                            <input id="input_equipment" name="equipments_id" type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
+                        </div>
+                    </div>
+                    <p class="border border-secondary mt-0 mb-0 text-dark pl-4" style="flex:1;" for="flexCheckChecked">{{this.name}}</p>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <input id="input_equipment_quantity" name="equipments_quantity" type="number" value="0" min="1" max="{{this.quantity}}">
+                        
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+            
+        </div>
+
+        <button id="btn-create"type="submit" class="btn btn-primary">Sign in</button>
+        
+    </form>
+</div>
+{{> js}}
+<script>
+    Validator(
+    {
+        form: '#form-create-farmstay',
+        errorSelector: '.form-message',
+        formGroupSelector: '.form-group',
+        rules:[
+            Validator.isRequired('#inputFarmstay'),
+            //Validator.isRequired('#inputRentCost'),
+           // Validator.isRequired('#inputManager'),
+           // Validator.isRequired('#inputProvince'),
+         //   Validator.isRequired('#inputDistrict'),
+           // Validator.isRequired('#inputWard'),
+
+        ],
+        callback: (data)=>{
+            console.log(data)
+        }
+    }
+    );
+
+</script>
+<script src="/js/farmstay/create_farmstay.js"></script>

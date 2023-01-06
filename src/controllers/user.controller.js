@@ -53,9 +53,9 @@ class UserController{
                 return next(new HttpError(400))
             }
             if (err instanceof multer.MulterError) {
-                next(HttpError(500))
+                next(new HttpError(500))
             } else if (err) {
-                next(HttpError(500))
+                next(new HttpError(500))
             } else{
                 try {
                     const {buffer} = req.file

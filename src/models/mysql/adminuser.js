@@ -27,8 +27,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       allowNull: false,
       // defaultValue: Buffer.from(uuid.parse(uuid.v4(), Buffer.alloc(16)), Buffer.alloc(16)),
-    
-      
     },
     user_uuid:{
       type: DataTypes.VIRTUAL,

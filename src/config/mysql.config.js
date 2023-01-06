@@ -12,7 +12,8 @@ const config = {
     "database": db_name,
     "host": host,
     "dialect": dialect,
-    "port": 3306
+    "port": 3306,
+    "logging": true
   },
   "test": {
     "username": "root",

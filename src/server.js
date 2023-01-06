@@ -60,6 +60,13 @@ const main = async()=>{
             dir: path.join(__dirname, 'resources', 'views', 'partials'),
         },
         layoutsDir: path.join(__dirname, 'resources', 'views', 'layouts'),
+        helpers: {
+            test: function(list, parent, child){
+                const length = list.length;
+                console.log("HEHE")
+                return list.length+"hêhe";
+            }
+        }
     }),
     ); // cấu hình handlebars
     app.set('view engine', '.hbs');
