@@ -124,6 +124,7 @@ class FarmstayController{
                         },
                         images: images_url
                     }
+                    
                     const farmstay = await Farmstay.create(FARMSTAY_ATTRS, {
                         include: [
                             {
