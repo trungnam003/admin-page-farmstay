@@ -17,11 +17,11 @@ const router                = require('./routers')
 const {HttpError, 
     HttpError404}           = require('./utils/errors')
 
-require('dotenv').config();
+const config                = require('./config')
 
 const redisClient = new Redis()
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.server.port;
 
 const main = async()=>{
     // Use middleware library
@@ -31,7 +31,7 @@ const main = async()=>{
 
     app.use(express.json());
 
-    app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
+    app.use(cookieParser(config.secret_key.cookie));
 
     app.use(methodOverride('_method'));
 
@@ -40,7 +40,7 @@ const main = async()=>{
     app.use(
         session({
             store: new RedisStore({ client: redisClient }),
-            secret: 'secret',
+            secret: config.secret_key.cookie,
             resave: false,
             saveUninitialized: true,
             cookie: {maxAge: 15000, secure: false}
@@ -61,11 +61,7 @@ const main = async()=>{
         },
         layoutsDir: path.join(__dirname, 'resources', 'views', 'layouts'),
         helpers: {
-            test: function(list, parent, child){
-                const length = list.length;
-                console.log("HEHE")
-                return list.length+"hêhe";
-            }
+            
         }
     }),
     ); // cấu hình handlebars
@@ -86,7 +82,7 @@ const main = async()=>{
     try {
         await sequelize.authenticate();
         console.log("Connect MySql OK ^^");
-        require('./utils/create_super_admin')
+        // require('./utils/create_super_admin')
     } catch (error) {
         console.log("Connect MySql FAIL :(");
     }

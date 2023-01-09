@@ -122,19 +122,19 @@ function Validator(options){
                                     
                                     break;
                                 }
-                                case 'number':{
+                                // case 'number':{
                                     
-                                    // if(!input.matches(':checked')){
-                                    //     // values[input.name] = [];
-                                    //     return values;
-                                    // } 
-                                    if(!Array.isArray(values[input.name])){
-                                        values[input.name] = [];
-                                    }
-                                    values[input.name].push(input.value);
+                                //     // if(!input.matches(':checked')){
+                                //     //     // values[input.name] = [];
+                                //     //     return values;
+                                //     // } 
+                                //     if(!Array.isArray(values[input.name])){
+                                //         values[input.name] = [];
+                                //     }
+                                //     values[input.name].push(input.value);
                                     
-                                    break;
-                                }
+                                //     break;
+                                // }
                                 case 'radio':{
                                     // Lấy thẻ input được checked
                                     const checked = elementForm.querySelector(`input[name="${input.name}"]:checked`)

@@ -105,7 +105,7 @@ margin-top: 36px;
 }
 </style>
 <div class="mt-4">
-    <form id='form-create-farmstay' method="post" enctype='multipart/form-data'>
+    <form id='form-create-farmstay' method="post" enctype='multipart/form-data'action="/farmstay/create" >
         <div class="alert alert-success" role="alert">
             <h4  class="text-center text-success" >Tạo Farmstay</h4>
         </div>
@@ -113,7 +113,7 @@ margin-top: 36px;
 
         <div class="form-group">
             <label for="inputFarmstay">Tên Farmstay</label>
-            <input type="text" class="form-control" id="inputFarmstay" name='name_farmstay' placeholder="Nhập tên farmstay">
+            <input type="text" class="form-control" id="inputFarmstay" name='farmstay_name' placeholder="Nhập tên farmstay">
             <span class="form-message"></span>
         </div>
 
@@ -250,18 +250,19 @@ margin-top: 36px;
         
 
         <div class="form-group">
+            <input id = "equipments" name ="equipments" type="text" class="sr-only">
             {{#each equipments}}
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <img style="width: 60px;"src="/img/logo1.png" class="img-thumbnail" alt="Cinque Terre">
                         <div class="input-group-text">
-                            <input id="input_equipment" name="equipments_id" type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
+                            <input class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
                         </div>
                     </div>
                     <p class="border border-secondary mt-0 mb-0 text-dark pl-4" style="flex:1;" for="flexCheckChecked">{{this.name}}</p>
                     <div class="input-group-append">
                         <div class="input-group-text">
-                            <input id="input_equipment_quantity" name="equipments_quantity" type="number" value="0" min="1" max="{{this.quantity}}">
+                            <input class="input_equipment_quantity"  type="number" value="0" min="1" max="{{this.quantity}}" disabled>
                         
                         </div>
                     </div>
@@ -270,8 +271,32 @@ margin-top: 36px;
             
         </div>
 
-        <button id="btn-create"type="submit" class="btn btn-primary">Sign in</button>
-        
+        {{!-- <button id="btn-create"type="submit" class="btn btn-primary">Tạo farmstay</button> --}}
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-submid-form">
+        Launch demo modal
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modal-submid-form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn tạo Farmstay này không?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Nhấn nút lưu để tạo
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id='btn-submit-form' class="btn btn-primary">Save changes</button>
+            </div>
+            </div>
+        </div>
+        </div>
     </form>
 </div>
 {{> js}}
@@ -283,16 +308,13 @@ margin-top: 36px;
         formGroupSelector: '.form-group',
         rules:[
             Validator.isRequired('#inputFarmstay'),
-            //Validator.isRequired('#inputRentCost'),
-           // Validator.isRequired('#inputManager'),
-           // Validator.isRequired('#inputProvince'),
-         //   Validator.isRequired('#inputDistrict'),
-           // Validator.isRequired('#inputWard'),
+            Validator.isRequired('#inputRentCost'),
+            Validator.isRequired('#inputManager'),
+            Validator.isRequired('#inputProvince'),
+            Validator.isRequired('#inputDistrict'),
+            Validator.isRequired('#inputWard'),
 
         ],
-        callback: (data)=>{
-            console.log(data)
-        }
     }
     );
 

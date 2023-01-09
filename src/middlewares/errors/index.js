@@ -1,19 +1,4 @@
-// app.get('/', (req, res, next) => {
-//   res.locals.noRenderHeader = true
-//   res.render('home')
-// });
-
-
-
-// app.post('/', (req, res, next) => {
-//   if(req.body.password == '123'){
-//     next(new HttpError404())
-//   }else{
-//     res.json(req.body)
-//   }
-  
-// });
-const {HttpError, HttpError404,HttpError401, HttpError409} = require('../../utils/errors')
+const {HttpError, HttpError404,HttpError401, HttpError409, HttpError400} = require('../../utils/errors')
 const jwt = require('jsonwebtoken')
 
 function handleJWT(err, req, res, next){
@@ -21,6 +6,15 @@ function handleJWT(err, req, res, next){
     next(new HttpError401())
   }
   next(err);
+}
+
+function handleHttpError400(err, req, res, next){
+  if(err instanceof HttpError400 || err.statusCode ==400){
+    res.locals.noRenderHeader = true
+    res.status(err.statusCode).render(`pages/errors/${err.statusCode+'_'+err.nameError}`,);
+    return;
+  }
+  return next(err);
 }
 
 function handleHttpError401(err, req, res, next){
@@ -48,11 +42,11 @@ function handleHttpErrorDefault(err, req, res, next){
       res.status(err.statusCode).render(`pages/errors/${err.statusCode+'_'+err.nameError}`,);
       return;
     }else{
-      res.status(500).json("err")
+      res.status(500).json("500 - Lỗi Server")
       return;
     }
     
 }
 
-const listArrayHandleError = [handleJWT,handleHttpError401, handleHttpError409, handleHttpErrorDefault, ];
+const listArrayHandleError = [handleJWT, handleHttpError400, handleHttpError401, handleHttpError409, handleHttpErrorDefault, ];
 module.exports = listArrayHandleError

@@ -1,16 +1,22 @@
-const {HttpError, HttpError404}         = require('../utils/errors')
-const { Province, District, Ward, Equipment, sequelize, Farmstay, FarmstayEquipment, FarmstayAddress}       = require('../models/mysql')
-const {uploadMultiImage} = require('../middlewares/uploads/upload.image')
-const multer                            = require("multer");
-const {generateBufferUUIDV4, uuidToString} = require('../helpers/generateUUID');
-const { QueryTypes, Op } = require('sequelize');
-const sharp                             = require('sharp');
-const mkdirp = require('mkdirp');
-const slug = require('slug')
-const PromiseBlueBird = require('bluebird');
-// global.Promise = Promise;
+const {HttpError, HttpError404}                 = require('../utils/errors')
+const { Province, District, Ward, 
+    Equipment, sequelize, Farmstay, 
+    FarmstayEquipment, FarmstayAddress}         = require('../models/mysql')
+const {uploadMultiImage}                        = require('../middlewares/uploads/upload.image')
+const multer                                    = require("multer");
+const {generateBufferUUIDV4, uuidToString}      = require('../helpers/generateUUID');
+const { QueryTypes, Op }                        = require('sequelize');
+const sharp                                     = require('sharp');
+const mkdirp                                    = require('mkdirp');
+const slug                                      = require('slug')
+const PromiseBlueBird                           = require('bluebird');
 
 class FarmstayController{
+
+    renderFarmstays(req, res, next){
+        res.json('OK')
+    }
+
     async renderCreateFarmstay(req, res, next){
         try {
 
@@ -46,8 +52,14 @@ class FarmstayController{
         }
         
     }
-
+    /**
+     * [POST] Tạo farmstay
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     async createFarmstay(req, res, next){
+        // Khởi tạo middleware formdata/multipart upload ảnh từ client
         const upload = uploadMultiImage({
             type: 'farmstay',
             quantity: 10,
@@ -58,10 +70,10 @@ class FarmstayController{
             } else if (err) {
                 next(new HttpError(400))
             }else{
+                // Lấy các thông tin client gửi lên
                 let {
                     farmstay_name, //string 'Farmstay ...'
                     rent_cost, // number vd. 1.000.000
-                    // equipments_quantity, // array
                     equipments, // array string vd. ["1-2","2-2","3-3","4-2", "5-3"]
                     link_embedded_ggmap, // string
                     link_ggmap, //string
@@ -73,42 +85,41 @@ class FarmstayController{
                     manager_id //number 
                 } = req.body;
                 rent_cost = parseInt(rent_cost)
-                // equipments_quantity = JSON.parse(equipments_quantity)
-                // equipments_id = JSON.parse(equipments_id);
                 manager_id = parseInt(manager_id);
 
-                // Tách mảng chuỗi  
+                // Tách mảng chuỗi equipments là id và số lượng ['1-2', '2-3', ...]
                 equipments = JSON.parse(equipments);
                 let [equipments_id, equipments_quantity] = Array.from(equipments).reduce((array, value)=>{
                     const arr = value.split('-');
-                    array[0].push(parseInt(arr[0]));
-                    array[1].push(parseInt(arr[1]));
+                    array[0].push(parseInt(arr[0])); // Mảng chứa id
+                    array[1].push(parseInt(arr[1])); // Mảng chứa số lượng của id
                     return array;
                 }, [[],[]]);
                 
                 var transaction;
-                try {
+                try { 
+                    // bắt đầu transaction
                     transaction = await sequelize.transaction();
                     
+                    // Lấy toàn bộ file ảnh được gửi lên và lưu vào thư mục uploads
                     const {files} = req;
                     const images_url = [];
                     const path = './src/public/uploads/farmstay'
-                    mkdirp.sync(path)
-                    const IMAGES = []
+                    mkdirp.sync(path) // Tạo thư mục đường dẫn nếu không tồn tại
+                    const IMAGES = [] // mảng chứa buffer và đường dẫn file
                     for (let index = 0; index < files.length; index++) {
                         const {buffer, originalname, fieldname} = files[index];
                         const uniqueSuffix = Date.now()+ `(${index+1})` + '-' + slug(farmstay_name, '_');
                         const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
                         images_url.push(`/uploads/farmstay/${filename}`); 
-                        // promises.push(sharp(buffer).toFile(`${path}/${filename}`))
                         IMAGES.push([buffer, filename])
                     }
-                    
+                    // Lưu các file ảnh
                     await PromiseBlueBird.map(IMAGES, async(image)=>{
                         return sharp(image[0]).toFile(`${path}/${image[1]}`);
                     });
                     
-                    
+                    // Obj farmstay cần tạo
                     const FARMSTAY_ATTRS = {
                         uuid: generateBufferUUIDV4(),
                         name: farmstay_name,
@@ -125,6 +136,7 @@ class FarmstayController{
                         images: images_url
                     }
                     
+                    // Tạo farmstay
                     const farmstay = await Farmstay.create(FARMSTAY_ATTRS, {
                         include: [
                             {
@@ -137,7 +149,7 @@ class FarmstayController{
                     });
 
                     const {id:farm_id} = farmstay;
-
+                    
                     // Lấy số lượng còn lại của thiết bị
                     const remain_equipments = await sequelize.query(
                         `SELECT e.id, count(*) AS remain 
@@ -169,9 +181,7 @@ class FarmstayController{
                         }else{
                             throw new Error("Không đủ số lượng");
                         }
-                        
                     }
-
                     await transaction.commit();
 
                     res.json('OK');
@@ -182,19 +192,27 @@ class FarmstayController{
                     console.log(error)
                     res.json('err');
                 }
-
             }
-            
         })
-        
-       
     }
 
-
+    /**
+     * [API-GET] Lấy toàn bộ tỉnh
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     async getAllProvince(req, res, next){
         const provinces = await Province.findAll();
         res.json(provinces)
     }
+
+    /**
+     * [API-GET] Lấy toàn bộ huyện thuộc tỉnh
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     async getAllDistrictOfProvince(req, res, next){
         const {province_code} = req.query;
 
@@ -209,6 +227,13 @@ class FarmstayController{
         })
         res.json({districts})
     }
+
+    /**
+     * [API-GET] Lấy toàn bộ xã thuộc huyện
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     async getAllWardOfDistrict(req, res, next){
         const {district_code} = req.query;
 
@@ -223,6 +248,8 @@ class FarmstayController{
         })
         res.json({wards})
     }
+
+
 }
 
 module.exports = new FarmstayController()

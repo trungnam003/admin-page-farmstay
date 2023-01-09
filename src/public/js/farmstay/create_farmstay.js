@@ -124,15 +124,66 @@ $( document ).ready(function(){
     })(jQuery);
 
     (function ($) {  
-        $('#btn-create').on('click', (e)=>{
+        $('#btn-submit-form').on('click', (e)=>{
             e.preventDefault();
+            let array = []
+            Array.from($('.input_equipment')).forEach((element, index)=>{
+                const input = $('.input_equipment')[index];
+                const {checked} = input;
+                if(checked){
+                    console.log(`${element.value}-${$('.input_equipment_quantity')[index].value}`)
+                    array.push(`${element.value}-${$('.input_equipment_quantity')[index].value}`)
+                }
+                
+            })
+            console.log(array)
             
+            $('#equipments').val(JSON.stringify(array));
+
+            console.log($('#equipments').val())
             const a = $('#form-create-farmstay')
+            
             a.submit();
             
         })
     })(jQuery);
     
+    (function($){
+        // for (let index = 0; index < $('.input_equipment').length; index++) {
+        //     $('.input_equipment')[index].on('change', (e)=>{
+        //         if( $('.input_equipment')[index].is(':checked') ){
+        //                 console.log("OK", index)
+        //             }
+        //     })
+        // }
+        $('.input_equipment').on('change', (e)=>{
+            const {target:_this} = e
+           
+            // $('.input_equipment:checked').each(function() {
+
+            //     console.log("OK",);
+            // });
+            for (let index = 0; index < $('.input_equipment').length; index++) {
+                const input = $('.input_equipment')[index];
+                const {checked} = input;
+                if(checked){
+                    $('.input_equipment_quantity')[index].removeAttribute('disabled');
+                    if($('.input_equipment_quantity')[index].value==0){
+                        $('.input_equipment_quantity')[index].value = 1;
+                    }
+
+                }else{
+                    $('.input_equipment_quantity')[index].setAttribute('disabled', '');
+                    $('.input_equipment_quantity')[index].value = 0;
+                }
+                // if( $('.input_equipment').is(':checked') ){
+                //     console.log("OK", index)
+                // }
+            }
+        })
+
+        // console.log($('.input_equipment').length)
+    })(jQuery);
 })
 
 

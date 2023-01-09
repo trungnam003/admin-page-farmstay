@@ -1,7 +1,7 @@
 const {AdminUser, ProtectedAdmin}       = require('../models/mysql')
 const {HttpError, HttpError404}         = require('../utils/errors')
 const jwt                               = require('jsonwebtoken')
-                                        require('dotenv').config();
+const config                            = require('../config');
 const { Buffer }                        = require('node:buffer');
 const uuid                              = require('uuid');
 
@@ -36,19 +36,18 @@ class AuthController{
     /* [POST] tạo JWT sau khi được middleware passport-local xử lí và xác thực thành công */
     async loginAdmin(req, res, next){
         try {
-            
             const {user}=req
             const {user_uuid} =user
             
             const JWT = jwt.sign({
                 sub: user_uuid,
-            }, process.env.JWT_SECRET_KEY, {expiresIn: 60*30, issuer: 'farmstay_admin'})
+            }, config.secret_key.jwt , {expiresIn: config.jwt.exp, issuer: 'farmstay_admin'})
 
             let REFESH_JWT;
-            if(user.refesh_token==null){
+            if(user.refesh_token==null || user.refesh_token==""){
                 REFESH_JWT = jwt.sign({
                     sub: user_uuid,
-                }, process.env.JWT_REFESH_SECRET_KEY, {expiresIn: 60*60*24, issuer: 'farmstay_admin'})
+                }, config.secret_key.jwt_refesh, {expiresIn: config.jwt.refesh_exp, issuer: 'farmstay_admin'})
                 user.refesh_token = REFESH_JWT;
                 await user.save();
             }else{
@@ -60,8 +59,7 @@ class AuthController{
             res.status(200).redirect('/')
 
         } catch (error) {
-            console.log(error)
-            next(new HttpError(400))
+            next(new HttpError(401, "Không thể đăng nhập"))
         }
     }
 
@@ -71,9 +69,9 @@ class AuthController{
         
         if (req && req.cookies){
             res.clearCookie("jwt");
+            res.clearCookie("jwt_refesh");
         }
         res.status(200).redirect('/auth/login')
-        
     }
 
 }

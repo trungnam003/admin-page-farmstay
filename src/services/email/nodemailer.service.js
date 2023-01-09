@@ -1,23 +1,23 @@
-require('dotenv').config();
+const config = require('../../config')
 const nodemailer = require("nodemailer");
 
 async function sendMail(to, subject, htmlContent){
     try {
         let transporter = nodemailer.createTransport({
-            host:  process.env.MAIL_HOST,
-            port:  process.env.MAIL_PORT,
+            host:  config.email_service.host,
+            port:  config.email_service.port,
             secure: false, // true for 465, false for other ports
             auth: {
-              user: process.env.MAIL_USERNAME, // generated ethereal user
-              pass:  process.env.MAIL_PASSWORD, // generated ethereal password
+              user: config.email_service.username, // generated ethereal user
+              pass:  config.email_service.password, // generated ethereal password
             },
             
         });
         const mailOptions = { // thiết lập đối tượng, nội dung gửi mail
-            from: process.env.MAIL_USERNAME,
+            from: config.email_service.from,
             to: to,
             subject: subject,
-            text: 'You recieved message from ' +  process.env.MAIL_USERNAME,
+            text: 'You recieved message from ' +  config.email_service.from,
             html: htmlContent
         }
         const info = await transporter.sendMail(mailOptions);

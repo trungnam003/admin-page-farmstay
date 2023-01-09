@@ -1,6 +1,6 @@
 const {AdminUser, protectedAdmin}       = require('../../models/mysql')
 const {HttpError, HttpError404}         = require('../../utils/errors')
-require('dotenv').config();
+
 
 async function authenticateLocal(req, res, next){
     try {
