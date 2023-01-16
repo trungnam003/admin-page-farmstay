@@ -1,4 +1,5 @@
 'use strict';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -28,7 +29,14 @@ module.exports = {
       },
       manager_id:{
         type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true
+        allowNull: true,
+        unique: true,
+        references:{
+          model: 'employees',
+          key: 'id',
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
       },
       description:{
         type: Sequelize.TEXT,

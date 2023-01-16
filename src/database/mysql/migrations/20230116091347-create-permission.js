@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('equipments', {
+    await queryInterface.createTable('permissions', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,33 +11,31 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
-      rent_cost: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: false,
-      },
-      quantity: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true
-      },
-      total_rented: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true
-      },
-      images: {
-        type: Sequelize.JSON,
-        allowNull: true
-      },
-      category_id:{
-        type: Sequelize.INTEGER.UNSIGNED,
+      description: {
+        type: Sequelize.STRING,
         allowNull: true,
+      },
+      api_method_id:{
+        type: Sequelize.INTEGER.UNSIGNED,
+        allowNull: false,
         references: {
-          model: 'categories',
+          model: 'api_methods',
           key: 'id'
         },
-        onDelete: "SET NULL",
-        onUpdate: "SET NULL"
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      },
+      api_endpoint_id:{
+        type: Sequelize.INTEGER.UNSIGNED,
+        allowNull: false,
+        references: {
+          model: 'api_endpoints',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       createdAt: {
         allowNull: false,
@@ -47,13 +45,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      deletedAt: {
+      deletedAt:{
         allowNull: true,
         type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('equipments');
+    await queryInterface.dropTable('permissions');
   }
 };

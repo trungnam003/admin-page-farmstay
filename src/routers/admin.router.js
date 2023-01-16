@@ -1,5 +1,5 @@
 const Router                        = require("express").Router();
-const UserController                = require('../controllers/user.controller')
+const AdminController                = require('../controllers/admin.controller')
 const {HttpError, HttpError404}     = require('../utils/errors')
 const {authorization}               = require('../middlewares/auths/authorization')
 const {authenticateJWT}             = require('../middlewares/auths/authenticate.jwt')
@@ -8,7 +8,7 @@ Router
 .route('/me')
 .get(
     authenticateJWT,
-    UserController.getDetail
+    AdminController.getDetail
 )
 .all((req, res, next)=>{
     next(new HttpError(405))
@@ -19,11 +19,11 @@ Router
 .route('/me/edit/upload-avatar')
 .get(
     authenticateJWT,
-    UserController.renderUploadAvatar
+    AdminController.renderUploadAvatar
 )
 .post(
     authenticateJWT,
-    UserController.uploadAvatar
+    AdminController.uploadAvatar
 )
 .all((req, res, next)=>{
     next(new HttpError(405))
@@ -33,7 +33,7 @@ Router
 Router
 .route('/me/active/:token')
 .put(
-    UserController.verifyActive
+    AdminController.verifyActive
 )
 .all((req, res, next)=>{
     next(new HttpError(405))
@@ -44,7 +44,7 @@ Router
 .route('/me/active')
 .get(
     authenticateJWT,
-    UserController.active
+    AdminController.active
 )
 .all((req, res, next)=>{
     next(new HttpError(405))

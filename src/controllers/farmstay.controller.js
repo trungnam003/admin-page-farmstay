@@ -14,7 +14,7 @@ const PromiseBlueBird                           = require('bluebird');
 class FarmstayController{
 
     renderFarmstays(req, res, next){
-        res.json('OK')
+        res.render('pages/farmstay/farmstays')
     }
 
     async renderCreateFarmstay(req, res, next){

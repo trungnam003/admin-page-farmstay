@@ -1,49 +1,6 @@
 <script src="/js/sidebar.js"></script>
 <script src="/js/validate_input.js"></script>
 <script>
-    Validator(
-    {
-        form: '#form-login',
-        errorSelector: '.form-message',
-        formGroupSelector: '.form-group',
-        rules:[
-            Validator.isRequired('#email'),
-            Validator.isRequired('#password'),
-            Validator.isEmail('#email'),
-            Validator.minLength('#password', 3),
-            // Validator.isRequired('#fullname'),
-            // Validator.isRequired('#email'),
-            // Validator.isEmail('#email'),
-            // Validator.isRequired('#password'),
-            // Validator.minLength('#password', 3),
-            // Validator.isRequired('#password_confirmation'),
-            // Validator.isConfirmPassword('#password_confirmation','#form-1 #password', 'Mật khẩu bạn nhập không chính xác'),
-            // Validator.isRequired('input[name="gender"]'),
-        ],
-        
-    }
-    );
-    Validator(
-    {
-        form: '#form-register',
-        errorSelector: '.form-message',
-        formGroupSelector: '.form-group',
-        rules:[
-            Validator.isRequired('#username'),
-            Validator.isRequired('#email'),
-            Validator.isRequired('#password'),
-            Validator.isEmail('#email'),
-            Validator.minLength('#password', 3),
-            // Validator.isRequired('#fullname'),
-            // Validator.isRequired('#email'),
-            // Validator.isEmail('#email'),
-            // Validator.isRequired('#password'),
-            // Validator.minLength('#password', 3),
-                Validator.isRequired('#password_confirmation'),
-                Validator.isConfirmPassword('#password_confirmation','#form-register #password', 'Mật khẩu bạn nhập không chính xác'),
-            // Validator.isRequired('input[name="gender"]'),
-        ],
-        
-    }
-    );
+    
+    
 </script>

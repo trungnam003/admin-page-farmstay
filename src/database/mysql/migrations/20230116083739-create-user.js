@@ -2,42 +2,54 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('equipments', {
+    await queryInterface.createTable('users', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER.UNSIGNED
       },
-      name: {
+      username: {
+        type: Sequelize.STRING(24),
+        allowNull: false,
+        unique: true
+      },
+      email: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true
       },
-      rent_cost: {
-        type: Sequelize.INTEGER.UNSIGNED,
+      hashed_password: {
+        type: Sequelize.CHAR(64),
         allowNull: false,
       },
-      quantity: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true
+      phone:{
+        type: Sequelize.STRING(15),
+        allowNull: true,
+        unique: true
       },
-      total_rented: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true
+      gender:{
+        type: Sequelize.ENUM('male', 'female', 'orther'),
+        allowNull: true,
       },
-      images: {
-        type: Sequelize.JSON,
-        allowNull: true
+      is_active:{
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
       },
-      category_id:{
+      group_id:{
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: true,
         references: {
-          model: 'categories',
+          model: 'groups',
           key: 'id'
         },
-        onDelete: "SET NULL",
-        onUpdate: "SET NULL"
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE'
+      },
+      user_type: {
+        type: Sequelize.ENUM('customer', 'employee'),
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -54,6 +66,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('equipments');
+    await queryInterface.dropTable('users');
   }
 };

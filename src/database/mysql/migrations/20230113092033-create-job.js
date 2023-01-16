@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('equipments', {
+    await queryInterface.createTable('jobs', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,33 +11,15 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
-      rent_cost: {
+      salary_per_hour: {
         type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: false,
+        allowNull: false
       },
-      quantity: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true
-      },
-      total_rented: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true
-      },
-      images: {
-        type: Sequelize.JSON,
-        allowNull: true
-      },
-      category_id:{
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true,
-        references: {
-          model: 'categories',
-          key: 'id'
-        },
-        onDelete: "SET NULL",
-        onUpdate: "SET NULL"
+      overtime_percent: {
+        type: Sequelize.DECIMAL(4,1).UNSIGNED,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -54,6 +36,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('equipments');
+    await queryInterface.dropTable('jobs');
   }
 };

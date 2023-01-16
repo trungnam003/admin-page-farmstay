@@ -12,20 +12,37 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {FarmstayEquipment,FarmstayAddress} = models;
-
+      const {FarmstayEquipment,FarmstayAddress, Employee, RentFarmstay} = models;
+      // belongTo
+      Farmstay.belongsTo(Employee, {
+        foreignKey: {name: 'manager_id', allowNull: true},
+        targetKey: 'id',
+        as: 'manager_by',
+        onDelete: "SET NULL",
+        onUpdate: 'CASCADE'
+      })
+      // hasOne
       Farmstay.hasOne(FarmstayAddress, 
         {foreignKey: {name: 'farm_id'},
         sourceKey:'id', 
         as:'address'
       });
-
+      // hasMany
       Farmstay.hasMany(FarmstayEquipment, 
         {foreignKey: {name: 'farm_id'},
         sourceKey:'id', 
         as:'list_equipment'
       });
-
+      Farmstay.hasMany(Employee, {
+        foreignKey: {name: 'farm_id', allowNull: true},
+        sourceKey: 'id',
+        as: 'employees',
+      });
+      Farmstay.hasMany(RentFarmstay, 
+        {foreignKey: {name: 'farm_id'},
+        sourceKey:'id', 
+        as:'rental_info'
+      });
     }
     
   }

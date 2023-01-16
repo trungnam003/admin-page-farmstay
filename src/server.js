@@ -1,23 +1,24 @@
-const express               = require('express');
-const {sequelize}           = require('./models/mysql');
-const mongodb               = require('./config/mongodb.config')
-const morgan                = require('morgan');
-const {engine}              = require('express-handlebars');
-const cookieParser          = require('cookie-parser');
-const path                  = require('path');
-const methodOverride        = require('method-override');
-const { createServer }      = require('http');
-const flash                 = require('connect-flash');
-const session               = require('express-session');
-const Redis                 = require("ioredis")
-const RedisStore            = require("connect-redis")(session)
+const express                           = require('express');
+const {sequelize}                       = require('./models/mysql');
+const mongodb                           = require('./config/mongodb.config')
+const morgan                            = require('morgan');
+const {engine}                          = require('express-handlebars');
+const cookieParser                      = require('cookie-parser');
+const path                              = require('path');
+const methodOverride                    = require('method-override');
+const { createServer }                  = require('http');
+const flash                             = require('connect-flash');
+const session                           = require('express-session');
+const Redis                             = require("ioredis")
+const RedisStore                        = require("connect-redis")(session)
+var favicon = require('serve-favicon');
 
-const ErrorMiddlewares      = require('./middlewares/errors')
-const router                = require('./routers')
+const ErrorMiddlewares                  = require('./middlewares/errors')
+const router                            = require('./routers')
 const {HttpError, 
-    HttpError404}           = require('./utils/errors')
+    HttpError404}                       = require('./utils/errors')
 
-const config                = require('./config')
+const config                            = require('./config')
 
 const redisClient = new Redis()
 const app = express();
@@ -31,12 +32,15 @@ const main = async()=>{
 
     app.use(express.json());
 
+
     app.use(cookieParser(config.secret_key.cookie));
 
     app.use(methodOverride('_method'));
 
     app.use(express.static(path.join(__dirname, 'public')));
     
+    app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
+
     app.use(
         session({
             store: new RedisStore({ client: redisClient }),

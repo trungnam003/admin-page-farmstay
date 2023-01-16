@@ -17,7 +17,7 @@ module.exports = {
       
       code_ward:{
         type: Sequelize.STRING(20),
-        allowNull: true,
+        allowNull: false,
         references: {
           model: 'wards',
           key: "code",
@@ -33,15 +33,15 @@ module.exports = {
       },
       specific_address:{
         type: Sequelize.STRING(512),
-        allowNull: true,
+        allowNull: false,
       },
       embedded_link:{
         type: Sequelize.STRING(2048),
-        allowNull: true,
+        allowNull: false,
       },
       link:{
         type: Sequelize.STRING(512),
-        allowNull: true,
+        allowNull: false,
       }
       
     });

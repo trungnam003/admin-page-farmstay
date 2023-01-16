@@ -1,1 +1,255 @@
+<style>
+    .test {
+	background-color: #c6070c;
+	color: #ffe392;
+	font-family: "Lato", Helvetica, Arial, "ヒラギノ角ゴシック体 GB W6", Hiragino Sans GB W6, "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+	text-align: center;
+    height: 100vh;
+    padding-top: 120px;
+    position: relative;
+	
+	 animation: fadein 3s;
+}
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.test table {
+	padding-top: 80px;
+	 margin: auto;
+	 width: 30%;
+    
+}
+
+.test .pinyin {
+	height: 20px;
+	font-size: 1.1em;
+	letter-spacing: 3px;
+	font-weight: 400;
+}
+
+.test td {
+	font-size: 8em;
+	text-align: center;
+	font-weight: 700;
+	padding: 0px;
+     
+}
+
+.test h2 {
+	margin-top: 15px;
+	margin-bottom: 100px;
+	font-size: 3em;
+	text-transform: uppercase;
+	font-weight: 700;
+	word-spacing: 5px;
+}
+
+.test p {
+	font-weight: 700;
+	letter-spacing: 1px;
+	word-spacing: 2px;
+}
+
+.test button {
+	background-color: #ef941a;
+	color: #fffbe2;
+	width: 200px;
+	position: relative;
+	border-radius: 5px;
+	margin: 0;
+	padding: 0;
+	line-height: 0.5;
+	cursor: pointer;
+	border: none;
+	outline: none;
+	font-size: 0.9em;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.test button:hover, button:focus {
+	background-color: #efa134;
+}
+
+.test button:active {
+	transform: translate(0px, 2px);
+	-webkit-transform: translate(0px, 2px);
+}
+.image{
+    position: absolute;
+    top: -66px;
+    right: -34px;
+    transform: rotate(-20deg);
+}
+.image2{
+    position: absolute;
+    top: -0px;
+    left: -32px;
+    transform: rotate(5deg);
+  
+}
+
+</style>
+<div class="test">
+
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'></head>
+
+	
+        
+        
+		<!-- Table for aligning pinyin and Chinese characters -->
+		<table>
+			<tr>
+				<th class="pinyin" id="pinyin1">xīn</th>
+				<th class="pinyin" id="pinyin2">nián</th>
+				<th class="pinyin" id="pinyin3">kuài</th>
+				<th class="pinyin" id="pinyin4">lè</th>
+			</tr>
+            <div class="image">
+            <img style = "width: 400px;" src="https://tiengdong.com/wp-content/uploads/www_tiengdong_com-anh-vector-stock-canh-hoa-mai-png-dep.png" alt="">
+            </div>
+            <div class="image2">
+                <img style = "width: 300px;" src="https://www.seekpng.com/png/full/908-9083051_hoa-mai-thng-bo-ngh-tt-nguyn-n.png" alt="">
+            </div>
+			<tr>
+				<td id="phraseChinese1">新</td>&nbsp;
+				<td id="phraseChinese2">年</td>&nbsp;
+				<td id="phraseChinese3">快</td>&nbsp;
+                
+				<td id="phraseChinese4">樂</td>&nbsp;
+			</tr>
+			
+		</table>
+		
+        <div>
+            <img style = "width: 300px;"src="https://d6ce0no7ktiq.cloudfront.net/images/preview/2020/01/07/design-57006/template-sticker-600x600.png" alt="">
+        </div>
+		{{!-- <h2 id="phraseEnglish">(Happy new year)</h2> --}}
+	
+		{{!-- <button type="button" id="button">
+			<p>Generate phrase</p>
+		</button> --}}
+</div>
 {{> js}}
+<script>
+
+var pinyin1 = document.getElementById("pinyin1");
+var pinyin2 = document.getElementById("pinyin2");
+var pinyin3 = document.getElementById("pinyin3");
+var pinyin4 = document.getElementById("pinyin4");
+
+var phraseChinese1 = document.getElementById("phraseChinese1");
+var phraseChinese2 = document.getElementById("phraseChinese2");
+var phraseChinese3 = document.getElementById("phraseChinese3");
+var phraseChinese4 = document.getElementById("phraseChinese4");
+
+//var phraseEnglish = document.getElementById("phraseEnglish");
+
+var button = document.getElementById("button");
+var random = Math.random();
+
+// Arrays for pinyin and Chinese characters
+var p1 = [
+	"Chúc",
+	"An",
+	"Vạn",
+	"Đại",
+	"^^",
+	
+];
+
+var p2 = [
+	"Mừng",
+	"Khang",
+	"Sự",
+	"Phú",
+	"Xuân",
+	
+];
+
+var p3 = [
+	"Năm",
+	"Thịnh",
+	"Như",
+	"Đại",
+	"An",
+	
+];
+
+var p4 = [
+	"Mới",
+	"Vượng",
+	"Ý",
+	"Quý",
+	"Khang",
+	
+];
+
+var phrasesC1 = [
+	"Chúc",
+	"An",
+	"Vạn",
+	"Đại",
+	"^^",
+];
+
+var phrasesC2 = [
+	"Mừng",
+	"Khang",
+	"Sự",
+	"Phú",
+	"Xuân",
+];
+
+var phrasesC3 = [
+	"Năm",
+	"Thịnh",
+	"Như",
+	"Đại",
+	"An",
+	
+];
+
+var phrasesC4 = [
+	"Mới",
+	"Vượng",
+	"Ý",
+	"Quý",
+	"Khang"
+];
+
+// English phrases
+// Translations taken from here: http://www.travelsintranslation.com/2014/01/cantonese-chinese-new-year-phrases/
+
+
+// Sets text content as random phrase from arrays
+pinyin1.textContent = p1[Math.floor(random * p1.length)];
+pinyin2.textContent = p2[Math.floor(random * p2.length)];
+pinyin3.textContent = p3[Math.floor(random * p3.length)];
+pinyin4.textContent = p4[Math.floor(random * p4.length)];
+phraseChinese1.textContent = phrasesC1[Math.floor(random * phrasesC1.length)];
+phraseChinese2.textContent = phrasesC2[Math.floor(random * phrasesC2.length)];
+phraseChinese3.textContent = phrasesC3[Math.floor(random * phrasesC3.length)];
+phraseChinese4.textContent = phrasesC4[Math.floor(random * phrasesC4.length)];
+//phraseEnglish.textContent = phrasesE[Math.floor(random * phrasesE.length)];
+var i  = 0;
+var onClick = function() {
+	var random = Math.random();
+
+	pinyin1.textContent = p1[i%4];
+	pinyin2.textContent = p2[i%4];
+	pinyin3.textContent = p3[i%4];
+	pinyin4.textContent = p4[i%4];
+	phraseChinese1.textContent = phrasesC1[i%4];
+	phraseChinese2.textContent = phrasesC2[i%4];
+	phraseChinese3.textContent = phrasesC3[i%4];
+	phraseChinese4.textContent = phrasesC4[i%4];
+    i++;
+}
+
+// Sets text content as random phrase when button is clicked
+setInterval(function () {onClick()}, 1000);
+
+
+</script>

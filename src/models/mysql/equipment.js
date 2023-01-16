@@ -11,12 +11,21 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {FarmstayEquipment} = models;
+      const {FarmstayEquipment, Category} = models;
       Equipment.hasMany(FarmstayEquipment, 
         {foreignKey: {name: 'equipment_id', },
         sourceKey:'id', 
         as:'equipments'
       });
+      Equipment.belongsTo(Category,
+        {
+          foreignKey: {name: 'category_id', },
+          targetKey: 'id',
+          as: 'category',
+          onDelete: 'SET NULL',
+          onUpdate: 'SET NULL',
+        }
+      );
     }
   }
   Equipment.init({
@@ -41,7 +50,12 @@ module.exports = (sequelize, DataTypes) => {
     total_rented: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true
-    }
+    },
+    category_id:{
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      
+    },
   }, {
     sequelize,
     modelName: 'Equipment',

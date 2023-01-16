@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class user extends Model {
+  class User extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,19 +11,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      const {Employee, Customer} = models
+      // hasOne
+      User.hasOne(Employee, {
+        foreignKey: {name: 'user_id'},
+        sourceKey: 'id',
+        as: 'user_employee'
+      });
+      User.hasOne(Customer, {
+        foreignKey: {name: 'user_id',},
+        sourceKey: 'id',
+        as: 'user_customer'
+      })
     }
   }
-  user.init({
+  User.init({
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      allowNull: false
-    },
-    uuid:{
-      type: 'BINARY(16)',
-      allowNull: false,
-      unique: true
+      type: DataTypes.INTEGER.UNSIGNED
     },
     username: {
       type: DataTypes.STRING(24),
@@ -42,6 +49,7 @@ module.exports = (sequelize, DataTypes) => {
     phone:{
       type: DataTypes.STRING(15),
       allowNull: true,
+      unique: true
     },
     gender:{
       type: DataTypes.ENUM('male', 'female', 'orther'),
@@ -52,13 +60,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: false
     },
-    birthdate:{
-      type: DataTypes.DATEONLY,
-      allowNull: true
+    group_id:{
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      
+    },
+    user_type: {
+      type: DataTypes.ENUM('customer', 'employee'),
+      allowNull: false,
     },
   }, {
     sequelize,
-    modelName: 'user',
+    modelName: 'User',
+    tableName: 'users'
   });
-  return user;
+  return User;
 };

@@ -49,15 +49,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     specific_address:{
       type: DataTypes.STRING(512),
-      allowNull: true,
+      allowNull: false,
     },
     embedded_link:{
       type: DataTypes.STRING(2048),
-      allowNull: true,
+      allowNull: false,
     },
     link:{
       type: DataTypes.STRING(512),
-      allowNull: true,
+      allowNull: false,
     }
   }, {
     sequelize,
