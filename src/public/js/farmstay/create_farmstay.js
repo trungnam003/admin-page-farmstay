@@ -2,13 +2,13 @@
 function readURL(input) {
     if (input.files) {
         $('#image-view').empty();
-        for (let index = 0; index < input.files.length; index++) {
-            var reader = new FileReader();           
+        for (const element of input.files) {
+            let reader = new FileReader();           
             reader.onload = function (e) {
                 $('#image-view')
                 .append(`<img style="width:100px;"src="${e.target.result}" alt="your image" class="img-thumbnail">`)  
             };
-            reader.readAsDataURL(input.files[index]);
+            reader.readAsDataURL(element);
         }
     }
 }
@@ -38,10 +38,10 @@ $( document ).ready(function(){
                 callAPI.then(data=>{
                     const {districts} = data
                     $('#inputDistrict').empty()
-                    for (let index = 0; index < districts.length; index++) {
+                    for (const element of districts) {
                         
                         $('#inputDistrict').append(
-                            `<option value="${districts[index].code}">${districts[index].name}</option>`
+                            `<option value="${element.code}">${element.name}</option>`
                         )
                     }
                     
@@ -75,10 +75,10 @@ $( document ).ready(function(){
                 callAPI.then((data)=>{
                     const {wards} = data
                     $('#inputWard').empty()
-                    for (let index = 0; index < wards.length; index++) {
+                    for (const element of wards) {
                         
                         $('#inputWard').append(
-                            `<option value="${wards[index].code}">${wards[index].name}</option>`
+                            `<option value="${element.code}">${element.name}</option>`
                         )
                     }
                 })
@@ -98,9 +98,9 @@ $( document ).ready(function(){
             $("#image-slide-view").empty();
             $('#carouselExampleIndicators').removeClass('sr-only');
             if(files.length){
-                for (let index = 0; index < files.length; index++) {
-                    var reader = new FileReader();
-                    reader.readAsDataURL(files[index]);
+                for (const element of files) {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(element);
                     reader.onload = function (e){
                         
     

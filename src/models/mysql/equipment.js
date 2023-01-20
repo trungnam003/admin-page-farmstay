@@ -15,13 +15,13 @@ module.exports = (sequelize, DataTypes) => {
       Equipment.hasMany(FarmstayEquipment, 
         {foreignKey: {name: 'equipment_id', },
         sourceKey:'id', 
-        as:'equipments'
+        as:'farmstay_equipments'
       });
       Equipment.belongsTo(Category,
         {
           foreignKey: {name: 'category_id', },
           targetKey: 'id',
-          as: 'category',
+          as: 'belong_to_category',
           onDelete: 'SET NULL',
           onUpdate: 'SET NULL',
         }
@@ -49,7 +49,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     total_rented: {
       type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true
+      allowNull: false,
+      defaultValue: 0
     },
     category_id:{
       type: DataTypes.INTEGER.UNSIGNED,

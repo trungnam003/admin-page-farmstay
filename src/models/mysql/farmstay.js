@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       Farmstay.belongsTo(Employee, {
         foreignKey: {name: 'manager_id', allowNull: true},
         targetKey: 'id',
-        as: 'manager_by',
+        as: 'management_staff',
         onDelete: "SET NULL",
         onUpdate: 'CASCADE'
       })
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       Farmstay.hasOne(FarmstayAddress, 
         {foreignKey: {name: 'farm_id'},
         sourceKey:'id', 
-        as:'address'
+        as:'address_of_farmstay'
       });
       // hasMany
       Farmstay.hasMany(FarmstayEquipment, 
@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       Farmstay.hasMany(Employee, {
         foreignKey: {name: 'farm_id', allowNull: true},
         sourceKey: 'id',
-        as: 'employees',
+        as: 'employees_work',
       });
       Farmstay.hasMany(RentFarmstay, 
         {foreignKey: {name: 'farm_id'},

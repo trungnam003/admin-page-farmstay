@@ -13,7 +13,6 @@ const config = {
     "host": host,
     "dialect": dialect,
     "port": 3306,
-    "logging": true
   },
   "test": {
     "username": "root",

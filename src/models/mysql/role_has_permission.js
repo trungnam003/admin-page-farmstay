@@ -15,12 +15,12 @@ module.exports = (sequelize, DataTypes) => {
       RoleHasPermission.belongsTo(Role, {
         foreignKey: {name: 'role_id'},
         targetKey: 'id',
-        as: 'role'
+        as: 'belong_to_role'
       });
       RoleHasPermission.belongsTo(Permission, {
         foreignKey: {name: 'permission_id'},
         targetKey: 'id',
-        as: 'permission'
+        as: 'belong_to_permission'
       })
     }
   }

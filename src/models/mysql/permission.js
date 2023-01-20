@@ -15,13 +15,13 @@ module.exports = (sequelize, DataTypes) => {
       Permission.hasMany(RoleHasPermission, {
         foreignKey: {name: 'permission_id'},
         sourceKey: 'id',
-        as: 'roles'
+        as: 'permission_has_roles'
       })
 
       Permission.belongsTo(ApiMethod, {
         foreignKey: {name: 'api_method_id'},
         targetKey: 'id',
-        as: 'method'
+        as: 'api_method'
       })
       Permission.belongsTo(ApiEndpoint, {
         foreignKey: {name: 'api_endpoint_id'},

@@ -24,7 +24,7 @@ class AuthController{
         try {
             const {email, password, username} = req.body;
             const id = Buffer.from(uuid.parse(uuid.v4(), Buffer.alloc(16)), Buffer.alloc(16))
-            const userCreated = await AdminUser.create({
+            await AdminUser.create({
                 user_id : id, username, email, hashed_password : password,
             })
             res.redirect('/auth/login')
@@ -44,7 +44,16 @@ class AuthController{
             }, config.secret_key.jwt , {expiresIn: config.jwt.exp, issuer: 'farmstay_admin'})
 
             let REFESH_JWT;
-            if(user.refesh_token==null || user.refesh_token==""){
+
+            let error, payload;
+            // Xác thực jwt
+            jwt.verify(user.refesh_token, config.secret_key.jwt_refesh,{ issuer: config.jwt.issuer }, (err, decode)=>{
+                error = err;
+                payload = decode
+            })
+            
+            if(user.refesh_token==null || user.refesh_token=="" || error){
+                // console.log(error)
                 REFESH_JWT = jwt.sign({
                     sub: user_uuid,
                 }, config.secret_key.jwt_refesh, {expiresIn: config.jwt.refesh_exp, issuer: 'farmstay_admin'})
@@ -59,6 +68,7 @@ class AuthController{
             res.status(200).redirect('/')
 
         } catch (error) {
+            console.log(error)
             next(new HttpError(401, "Không thể đăng nhập"))
         }
     }

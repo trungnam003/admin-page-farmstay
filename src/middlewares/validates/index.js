@@ -10,7 +10,7 @@ const {Validate} = require('../../helpers/validate_request')
 */
 module.exports.validateParam = function (target){
     return (req, res, next)=>{
-        const {error, value} = Validate(req.params, target)
+        const {error, } = Validate(req.params, target)
         if(error){
             next(new HttpError400("Yêu cầu của bạn không hợp lệ"))
         }else{
@@ -18,5 +18,27 @@ module.exports.validateParam = function (target){
         }
     }
 }
-
+module.exports.validateBody = function (target){
+    return (req, res, next)=>{
+        const {error, } = Validate(req.body, target)
+        
+        if(error){
+            return next(new HttpError400("Yêu cầu của bạn không hợp lệ"))
+        }else{
+            return next();
+        }
+    }
+}
+module.exports.validateQuery = function (target){
+    return (req, res, next)=>{
+        const {error, } = Validate(req.query, target)
+        
+        if(error){
+            console.log(error)
+            return next(new HttpError400("Yêu cầu của bạn không hợp lệ"))
+        }else{
+            return next();
+        }
+    }
+}
 module.exports.Validate = Validate;

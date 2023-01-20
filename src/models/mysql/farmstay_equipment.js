@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       FarmstayEquipment.belongsTo(Equipment, 
         {foreignKey: {name: 'equipment_id'},
         targetKey:'id', 
-        as:'belong_to', 
+        as:'belong_to_equipment', 
         onDelete: 'CASCADE', 
         onUpdate: 'CASCADE'
       });

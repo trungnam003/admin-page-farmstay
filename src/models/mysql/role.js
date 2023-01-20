@@ -15,12 +15,12 @@ module.exports = (sequelize, DataTypes) => {
       Role.hasMany(GroupHasRole, {
         foreignKey: {name: 'role_id'},
         sourceKey: 'id',
-        as: 'groups'
+        as: 'roles_with_groups'
       });
       Role.hasMany(RoleHasPermission, {
         foreignKey: {name: 'role_id'},
         sourceKey: 'id',
-        as: 'permissions'
+        as: 'role_has_permissions'
       })
     }
   }

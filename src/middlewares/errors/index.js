@@ -34,19 +34,25 @@ function handleHttpError409(err, req, res, next){
   }
   return next(err);
 }
-
+function handleHttpError500(err, req, res, next){
+  if(err instanceof HttpError && err.statusCode ==500){
+    res.locals.noRenderHeader = true
+    res.status(err.statusCode).render(`pages/errors/${err.statusCode+'_'+err.nameError}`,);
+    return;
+  }
+  return next(err);
+}
 
 function handleHttpErrorDefault(err, req, res, next){
     if(err instanceof HttpError){
       res.locals.noRenderHeader = true
       res.status(err.statusCode).render(`pages/errors/${err.statusCode+'_'+err.nameError}`,);
-      return;
     }else{
       res.status(500).json("500 - Lỗi Server")
-      return;
+      
     }
     
 }
 
-const listArrayHandleError = [handleJWT, handleHttpError400, handleHttpError401, handleHttpError409, handleHttpErrorDefault, ];
+const listArrayHandleError = [handleJWT, handleHttpError400, handleHttpError401, handleHttpError409,handleHttpError500, handleHttpErrorDefault, ];
 module.exports = listArrayHandleError

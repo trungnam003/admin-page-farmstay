@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           foreignKey: {name: 'category_id', },
           sourceKey: 'id',
-          as: 'equipments',
+          as: 'equipments_in_category',
         });
 
     }

@@ -10,7 +10,7 @@ const Joi = require('@hapi/joi');
  * 
  */
 function Validate(source, target){
-    var objSource = {};
+    let objSource = {};
     const objs = Object.keys(target).reduce((obj, key)=>{
         objSource[key] = source[key]
         return {[key]: target[key], ...obj}
@@ -25,7 +25,7 @@ Validate.isString = function(){
     return Joi.string().required();
 }
 Validate.isNumber = function(){
-    return Joi.string().required();
+    return Joi.number().required();
 }
 Validate.isEmail = function(){
     return Validate.isString().email();

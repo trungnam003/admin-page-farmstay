@@ -15,12 +15,12 @@ module.exports = (sequelize, DataTypes) => {
       GroupHasRole.belongsTo(Group, {
         foreignKey: {name: 'group_id'},
         targetKey: 'id',
-        as: 'group'
+        as: 'belong_to_group'
       });
       GroupHasRole.belongsTo(Role, {
         foreignKey: {name: 'role_id'},
         targetKey: 'id',
-        as: 'role'
+        as: 'belong_to_role'
       })
     }
   }

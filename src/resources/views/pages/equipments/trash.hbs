@@ -1,0 +1,177 @@
+<div class="row mt-4">
+     
+    <div class="col-md-offset-1 col-md-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        {{!-- <a href="/farmstay/create" class="btn btn-sm btn-primary pull-left"><i class="fa fa-plus-circle"></i> Add New</a> --}}
+                        <!-- Button trigger modal -->
+                        <a href = "/equipment" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                        <h3 class="text-warning">Thùng Rác</h3>
+                        
+                    </div>
+                    <div class="col-sm-2 col-xs-2">
+                        <form class="form-horizontal pull-right">
+                            <div class="form-group">
+                                <label>Show : </label>
+                                <select class="form-control">
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>15</option>
+                                    <option>20</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+            <div class="panel-body table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>#</th>
+                            <th>Tên</th>
+                            <th>Giá thuê</th>
+                            <th>Số lượng</th>
+                            <th>Đã thuê</th>
+                            <th>Loại thiết bị</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each equipments}}
+                            <tr>
+                                <td>
+                                    <ul class="action-list">
+                                        <li>
+                                            <a 
+                                                data-id="{{this.id}}",
+                                                
+                                                class="btn btn-primary restore-equipment">
+                                                <i class="fas fa-undo"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a data-name="{{this.name}}" data-id="{{this.id}}" class="btn btn-danger delete-force-equipment" data-toggle="modal" data-target="#modalDeleteForceEquipment">
+                                            <i class="fas fa-times-circle"></i></a>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>{{sum @index 1}}</td>
+                                <td><a href="#" class="text-info">{{this.name}}</a></td>
+                                <td>{{this.rent_cost}}</td>
+                                <td>{{this.quantity}}</td>
+                                <td>{{this.total_rented}}</td>
+                                <td>{{this.belong_to_category.name}}</td>
+                                
+                            </tr>
+                        {{else}}
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    Thùng rác rỗng
+                                </td>
+                            </tr>
+                        {{/each}}
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-footer">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-8">showing <b>5</b> out of <b>25</b> entries</div>
+                    <div class="col-sm-4 col-xs-4">
+                        <ul class="pagination hidden-xs pull-right pag">
+                            <li><a href="#">«</a></li>
+                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#">»</a></li>
+                        </ul>
+                        {{!-- <ul class="pagination visible-xs pull-right">
+                            <li><a href="#">«</a></li>
+                            <li><a href="#">»</a></li>
+                        </ul> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="formRestoreEquipment" class="sr-only" action="/equipment/trash?_method=PUT" method="POST">
+        <input class="sr-only" id="inputIdRestoreEquipment" name="id" type="text">
+    </form>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="modalDeleteForceEquipment" tabindex="-1" role="dialog" aria-labelledby="modalDeleteForceEquipmentLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDeleteForceEquipmentLabel">Thông báo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger modal-title-danger" role="alert">
+                        Bạn có muốn xóa <a class="alert-link"></a> vĩnh viễn không?
+                    </div>
+                    <form id="formDeleteForceEquipment" method="POST"></form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnDeleteForceEquipment"type="button" class="btn btn-danger">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> js}}
+<script>
+
+    $( document ).ready(function(){
+        (function($){
+            $('.restore-equipment').click(function(){
+                const id  = this.getAttribute("data-id");
+                $('#inputIdRestoreEquipment').val(id)
+                $('#formRestoreEquipment').submit();
+            })
+         })(jQuery);
+
+
+        (function($){
+            $('#btnDeleteForceEquipment').on('click', function (e) {
+                const id = e.target.getAttribute('data-id-delete')
+                $('#formDeleteForceEquipment').attr('action', `/equipment/trash?_method=DELETE&equipment_id=${id}`);
+                $('#formDeleteForceEquipment').submit();
+                
+            })
+         })(jQuery);
+
+        (function($){
+            $('#modalDeleteForceEquipment').on('show.bs.modal', function (e){
+                var button = $(e.relatedTarget) // Button that triggered the modal
+                let id = button.data('id')
+                $('#btnDeleteForceEquipment').attr('data-id-delete', id);
+                
+            });
+        })(jQuery);
+
+        (function($){
+            $('.delete-force-equipment').click(function(){  
+                let name = this.getAttribute("data-name");
+                
+                //$('#modalDeleteEquipment').modal('show');
+                $('.modal-title-danger .alert-link').text(name)
+            });
+        })(jQuery);
+    });
+
+        
+</script>

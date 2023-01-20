@@ -11,12 +11,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {GroupHasRole} = models;
+      const {GroupHasRole, User} = models;
       Group.hasMany(GroupHasRole, {
         foreignKey: {name: 'group_id'},
         sourceKey: 'id',
         as: 'group_roles'
-      })
+      });
+      Group.hasMany(User, {
+        foreignKey: {name: 'group_id'},
+        sourceKey: 'id',
+        as: 'group_has_users'
+      });
     }
   }
   Group.init({

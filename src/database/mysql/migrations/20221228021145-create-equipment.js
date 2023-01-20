@@ -23,7 +23,8 @@ module.exports = {
       },
       total_rented: {
         type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true
+        allowNull: false,
+        defaultValue: 0
       },
       images: {
         type: Sequelize.JSON,

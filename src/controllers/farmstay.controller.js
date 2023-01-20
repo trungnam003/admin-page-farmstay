@@ -79,10 +79,8 @@ class FarmstayController{
                     link_ggmap, //string
                     address, //string
                     ward_code, //string vd. '09888'
-                    district_code, //string vd. '092'
-                    province_code, //string vd. '11'
                     description, //string
-                    manager_id //number 
+                    manager_id //number S
                 } = req.body;
                 rent_cost = parseInt(rent_cost)
                 manager_id = parseInt(manager_id);
@@ -96,11 +94,10 @@ class FarmstayController{
                     return array;
                 }, [[],[]]);
                 
-                var transaction;
+                let transaction;
                 try { 
                     // bắt đầu transaction
                     transaction = await sequelize.transaction();
-                    
                     // Lấy toàn bộ file ảnh được gửi lên và lưu vào thư mục uploads
                     const {files} = req;
                     const images_url = [];
@@ -164,7 +161,7 @@ class FarmstayController{
                             const ok = array.findIndex((value)=>{
                                 return value['id'] === id && value['remain']>=rent
                             });
-                            if(ok>=0)return true;else return false;
+                            return ok>=0;
                         };
                         if(check(remain_equipments, equipments_id[index], equipments_quantity[index])){
                             await FarmstayEquipment.update(

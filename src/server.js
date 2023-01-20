@@ -19,7 +19,7 @@ const {HttpError,
     HttpError404}                       = require('./utils/errors')
 
 const config                            = require('./config')
-
+const Handlebar = require('handlebars')
 const redisClient = new Redis()
 const app = express();
 const PORT = config.server.port;
@@ -65,7 +65,44 @@ const main = async()=>{
         },
         layoutsDir: path.join(__dirname, 'resources', 'views', 'layouts'),
         helpers: {
-            
+            sum(a, b){
+                return a+b
+            },
+            page(page, limit_page, limit, max){
+                let str = '';
+                let n = Math.floor(page/limit_page);
+                let from_page = limit_page*n+1;
+                let to_page = limit_page*(n+1);
+                
+                if(page%limit_page==0 || (page%limit_page==1 && page!=1)){
+                    from_page = page-1;
+                    to_page = page+limit_page-2;
+                };
+                // console.log(max)
+                
+                if(to_page>Math.ceil(max/limit)){
+                    to_page = Math.ceil(max/limit);
+                }
+                try {
+                    for (let index = from_page; index <= to_page; index++) {
+                        const href =  Handlebar.escapeExpression(
+                            `?limit=${limit}&page=${index}`,
+                        );
+                        if(index==page){
+                            str += `<li class="pagination-page active"><a href="${href}">${index}</a></li>`
+                        }else{
+                            str += `<li class="pagination-page"><a href="${href}">${index}</a></li>`
+                        }
+                    }
+                    const output = str;
+                    return new Handlebar.SafeString(output);
+
+                } catch (error) {
+                    console.log(error)
+                }
+                
+
+            }
         }
     }),
     ); // cấu hình handlebars

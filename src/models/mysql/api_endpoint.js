@@ -54,5 +54,5 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'api_endpoints',
     paranoid: true
   });
-  return api_endpointApiEndpoint;
+  return ApiEndpoint;
 };

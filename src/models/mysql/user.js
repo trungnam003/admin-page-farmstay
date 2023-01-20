@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {Employee, Customer} = models
+      const {Employee, Customer, Group} = models
       // hasOne
       User.hasOne(Employee, {
         foreignKey: {name: 'user_id'},
@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: {name: 'user_id',},
         sourceKey: 'id',
         as: 'user_customer'
+      })
+      User.belongsTo(Group, {
+        foreignKey: {name: 'group_id', allowNull: true},
+        targetKey: 'id',
+        as: 'belong_to_group'
       })
     }
   }

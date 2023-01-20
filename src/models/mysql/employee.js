@@ -16,21 +16,21 @@ module.exports = (sequelize, DataTypes) => {
       Employee.belongsTo(Job, {
         foreignKey: {name: 'job_id', allowNull: true},
         targetKey: 'id',
-        as: 'job',
+        as: 'job_of_employee',
         onDelete: "SET NULL",
         onUpdate: "CASCADE"
       });
       Employee.belongsTo(Farmstay, {
         foreignKey: {name: 'farm_id', allowNull: true},
         targetKey: 'id',
-        as: 'farmstay',
+        as: 'work_at_farmstay',
         onDelete: "SET NULL",
         onUpdate: "CASCADE"
       })
       Employee.belongsTo(Employee, {
         foreignKey: {name: 'manager_id', allowNull: true},
         targetKey: 'id',
-        as:'manager',
+        as:'managed_by',
         onDelete: "SET NULL",
         onUpdate: "CASCADE"
       })
@@ -43,23 +43,23 @@ module.exports = (sequelize, DataTypes) => {
       Employee.hasMany(Employee, {
         foreignKey: {name: 'manager_id', allowNull: true},
         sourceKey: 'id',
-        as:'employees'
+        as:'manage_employees'
       });
       Employee.hasMany(AttendanceEmployee, {
         foreignKey: {name: 'employee_id', },
         sourceKey: 'id',
-        as: 'attendances',
+        as: 'attendances_of_employee',
       })
       // hasOne
       Employee.hasOne(Salary, {
         foreignKey: {name: 'employee_id', },
         sourceKey: 'id',
-        as: 'salary',
+        as: 'salary_of_employee',
       })
       Employee.hasOne(Farmstay, {
         foreignKey: {name: 'manager_id', allowNull: true},
         sourceKey: 'id',
-        as: 'manager_farmstay',
+        as: 'manage_farmstay',
       })
     }
   }

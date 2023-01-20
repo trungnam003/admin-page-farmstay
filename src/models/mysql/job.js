@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       Job.hasMany(Employee, {
         foreignKey: {name: 'job_id', allowNull: true},
         sourceKey: 'id',
-        as: 'employees',
+        as: 'employees_of_job',
       });
     }
   }
