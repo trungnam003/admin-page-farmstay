@@ -15,9 +15,6 @@ const config                            = require('../config');
 class UserController{
     /**
      * [GET] render page user detail 
-     * @param {*} req Request
-     * @param {*} res Response
-     * @param {*} next NextFunction
      * 
      */
     getDetail(req, res, next){
@@ -28,9 +25,6 @@ class UserController{
 
     /**
      * [GET] render page upload avatar
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
      */
     renderUploadAvatar(req, res, next){
         res.render('pages/users/upload_avatar')
@@ -38,9 +32,6 @@ class UserController{
 
     /**
      * [POST] Xử lí form upload avatar xử lí ảnh, lưu ảnh local và database
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
      */
     async uploadAvatar(req, res, next){
         
@@ -97,10 +88,6 @@ class UserController{
 
     /**
      * [GET] Controller Active User using email
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     * @returns 
      */
     async active(req, res, next){
         try {
@@ -130,10 +117,6 @@ class UserController{
     }
     /**
      * [PUT] Controller verify mail active
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     * @returns 
      */
     async verifyActive(req, res, next){
 

@@ -4,25 +4,25 @@ const {HttpError, HttpError404}     = require('../utils/errors')
 const {authorization}               = require('../middlewares/auths/authorization')
 const {authenticateJWT}             = require('../middlewares/auths/authenticate.jwt')
 const {Validate, validateParam,validateBody, validateQuery} = require('../middlewares/validates')
-// Router.route('/create')
-// .post(
-//     EquipmentController.createEquipment
-// )
-// .all((req, res, next)=>{
-//     next(new HttpError(405))
-// });
 
 /**
  * 
  */
 Router.route('/trash')
 .get(
+    
     EquipmentController.renderTrashEquipment
 )
 .put(
+    validateBody({
+        id: Validate.isNumber()
+    }),
     EquipmentController.restoreEquipment
 )
 .delete(
+    validateQuery({
+        equipment_id: Validate.isNumber(),
+    }),
     EquipmentController.deleteForceEquiment
 )
 .all((req, res, next)=>{
@@ -34,6 +34,10 @@ Router.route('/trash')
  */
 Router.route('/')
 .get(
+    validateQuery({
+        limit: Validate.isNumber({require: false}),
+        page: Validate.isNumber({require: false})
+    }),
     EquipmentController.renderEquipmentManager
 )
 .post(

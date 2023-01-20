@@ -74,7 +74,9 @@ class AuthController{
     }
 
 
-
+    /**
+     * [GET] Đăng xuất
+     */
     async logout(req, res, next){
         
         if (req && req.cookies){

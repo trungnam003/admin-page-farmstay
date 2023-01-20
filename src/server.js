@@ -127,12 +127,12 @@ const main = async()=>{
     } catch (error) {
         console.log("Connect MySql FAIL :(");
     }
-    try {
-        await mongodb.connect();
-        console.log("Connect MongoDB OK ^^");
-    } catch (error) {
-        console.log("Connect MongoDB FAIL :(");
-    }
+    // try {
+    //     await mongodb.connect();
+    //     console.log("Connect MongoDB OK ^^");
+    // } catch (error) {
+    //     console.log("Connect MongoDB FAIL :(");
+    // }
     
     const httpServer = createServer(app)
 
