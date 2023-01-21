@@ -19,6 +19,15 @@ Router.route('/create')
     next(new HttpError(405))
 });
 
+Router.route('/trash')
+.get(
+    
+    FarmstayController.renderTrashFarmstay
+)
+
+.all((req, res, next)=>{
+    next(new HttpError(405))
+});
 
 Router.route('/api/get_districts')
 .get(
@@ -40,6 +49,9 @@ Router.route('/api/get_wards')
 Router.route('/')
 .get(
     FarmstayController.renderFarmstays
+)
+.delete(
+    FarmstayController.deleteFarmstayById
 )
 .all((req, res, next)=>{
     next(new HttpError(405))

@@ -1,15 +1,17 @@
-
 <div class="row mt-4">
+     
     <div class="col-md-offset-1 col-md-12">
         <div class="panel">
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-sm-10 col-xs-10">
-                        <a href="/farmstay/create" class="btn btn-sm btn-primary pull-left"><i class="fa fa-plus-circle"></i>Thêm farmstay</a>
-                        <a href = "/farmstay/trash" class="btn btn-primary position-relative">
-                            <i class="fas fa-trash"></i>
-                            <p class="badge badge-warning position-absolute" style="top: -4px;right: -4px;">{{total_equipment_deleted}}</p>
+                        {{!-- <a href="/farmstay/create" class="btn btn-sm btn-primary pull-left"><i class="fa fa-plus-circle"></i> Add New</a> --}}
+                        <!-- Button trigger modal -->
+                        <a href = "/farmstay" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i>
                         </a>
+                        <h3 class="text-warning">Thùng Rác</h3>
+                        
                     </div>
                     {{!-- <div class="col-sm-2 col-xs-2">
                         <form class="form-horizontal pull-right">
@@ -27,7 +29,6 @@
 
                 </div>
             </div>
-            
             <div class="panel-body table-responsive">
                 <table class="table">
                     <thead>
@@ -38,6 +39,7 @@
                             <th>Người quản lý</th>
                             <th>Giá thuê</th>
                             <th>Trạng thái</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -45,10 +47,17 @@
                             <tr>
                                 <td>
                                     <ul class="action-list">
-                                        <li><a href="#" class="btn btn-primary"><i class="fa fa-pencil-alt"></i></a></li>
                                         <li>
-                                            <a data-name="{{this.name}}" data-id="{{this.id}}" href="#" class="btn btn-warning delete-farmstay" data-toggle="modal" data-target="#modalDeleteFarmstay">
-                                            <i class="fas fa-trash"></i></a>
+                                            <a 
+                                                data-id="{{this.id}}",
+                                                
+                                                class="btn btn-primary restore-equipment">
+                                                <i class="fas fa-undo"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a data-name="{{this.name}}" data-id="{{this.id}}" class="btn btn-danger delete-force-equipment" data-toggle="modal" data-target="#modalDeleteForceEquipment">
+                                            <i class="fas fa-times-circle"></i></a>
                                         </li>
                                     </ul>
                                 </td>
@@ -62,8 +71,16 @@
                                 
                                 <td>{{this.rent_cost_per_day}}</td>
                                 <td><a href="#" class="btn btn-sm btn-success"><i class="fas fa-check-circle"></i></a></td>
+                                
+                            </tr>
+                        {{else}}
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    Thùng rác rỗng
+                                </td>
                             </tr>
                         {{/each}}
+                        
                     </tbody>
                 </table>
             </div>
@@ -89,53 +106,75 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalDeleteFarmstay" tabindex="-1" role="dialog" aria-labelledby="modalDeleteFarmstay" aria-hidden="true">
+    <form id="formRestoreEquipment" class="sr-only" action="/equipment/trash?_method=PUT" method="POST">
+        <input class="sr-only" id="inputIdRestoreEquipment" name="id" type="text">
+    </form>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="modalDeleteForceEquipment" tabindex="-1" role="dialog" aria-labelledby="modalDeleteForceEquipmentLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalDeleteFarmstayLabel">Bạn có muốn xóa?</h5>
+                    <h5 class="modal-title" id="modalDeleteForceEquipmentLabel">Thông báo</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-warning modal-title-warning" role="alert">
-                        Bạn có muốn xóa <a class="alert-link"></a> không?
+                    <div class="alert alert-danger modal-title-danger" role="alert">
+                        Bạn có muốn xóa <a class="alert-link"></a> vĩnh viễn không?
                     </div>
-                    <form id="formDeleteFarmstay" method="POST"></form>
+                    <form id="formDeleteForceEquipment" method="POST"></form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="btnDeleteFarmstay"type="button" class="btn btn-warning">Xóa</button>
+                    <button id="btnDeleteForceEquipment"type="button" class="btn btn-danger">Xóa</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {{> js}}
 <script>
-$( document ).ready(function(){
 
-    // Submit xóa thiết bị
-    (function($){
-        $('#btnDeleteFarmstay').on('click', function (e) {
-            const id = e.target.getAttribute('data-id-delete')
-            $('#formDeleteFarmstay').attr('action', `/farmstay?_method=DELETE&farmstay_id=${id}`);
-            $('#formDeleteFarmstay').submit();
-        })
-    })(jQuery);
-    // Xử lí lấy id của nút khi nhấn hiện modal xóa thiết bị
-    (function($){
-        $('#modalDeleteFarmstay').on('show.bs.modal', function (e){
-            var button = $(e.relatedTarget) // Button that triggered the modal
-            let id = button.data('id')
-            let name =  button.data('name')
-            $('.modal-title-warning .alert-link').text(name)
-            
-            $('#btnDeleteFarmstay').attr('data-id-delete', id);
-            
-        });
-    })(jQuery);
-});
+    $( document ).ready(function(){
+        (function($){
+            $('.restore-equipment').click(function(){
+                const id  = this.getAttribute("data-id");
+                $('#inputIdRestoreEquipment').val(id)
+                $('#formRestoreEquipment').submit();
+            })
+         })(jQuery);
 
+
+        (function($){
+            $('#btnDeleteForceEquipment').on('click', function (e) {
+                const id = e.target.getAttribute('data-id-delete')
+                $('#formDeleteForceEquipment').attr('action', `/equipment/trash?_method=DELETE&equipment_id=${id}`);
+                $('#formDeleteForceEquipment').submit();
+                
+            })
+         })(jQuery);
+
+        (function($){
+            $('#modalDeleteForceEquipment').on('show.bs.modal', function (e){
+                var button = $(e.relatedTarget) // Button that triggered the modal
+                let id = button.data('id')
+                $('#btnDeleteForceEquipment').attr('data-id-delete', id);
+                
+            });
+        })(jQuery);
+
+        (function($){
+            $('.delete-force-equipment').click(function(){  
+                let name = this.getAttribute("data-name");
+                
+                //$('#modalDeleteEquipment').modal('show');
+                $('.modal-title-danger .alert-link').text(name)
+            });
+        })(jQuery);
+    });
+
+        
 </script>

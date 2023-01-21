@@ -1,8 +1,8 @@
 const {HttpError, HttpError404}                 = require('../utils/errors')
 const { Province, District, Ward, 
-    Equipment, sequelize, Farmstay, 
+    Equipment, sequelize, Farmstay, Employee,
     FarmstayEquipment, FarmstayAddress}         = require('../models/mysql')
-const {uploadMultiImage}                        = require('../middlewares/uploads/upload.image')
+const {handleMultiImage}                        = require('../utils/uploads/upload.image')
 const multer                                    = require("multer");
 const {generateBufferUUIDV4, uuidToString}      = require('../helpers/generateUUID');
 const { QueryTypes, Op }                        = require('sequelize');
@@ -10,11 +10,29 @@ const sharp                                     = require('sharp');
 const mkdirp                                    = require('mkdirp');
 const slug                                      = require('slug')
 const PromiseBlueBird                           = require('bluebird');
+const {arrayToJSON}                             = require('../helpers/sequelize')
 
 class FarmstayController{
 
-    renderFarmstays(req, res, next){
-        res.render('pages/farmstay/farmstays')
+    async renderFarmstays(req, res, next){
+        try {
+            const farmstays =  await Farmstay.findAll({
+                attributes: ['id', 'name', 'uuid', 'rent_cost_per_day'],
+                include: [
+                    {
+                        model: Employee,
+                        as: 'management_staff'
+                    }
+                ]
+            })
+            // console.log(arrayToJSON(farmstays))
+            res.render('pages/farmstay/farmstays', {
+                farmstays: arrayToJSON(farmstays)
+            })
+            
+        } catch (error) {
+            
+        }
     }
 
     async renderCreateFarmstay(req, res, next){
@@ -27,7 +45,7 @@ class FarmstayController{
                     }),
                     Equipment.findAll(
                         {
-                            attributes: ['id', 'name', 'quantity']
+                            attributes: ['id', 'name', 'quantity', [sequelize.literal('`quantity`-`total_rented`'), 'remain']]
                         }
                     ),
                 ]
@@ -39,6 +57,7 @@ class FarmstayController{
             equipments = equipments.map(v=>{
                 return v.toJSON() 
             })
+            console.log(equipments)
             const fakeManager = [
                 {id: 1, 'name': "Trung Nam"},
                 {id: 2, 'name': "Nam Anh"},
@@ -121,10 +140,10 @@ class FarmstayController{
                         uuid: generateBufferUUIDV4(),
                         name: farmstay_name,
                         rent_cost_per_day: rent_cost,
-                        manager_id: manager_id,
+                        manager_id: manager_id===0?null:manager_id,
                         description: description,
                         square_meter: 1000,
-                        address: {
+                        address_of_farmstay: {
                             code_ward: ward_code,
                             specific_address: address,
                             link: link_ggmap,
@@ -138,7 +157,7 @@ class FarmstayController{
                         include: [
                             {
                                 model: FarmstayAddress,
-                                as: 'address'
+                                as: 'address_of_farmstay'
                             },
                         
                         ],
@@ -175,13 +194,23 @@ class FarmstayController{
                                     transaction: transaction
                                 }
                             )
+                            await Equipment.update(
+                                {
+                                    total_rented: sequelize.literal(`total_rented+${equipments_quantity[index]}`)
+                                },
+                                {
+                                    where:{
+                                        id: equipments_id[index]
+                                    }
+                                })
                         }else{
                             throw new Error("Không đủ số lượng");
                         }
                     }
+
                     await transaction.commit();
 
-                    res.json('OK');
+                    res.redirect('/farmstay');
                 } catch (error) {
                     if(transaction) {
                         await transaction.rollback();
@@ -191,6 +220,49 @@ class FarmstayController{
                 }
             }
         })
+    }
+
+    async renderTrashFarmstay(req, res, next){
+        try {
+            const farmstays = await Farmstay.findAll({
+                attributes: ['id', 'name', 'uuid', 'rent_cost_per_day'],
+                include: [
+                    {
+                        model: Employee,
+                        as: 'management_staff'
+                    }
+                ],
+                where: {
+                    deletedAt: {
+                        [Op.not]: null
+                    }
+                },
+                paranoid: false
+            })
+            res.status(200).render('pages/farmstay/trash', {
+                farmstays: arrayToJSON(farmstays)
+            })
+        } catch (error) {
+            
+        }
+    }
+    /**
+     * [DELETE] Xóa mềm Farmstay sủ dụng id
+     */
+    async deleteFarmstayById(req, res, next){
+        try {
+            const {farmstay_id} = req.query;
+            await Farmstay.destroy({
+                where: {
+                    id: farmstay_id
+                }
+            })
+            
+            res.redirect('back') 
+        } catch (error) {
+            next(new HttpError(500, "Có lỗi xảy ra"));
+            
+        }
     }
 
     /**

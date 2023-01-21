@@ -1,125 +1,35 @@
 const multer = require("multer");
 const mkdirp = require('mkdirp');
+const {handleMultiImage,handleSingleImage} = require('../../utils/uploads/upload.image')
 
-// // type là tên body request tải lên
-// function uploadImage(type = '', imageName = ''){
-
-//     const made = mkdirp.sync(`./src/public/uploads/${type}`)
-
-//     // const storage = multer.diskStorage({
-//     //     destination: function(req, file, cb){
-//     //         cb(null, `./src/public/uploads/${type}`)
-//     //     },
-//     //     filename: function(req, file, cb){
-//     //         const uniqueSuffix = Date.now() + '-' + imageName
-//     //         const path = uniqueSuffix+'-'+file.fieldname+'.'+file.originalname.split('.').at(-1)
-//     //         cb(null,  path)
-//     //     }
-//     // })
-
-//     // lưu vào memoryStorage
-//     const storage = multer.memoryStorage()
+module.exports.uploadSingleImage = function({type, imageName=undefined, path=undefined}){
     
-//     // lọc file ảnh
-//     const fileFilter = function(req, file, cb){
-//         const extFiles = ['.png', '.jpg']
-//         const ext = "."+file.originalname.split('.').at(-1);
-        
-//         if(extFiles.includes(ext)){
-//             cb(null, true)
-//         }else{
-//             cb(new multer.MulterError(1611, "LỖI FILE KHÔNG HỢP LỆ"))
-//         }
-//     }
-    
-//     const upload_Image = multer({storage: storage, fileFilter: fileFilter, limits: {fileSize: 5000000}})
-//     // trả về middleware tải ảnh lên
-//     return upload_Image.single(type)
-// }
-
-/**
- * @param {object} options
- * @param {string} options.type Loại ảnh cần lưu, trùng tên với req.files
- * @param {string|undefined} options.imageName Tên file cần lưu
- * @param {string|undefined} options.path Đường dẫn đến nơi cần lưu
- * @returns Middleware
- */
-function uploadImage(options){
-    let {type, imageName, path} = options;
-    var storage
-    if(path){
-        const made = mkdirp.sync(path)
-        storage = multer.diskStorage({
-            destination: function(req, file, cb){
-                cb(null, path)
-            },
-            filename: function(req, file, cb){
-                const uniqueSuffix = Date.now() + '-' + imageName
-                const path = uniqueSuffix+'-'+file.fieldname+'.'+file.originalname.split('.').at(-1)
-                cb(null,  path)
+    const upload = handleSingleImage({type, imageName, path})
+    return function(req, res, next){
+        upload(req, res, (err)=>{
+            if (err instanceof multer.MulterError) {
+                next(new HttpError(400))
+            } else if (err) {
+                next(new HttpError(400))
+            }else{
+                next()
             }
         })
-    }else{
-        storage = multer.memoryStorage();
     }
-    // lọc file ảnh
-    const fileFilter = function(req, file, cb){
-        const extFiles = ['.png', '.jpg']
-        const ext = "."+file.originalname.split('.').at(-1);
-        
-        if(extFiles.includes(ext)){
-            cb(null, true)
-        }else{
-            cb(new multer.MulterError(1611, "LỖI FILE KHÔNG HỢP LỆ"))
-        }
-    }
-    const upload_Image = multer({storage: storage, fileFilter: fileFilter, limits: {fileSize: 5000000}})
-    // trả về middleware tải ảnh lên
-    return upload_Image.single(type)
 }
 
-/**
- * @param {object} options
- * @param {string} options.type Loại ảnh cần lưu, trùng tên với req.files
- * @param {string} options.imageName Tên các file cần lưu
- * @param {string} options.quantity Số lượng file cần lưu
- * @param {string} options.path Đường dẫn đến nơi cần lưu
- * @returns Middleware
- */
-function uploadMultiImage(options){
-    let {type, imageName, quantity, path} = options;
-    var storage
-    if(path){
-        const made = mkdirp.sync(path)
-        storage = multer.diskStorage({
-            destination: function(req, file, cb){
-                cb(null, path)
-            },
-            filename: function(req, file, cb){
-                //'-'+(Math.random()*10e9).toFixed(0)
-                const uniqueSuffix = Date.now() + '-' + imageName 
-                const path = uniqueSuffix+'-'+file.fieldname+'.'+file.originalname.split('.').at(-1)
-                cb(null,  path)
+module.exports.uploadMultiImage = function({type, quantity, imageName=undefined, path=undefined}){
+    
+    const upload = handleMultiImage({type, quantity, imageName, path})
+    return function(req, res, next){
+        upload(req, res, (err)=>{
+            if (err instanceof multer.MulterError) {
+                next(new HttpError(400))
+            } else if (err) {
+                next(new HttpError(400))
+            }else{
+                next()
             }
         })
-    }else{
-        storage = multer.memoryStorage();
     }
-
-    const fileFilter = function(req, file, cb){
-        const extFiles = ['.png', '.jpg']
-        const ext = "."+file.originalname.split('.').at(-1);
-        
-        if(extFiles.includes(ext)){
-            cb(null, true)
-        }else{
-            cb(new multer.MulterError(1611, "LỖI FILE KHÔNG HỢP LỆ"))
-        }
-    }
-    const upload_Image = multer({storage: storage, fileFilter: fileFilter, limits: {fileSize: 5000000}})
-    return upload_Image.array(type, quantity)
-}
-
-module.exports = {
-    uploadImage, uploadMultiImage
 }

@@ -29,10 +29,11 @@
             <div class="form-group col-md-6">
                 <label for="inputManager">Chọn người quản lý</label>
                 <select name="manager_id" id="inputManager" class="form-control">
-                <option value="" selected>Choose...</option>
+                <option value="0" selected>Chưa có</option>
                 {{#each managers}}
                     <option value="{{this.id}}">{{this.name}}</option>
                 {{/each}}
+
                 </select>
                 <span class="form-message"></span>
             </div>
@@ -159,13 +160,25 @@
                     <div class="input-group-prepend">
                         <img style="width: 60px;"src="/img/logo1.png" class="img-thumbnail" alt="Cinque Terre">
                         <div class="input-group-text">
-                            <input class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
+                            {{#if this.remain}}
+                                
+                                <input  class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
+                                
+                            {{else}}
+                                <input class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input" disabled>
+                                
+                            {{/if}}
                         </div>
                     </div>
-                    <p class="border border-secondary mt-0 mb-0 text-dark pl-4" style="flex:1;" for="flexCheckChecked">{{this.name}}</p>
+                    <div style="flex:1;" class=" border border-secondary mt-0 mb-0 text-dark pl-4">
+                        <p class="text-dark"  for="flexCheckChecked">{{this.name}}
+                            {{#if this.remain}}{{else}}<span class="badge badge-pill badge-warning">không đủ số lượng</span>{{/if}}
+                        </p>
+
+                    </div>
                     <div class="input-group-append">
                         <div class="input-group-text">
-                            <input class="input_equipment_quantity"  type="number" value="0" min="1" max="{{this.quantity}}" disabled>
+                            <input class="input_equipment_quantity"  type="number" value="0" min="1" max="{{this.remain}}" disabled>
                         
                         </div>
                     </div>
