@@ -6,12 +6,26 @@ const {authenticateJWT}             = require('../middlewares/auths/authenticate
 const {Validate, validateParam,validateBody, validateQuery} = require('../middlewares/validates')
 const multer                                    = require("multer");
 const {uploadSingleImage, uploadMultiImage} = require('../middlewares/uploads/upload.image')
+const config = require('../config')
 
-Router.post('/test', 
-uploadMultiImage({type: 'test', imageName: 'cc', path:'./src/public/upload/test', quantity: 4})
-, (req, res, next)=>{
-    res.send('ok')
-})
+// Router.post('/test', 
+// uploadMultiImage({type: 'test',quantity:12}),
+// uploadMultiImage({type: 'sss', quantity:12})
+
+// , (req, res, next)=>{
+//     res.send(req.files)
+// })
+
+Router.route('/detail/:id')
+.get(
+    EquipmentController.renderDetailEquipment
+)
+.put(
+    EquipmentController.changeQuantityEquipment
+)
+.all((req, res, next)=>{
+    next(new HttpError(405))
+});
 /**
  * 
  */
@@ -38,9 +52,8 @@ Router.route('/trash', authenticateJWT)
 /**
  * 
  */
-Router.route('/', authenticateJWT)
+Router.route('/', ).all(authenticateJWT)
 .get(
-    
     validateQuery({
         limit: Validate.isNumber({require: false}),
         page: Validate.isNumber({require: false})
@@ -48,13 +61,16 @@ Router.route('/', authenticateJWT)
     EquipmentController.renderEquipmentManager
 )
 .post(
-    
+    uploadSingleImage({type: 'equipment_image'}),
     validateBody({
         name: Validate.isString(),
         rent_cost: Validate.isNumber(),
         quantity: Validate.isNumber(),
         category_id: Validate.isNumber(),
     }),
+    // (req, res)=>{
+    //     res.json(req.file)
+    // },
     EquipmentController.createEquipment
 )
 .delete(

@@ -48,7 +48,7 @@ function handleSingleImage(options){
     let {type, imageName, path} = options;
     let storage;
     if(path){
-        const made = mkdirp.sync(path)
+        mkdirp.sync(path)
         storage = multer.diskStorage({
             destination: function(req, file, cb){
                 cb(null, path)
@@ -88,9 +88,9 @@ function handleSingleImage(options){
  */
 function handleMultiImage({type, imageName, quantity, path}){
     // let {type, imageName, quantity, path} = options;
-    var storage
+    let storage
     if(path){
-        const made = mkdirp.sync(path)
+        mkdirp.sync(path)
         storage = multer.diskStorage({
             destination: function(req, file, cb){
                 cb(null, path)

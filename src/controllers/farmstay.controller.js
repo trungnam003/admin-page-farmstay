@@ -79,7 +79,7 @@ class FarmstayController{
      */
     async createFarmstay(req, res, next){
         // Khởi tạo middleware formdata/multipart upload ảnh từ client
-        const upload = uploadMultiImage({
+        const upload = handleMultiImage({
             type: 'farmstay',
             quantity: 10,
         });

@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true
     },
+    images: {
+      type: DataTypes.JSON,
+      allowNull: true
+    },
     total_rented: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,

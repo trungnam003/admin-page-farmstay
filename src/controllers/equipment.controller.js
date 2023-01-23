@@ -1,8 +1,12 @@
-const {Category, Equipment,FarmstayEquipment, sequelize}    = require('../models/mysql')
+const {Category, Equipment,FarmstayEquipment,
+    Farmstay, sequelize}  = require('../models/mysql')
 const {HttpError, HttpError404, HttpError400}               = require('../utils/errors')
+const sharp                                     = require('sharp');
+const slug                                      = require('slug')
+const mkdirp                                    = require('mkdirp');
 
 const { Op, fn }                                            = require("sequelize");
-const {arrayToJSON}                                         = require('../helpers/sequelize')
+const {arrayToJSON, objectToJSON}                                         = require('../helpers/sequelize')
 
 
 class EquipmentController{
@@ -63,6 +67,7 @@ class EquipmentController{
      */
     async createEquipment(req, res, next){
         try {
+            let {file} = req;
             let {name, rent_cost, quantity, category_id} = req.body;
             if(category_id==0){
                 category_id=null;
@@ -71,8 +76,15 @@ class EquipmentController{
             for (let i = 0; i < quantity; i++) {
                 equipments.push({});
             }
+            const {buffer, originalname, fieldname} = file;
+            const path = './src/public/uploads/equipment'
+            mkdirp.sync(path) 
+            const uniqueSuffix = Date.now() + '-' + slug(name, '_');
+            const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
+            let images = [`/uploads/equipment/${filename}`];
+            
             await Equipment.create({
-                name, rent_cost, category_id, quantity, farmstay_equipments: equipments
+                name, rent_cost, category_id, quantity,images, farmstay_equipments: equipments
             }, {
                 include: [
                     {
@@ -81,8 +93,15 @@ class EquipmentController{
                     }
                 ]
             })
+
+            
+
+            // equipment.
+            await sharp(buffer).toFile(`${path}/${filename}`);
+
             res.redirect('back')
         } catch (error) {
+            console.log(error)
             next(new HttpError(500, "Có lỗi xảy ra"));
             
         }
@@ -187,6 +206,103 @@ class EquipmentController{
         } catch (error) {
             
             next(new HttpError(500, "Có lỗi xảy ra"));
+        }
+    }
+
+    /**
+     * [GET] 
+     */
+    async renderDetailEquipment(req, res, next){
+        try {
+            const {id} = req.params;
+            const equipment = await Equipment.findOne({
+                where: {
+                    id
+                },
+                attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+                include: [
+                    {
+                        model: Category,
+                        as: 'belong_to_category',
+                        attributes: ['id','name'],
+
+                    },
+                    
+                ]
+            })
+            const farmstayEquipment = await FarmstayEquipment.findAll(
+                {
+                    where: {equipment_id: id},
+                    attributes: ['id'],
+                    include: [
+                        {
+                            model: Farmstay,
+                            as: 'used_by',
+                            attributes: ['id', 'name'],
+                        }
+                    ],
+                }
+            )
+            // console.log()
+            res.render('pages/equipments/detail_equipment',
+                {
+                    equipment: objectToJSON(equipment),
+                    farmstayEquipment: arrayToJSON(farmstayEquipment)
+                }
+            );
+        } catch (error) {
+            console.log('error', error)
+        }
+    }
+
+    async changeQuantityEquipment(req, res, next){
+        try {
+            const {id} = req.params;
+            const {quantity: quantityChange} = req.body;
+
+            const equipment = await Equipment.findOne({
+                where: {
+                    id
+                },
+                attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+            })
+            const {total_rented, quantity} = equipment;
+            if(quantityChange >= total_rented){
+                if(quantityChange > quantity){
+                    const createList = [];
+                    for (let index = 0; index < quantityChange-quantity; index++) {
+                        createList.push({equipment_id: id})
+                    }
+                    await FarmstayEquipment.bulkCreate(createList);
+                    equipment.quantity = quantityChange
+                    await equipment.save();
+                }else if(quantityChange < quantity){
+                    const farmstay_equipments = await FarmstayEquipment.findAll({
+                        where: {
+                            equipment_id: id,
+                            farm_id: {
+                                [Op.is]: null
+                            }
+                        },
+                        limit: quantity-quantityChange,
+                        order: [
+                            ['id', 'DESC']
+                        ]
+                    })
+                    const deleteList = farmstay_equipments.map(v=>v.id)
+                    await FarmstayEquipment.destroy({
+                        where: {
+                            id: deleteList
+                        }
+                    })
+                    equipment.quantity = quantityChange
+                    await equipment.save();
+                }
+            }
+
+            res.redirect('back');
+        } catch (error) {
+            
         }
     }
 }
