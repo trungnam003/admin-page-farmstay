@@ -68,6 +68,9 @@ const main = async()=>{
             sum(a, b){
                 return a+b
             },
+            minus(a,b){
+                return a-b;
+            },
             page(page, limit_page, limit, max){
                 let str = '';
                 let n = Math.floor(page/limit_page);

@@ -1,4 +1,35 @@
 require("dotenv").config();
+const path = require('node:path')
+const {dirname} = require('../../nodepath');
+
+const deepFreeze = (obj) => {
+    Object.keys(obj).forEach((property) => {
+      if (
+        typeof obj[property] === "object" &&
+        !Object.isFrozen(obj[property])
+      )
+        deepFreeze(obj[property]);
+    });
+    return Object.freeze(obj);
+};
+
+const test = {
+    _this: dirname,
+    toString(){
+        return this._this;
+    }
+}
+const createPathObject = function({obj, key, name}){
+    if(!name){
+        name = key;
+    }
+    obj[key] =  Object.create(
+        Object.getPrototypeOf(test),
+        Object.getOwnPropertyDescriptors(test)
+    )
+    obj[key]._this = path.join(obj._this+'', name)
+
+}
 
 const config = {
     server: {
@@ -27,18 +58,18 @@ const config = {
         exp : parseInt(process.env.JWT_EXP),
         refesh_exp:  parseInt(process.env.JWT_REFESG_EXP),
         issuer: process.env.JWT_ISSUER,
-    }
+    },
+    __path: Object.create(
+        Object.getPrototypeOf(test),
+        Object.getOwnPropertyDescriptors(test)
+    )
 }
-const deepFreeze = (obj) => {
-    Object.keys(obj).forEach((property) => {
-      if (
-        typeof obj[property] === "object" &&
-        !Object.isFrozen(obj[property])
-      )
-        deepFreeze(obj[property]);
-    });
-    return Object.freeze(obj);
-};
+const {__path} = config
+createPathObject({obj: __path, key: 'app', name:'src'})
+createPathObject({obj: __path['app'], key: 'public',})
+createPathObject({obj: __path['app']['public'], key: 'uploads',})
+
+
 deepFreeze(config);
 
 

@@ -72,7 +72,7 @@
                                     </ul>
                                 </td>
                                 <td>{{sum @index 1}}</td>
-                                <td><a href="#" class="text-info">{{this.name}}</a></td>
+                                <td><a href="/equipment/detail/{{this.id}}" class="text-info">{{this.name}}</a></td>
                                 <td>{{this.rent_cost}}</td>
                                 <td>{{this.quantity}}</td>
                                 <td>{{this.total_rented}}</td>
@@ -172,7 +172,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="formSubmitCreateEquipment" action="/equipment" method="POST">
+                <form id="formSubmitCreateEquipment" enctype="multipart/form-data" action="/equipment" method="POST">
                     <div class="form-group">
                         <label for="inputNameEquipment">Tên thiết bị</label>
                         <input name="name" type="text" class="form-control" id="inputNameEquipment" placeholder="Nhập tên thiết bị">
@@ -200,6 +200,21 @@
                             <input name="quantity" type="number" class="form-control" id="inputQuantityEquipment" min="0" value="0">
                             <span class="form-message"></span>
 
+                        </div>
+                    </div> 
+                    
+                    <div class="form-group">
+                        <label for="inputImageEquipment">Tải ảnh</label>
+                        <div id='image-view' class="d-flex justify-content-center" >
+                        </div>
+                        <div class="input-group flex-nowrap">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="addon-wrapping"><i class="fas fa-file-image"></i></span>
+                            </div>
+
+                            <input id = "inputImageEquipment" name="equipment_image" class="form-control" type="file" onchange="readURL(this);"  accept="image/*" aria-describedby="addon-wrapping"/>
+
+                            {{!-- <input type="file" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="addon-wrapping"> --}}
                         </div>
                     </div>
                     <div class="form-group">
@@ -312,6 +327,19 @@
 
 {{> js}}
 <script>
+    function readURL(input) {
+        if (input.files) {
+            $('#image-view').empty();
+            for (const element of input.files) {
+                let reader = new FileReader();           
+                reader.onload = function (e) {
+                    $('#image-view')
+                    .append(`<img style="width:100px;"src="${e.target.result}" alt="your image" class="img-thumbnail">`)  
+                };
+                reader.readAsDataURL(element);
+            }
+        }
+    }
     $( document ).ready(function(){
         // Submit tạo thiết bị 
          (function($){
@@ -322,6 +350,7 @@
 
          (function($){
             $('#btnSubmitEditEquipment').on('click', function (e) {
+                
                 $('#formSubmitEditEquipment').submit();
             })
          })(jQuery);
