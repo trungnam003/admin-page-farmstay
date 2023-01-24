@@ -23,6 +23,7 @@ module.exports.validateBody = function (target){
         const {error, } = Validate(req.body, target)
         
         if(error){
+            console.log(error)
             return next(new HttpError400("Yêu cầu của bạn không hợp lệ"))
         }else{
             return next();

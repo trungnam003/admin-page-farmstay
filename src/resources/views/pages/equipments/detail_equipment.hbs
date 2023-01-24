@@ -5,12 +5,12 @@
         </div>
     </div>
     <div class="col-4">
-        {{#each equipment.images}}
+        
             <img 
             style="width: 400px; object-fit: contain; max-height: 400px;"
-            src="{{this}}"
+            src="{{equipment.images}}"
             class="img-thumbnail">
-        {{/each}}
+        
         
     </div>
     <div class="col-8">
@@ -74,7 +74,13 @@
                         {{else}}
                             <td class="text-danger">Chưa có</td>
                         {{/if}}
-                        <td class="badge badge-success"> <i class="fas fa-check-circle"></i></td>
+                        {{#if this.used_by.deletedAt}}
+                            <td class="badge badge-warning"> <i class="far fa-times-circle"></i> Farmstay đã xóa</td>
+                        {{else}}
+                            <td class="badge badge-success"> <i class="fas fa-check-circle"></i> Đang được sử dụng </td>
+                            
+                            
+                        {{/if}}
                     </tr>
                 {{/each}}
                 
@@ -113,17 +119,4 @@
     </div>
 </div>
 {{> js}}
-<script>
-    $( document ).ready(function(){
-        (function($){
-            $('#btnSubmitEditEquipment').on('click', function (e) {
-                let action = $('#formEditQuantityEquipment').attr('action')
-                action += '?_method=PUT';
-                console.log(action)
-                $('#formEditQuantityEquipment').attr('action', action)
-
-                $('#formEditQuantityEquipment').submit();
-            })
-         })(jQuery);
-    });
-</script>
+<script src="/js/equipment/detail_equipment.js"></script>

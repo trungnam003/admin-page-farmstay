@@ -7,6 +7,10 @@ const mkdirp                                    = require('mkdirp');
 
 const { Op, fn }                                            = require("sequelize");
 const {arrayToJSON, objectToJSON}                                         = require('../helpers/sequelize')
+const fs                                = require('node:fs/promises');
+const config = require('../config')
+const path = require('path')
+const {deleteDiskImage, }  =require('../utils/image')
 
 
 class EquipmentController{
@@ -48,13 +52,13 @@ class EquipmentController{
             ]);
             
             res.render('pages/equipments/equipments', {
-                category: arrayToJSON(category),
+                category: arrayToJSON(category), 
                 equipments: arrayToJSON(equipments),
-                total_equipment: count,
-                total_equipment_deleted: countDeleted,
+                total_equipment: count, // số lượng của toàn bộ thiết bị
+                total_equipment_deleted: countDeleted, // số lượng thiết bị đã xóa
                 limit: limit,
                 page: page,
-                total: equipments.length
+                total: equipments.length // số lượng thiết bị được lấy ra
             })
         } catch (error) {
             
@@ -66,42 +70,41 @@ class EquipmentController{
      * [POST] Tạo equipment mới
      */
     async createEquipment(req, res, next){
+        
+        let transaction;
+        let images = null;
+        let diskPath = null;
         try {
+            transaction = await sequelize.transaction();
+            
             let {file} = req;
             let {name, rent_cost, quantity, category_id} = req.body;
             if(category_id==0){
                 category_id=null;
             }
-            const equipments = [];
-            for (let i = 0; i < quantity; i++) {
-                equipments.push({});
+            if(file){
+                const {buffer, originalname, fieldname} = file;
+                diskPath = path.join(config.__path.app.public.uploads+'', 'equipment');
+                mkdirp.sync(diskPath) 
+                const uniqueSuffix = Date.now() + '-' + slug(name, '_');
+                const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
+                images = `/uploads/equipment/${filename}`;
+                diskPath = path.join(diskPath, filename)
+                await sharp(buffer).toFile(diskPath);
             }
-            const {buffer, originalname, fieldname} = file;
-            const path = './src/public/uploads/equipment'
-            mkdirp.sync(path) 
-            const uniqueSuffix = Date.now() + '-' + slug(name, '_');
-            const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
-            let images = [`/uploads/equipment/${filename}`];
             
             await Equipment.create({
-                name, rent_cost, category_id, quantity,images, farmstay_equipments: equipments
-            }, {
-                include: [
-                    {
-                        model: FarmstayEquipment,
-                        as: 'farmstay_equipments'
-                    }
-                ]
-            })
-
+                name, rent_cost, category_id, quantity,images, 
+            },{transaction});
             
-
-            // equipment.
-            await sharp(buffer).toFile(`${path}/${filename}`);
-
+            await transaction.commit();
             res.redirect('back')
         } catch (error) {
             console.log(error)
+            if(transaction) {
+                await transaction.rollback();
+                await deleteDiskImage({pathList:[diskPath]});
+            }
             next(new HttpError(500, "Có lỗi xảy ra"));
             
         }
@@ -196,12 +199,25 @@ class EquipmentController{
     async deleteForceEquiment(req, res, next){
         try {
             const {equipment_id:id} = req.query;
+            const equipment = await Equipment.findOne({
+                where:{
+                    id
+                },
+                paranoid: false
+            })
+            const {images} = equipment;
+            const filename = images.split('/').at(-1)
+            let diskPath = config.__path.app.public.uploads+''
+            diskPath = path.join(diskPath,  'equipment', filename)
+            await deleteDiskImage({pathList: [diskPath]});
+
             await Equipment.destroy({
                 where: {
                     id
                 },
                 force: true,
             })
+
             res.redirect('/equipment/trash') 
         } catch (error) {
             
@@ -238,9 +254,11 @@ class EquipmentController{
                         {
                             model: Farmstay,
                             as: 'used_by',
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'deletedAt'],
+                            paranoid: false
                         }
                     ],
+                    
                 }
             )
             // console.log()
@@ -251,7 +269,8 @@ class EquipmentController{
                 }
             );
         } catch (error) {
-            console.log('error', error)
+            next(new HttpError(500, "Có lỗi xảy ra"));
+
         }
     }
 
@@ -266,42 +285,45 @@ class EquipmentController{
                 },
                 attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
             })
-            const {total_rented, quantity} = equipment;
+            const {total_rented, } = equipment;
             if(quantityChange >= total_rented){
-                if(quantityChange > quantity){
-                    const createList = [];
-                    for (let index = 0; index < quantityChange-quantity; index++) {
-                        createList.push({equipment_id: id})
-                    }
-                    await FarmstayEquipment.bulkCreate(createList);
-                    equipment.quantity = quantityChange
-                    await equipment.save();
-                }else if(quantityChange < quantity){
-                    const farmstay_equipments = await FarmstayEquipment.findAll({
-                        where: {
-                            equipment_id: id,
-                            farm_id: {
-                                [Op.is]: null
-                            }
-                        },
-                        limit: quantity-quantityChange,
-                        order: [
-                            ['id', 'DESC']
-                        ]
-                    })
-                    const deleteList = farmstay_equipments.map(v=>v.id)
-                    await FarmstayEquipment.destroy({
-                        where: {
-                            id: deleteList
-                        }
-                    })
-                    equipment.quantity = quantityChange
-                    await equipment.save();
-                }
+                // if(quantityChange > quantity){
+                //     const createList = [];
+                //     for (let index = 0; index < quantityChange-quantity; index++) {
+                //         createList.push({equipment_id: id})
+                //     }
+                //     await FarmstayEquipment.bulkCreate(createList);
+                //     equipment.quantity = quantityChange
+                //     await equipment.save();
+                // }else if(quantityChange < quantity){
+                //     const farmstay_equipments = await FarmstayEquipment.findAll({
+                //         where: {
+                //             equipment_id: id,
+                //             farm_id: {
+                //                 [Op.is]: null
+                //             }
+                //         },
+                //         limit: quantity-quantityChange,
+                //         order: [
+                //             ['id', 'DESC']
+                //         ]
+                //     })
+                //     const deleteList = farmstay_equipments.map(v=>v.id)
+                //     await FarmstayEquipment.destroy({
+                //         where: {
+                //             id: deleteList
+                //         }
+                //     })
+                //     equipment.quantity = quantityChange
+                //     await equipment.save();
+                // }
+                equipment.quantity = quantityChange
+                await equipment.save();
             }
 
             res.redirect('back');
         } catch (error) {
+            next(new HttpError(500, "Có lỗi xảy ra"));
             
         }
     }

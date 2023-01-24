@@ -1,7 +1,7 @@
 const Router                        = require("express").Router();
 const AuthController                = require('../controllers/auth.controller')
 const {HttpError, HttpError404}     = require('../utils/errors')
-const {authenticateLocal} = require('../middlewares/auths/authenticate.local')
+const {authenticateLocal}           = require('../middlewares/auths/authenticate.local')
 
 Router
 .route('/login')

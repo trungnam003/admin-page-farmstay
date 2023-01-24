@@ -1,7 +1,7 @@
-const Router = require("express").Router();
-const DashboardController = require('../controllers/dashboard.controller')
-const {HttpError, HttpError404} = require('../utils/errors')
-const {Validate, validateParam} = require('../middlewares/validates')
+const Router                        = require("express").Router();
+const DashboardController           = require('../controllers/dashboard.controller')
+const {HttpError, HttpError404}     = require('../utils/errors')
+const {Validate, validateParam}     = require('../middlewares/validates')
 
 Router
 .route('/test2/:username/:email')

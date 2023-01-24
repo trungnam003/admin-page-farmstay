@@ -1,12 +1,13 @@
-const Router                        = require("express").Router();
-const EquipmentController            = require('../controllers/equipment.controller')
-const {HttpError, HttpError404}     = require('../utils/errors')
-const {authorization}               = require('../middlewares/auths/authorization')
-const {authenticateJWT}             = require('../middlewares/auths/authenticate.jwt')
-const {Validate, validateParam,validateBody, validateQuery} = require('../middlewares/validates')
-const multer                                    = require("multer");
+const Router                                = require("express").Router();
+const EquipmentController                   = require('../controllers/equipment.controller')
+const {HttpError, HttpError404}             = require('../utils/errors')
+const {authorization}                       = require('../middlewares/auths/authorization')
+const {authenticateJWT}                     = require('../middlewares/auths/authenticate.jwt')
+const {Validate, validateParam,
+    validateBody, validateQuery}            = require('../middlewares/validates')
+const multer                                = require("multer");
 const {uploadSingleImage, uploadMultiImage} = require('../middlewares/uploads/upload.image')
-const config = require('../config')
+const config                                = require('../config')
 
 // Router.post('/test', 
 // uploadMultiImage({type: 'test',quantity:12}),
@@ -16,20 +17,30 @@ const config = require('../config')
 //     res.send(req.files)
 // })
 
-Router.route('/detail/:id')
+Router.route('/detail/:id').all(authenticateJWT)
 .get(
+    validateParam({
+        id: Validate.isNumber()
+    }),
     EquipmentController.renderDetailEquipment
 )
 .put(
+    validateParam({
+        id: Validate.isNumber()
+    }),
+    validateBody({
+        quantity: Validate.isNumber()
+    }),
     EquipmentController.changeQuantityEquipment
 )
 .all((req, res, next)=>{
     next(new HttpError(405))
 });
+
 /**
  * 
  */
-Router.route('/trash', authenticateJWT)
+Router.route('/trash').all(authenticateJWT)
 .get(
     EquipmentController.renderTrashEquipment
 )
@@ -41,7 +52,7 @@ Router.route('/trash', authenticateJWT)
 )
 .delete(
     validateQuery({
-        equipment_id: Validate.isNumber(),
+        equipment_id: Validate.isNumber().min(1),
     }),
     EquipmentController.deleteForceEquiment
 )
@@ -68,20 +79,15 @@ Router.route('/', ).all(authenticateJWT)
         quantity: Validate.isNumber(),
         category_id: Validate.isNumber(),
     }),
-    // (req, res)=>{
-    //     res.json(req.file)
-    // },
     EquipmentController.createEquipment
 )
 .delete(
-    
     validateQuery({
         equipment_id: Validate.isNumber(),
     }),
     EquipmentController.deleteEquipmentById
 )
 .put(
-    
     validateBody({
         name: Validate.isString(),
         rent_cost: Validate.isNumber(),
@@ -93,4 +99,6 @@ Router.route('/', ).all(authenticateJWT)
 .all((req, res, next)=>{
     next(new HttpError(405))
 });
+
+
 module.exports = Router;

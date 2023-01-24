@@ -111,7 +111,7 @@ class UserController{
                 res.status(200).render('pages/site/active_user')
             }
         } catch (error) {
-            next(HttpError(500));
+            next(new HttpError(500));
         }
         
     }

@@ -25,7 +25,6 @@ module.exports.uploadMultiImage = function({type, quantity, imageName=undefined,
     const upload = handleMultiImage({type, quantity, imageName, path})
     return function(req, res, next){
         upload(req, res, (err)=>{
-            console.log(err)
             if (err instanceof multer.MulterError) {
                 next(new HttpError(400))
             } else if (err) {

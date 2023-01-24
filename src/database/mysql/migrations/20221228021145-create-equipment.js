@@ -27,7 +27,7 @@ module.exports = {
         defaultValue: 0
       },
       images: {
-        type: Sequelize.JSON,
+        type: Sequelize.STRING(512),
         allowNull: true
       },
       category_id:{

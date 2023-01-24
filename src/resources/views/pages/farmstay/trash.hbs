@@ -50,13 +50,12 @@
                                         <li>
                                             <a 
                                                 data-id="{{this.id}}",
-                                                
-                                                class="btn btn-primary restore-equipment">
+                                                class="btn btn-primary restore-farmstay">
                                                 <i class="fas fa-undo"></i>
                                             </a>
                                         </li>
                                         <li>
-                                            <a data-name="{{this.name}}" data-id="{{this.id}}" class="btn btn-danger delete-force-equipment" data-toggle="modal" data-target="#modalDeleteForceEquipment">
+                                            <a data-name="{{this.name}}" data-id="{{this.id}}" class="btn btn-danger delete-force-farmstay" data-toggle="modal" data-target="#modalDeleteForceFarmstay">
                                             <i class="fas fa-times-circle"></i></a>
                                         </li>
                                     </ul>
@@ -106,16 +105,16 @@
             </div>
         </div>
     </div>
-    <form id="formRestoreEquipment" class="sr-only" action="/equipment/trash?_method=PUT" method="POST">
-        <input class="sr-only" id="inputIdRestoreEquipment" name="id" type="text">
+    <form id="formRestoreFarmstay" class="sr-only" action="/farmstay/trash?_method=PUT" method="POST">
+        <input class="sr-only" id="inputIdRestoreFarmstay" name="id" type="text">
     </form>
     
     <!-- Modal -->
-    <div class="modal fade" id="modalDeleteForceEquipment" tabindex="-1" role="dialog" aria-labelledby="modalDeleteForceEquipmentLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDeleteForceFarmstay" tabindex="-1" role="dialog" aria-labelledby="modalDeleteForceFarmstayLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalDeleteForceEquipmentLabel">Thông báo</h5>
+                    <h5 class="modal-title" id="modalDeleteForceFarmstayLabel">Thông báo</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
@@ -124,11 +123,11 @@
                     <div class="alert alert-danger modal-title-danger" role="alert">
                         Bạn có muốn xóa <a class="alert-link"></a> vĩnh viễn không?
                     </div>
-                    <form id="formDeleteForceEquipment" method="POST"></form>
+                    <form id="formDeleteForceFarmstay" method="POST"></form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="btnDeleteForceEquipment"type="button" class="btn btn-danger">Xóa</button>
+                    <button id="btnDeleteForceFarmstay"type="button" class="btn btn-danger">Xóa</button>
                 </div>
             </div>
         </div>
@@ -140,34 +139,34 @@
 
     $( document ).ready(function(){
         (function($){
-            $('.restore-equipment').click(function(){
+            $('.restore-farmstay').click(function(){
                 const id  = this.getAttribute("data-id");
-                $('#inputIdRestoreEquipment').val(id)
-                $('#formRestoreEquipment').submit();
+                $('#inputIdRestoreFarmstay').val(id)
+                $('#formRestoreFarmstay').submit();
             })
          })(jQuery);
 
 
         (function($){
-            $('#btnDeleteForceEquipment').on('click', function (e) {
+            $('#btnDeleteForceFarmstay').on('click', function (e) {
                 const id = e.target.getAttribute('data-id-delete')
-                $('#formDeleteForceEquipment').attr('action', `/equipment/trash?_method=DELETE&equipment_id=${id}`);
-                $('#formDeleteForceEquipment').submit();
+                $('#formDeleteForceFarmstay').attr('action', `/farmstay/trash?_method=DELETE&farmstay_id=${id}`);
+                $('#formDeleteForceFarmstay').submit();
                 
             })
          })(jQuery);
 
         (function($){
-            $('#modalDeleteForceEquipment').on('show.bs.modal', function (e){
+            $('#modalDeleteForceFarmstay').on('show.bs.modal', function (e){
                 var button = $(e.relatedTarget) // Button that triggered the modal
                 let id = button.data('id')
-                $('#btnDeleteForceEquipment').attr('data-id-delete', id);
+                $('#btnDeleteForceFarmstay').attr('data-id-delete', id);
                 
             });
         })(jQuery);
 
         (function($){
-            $('.delete-force-equipment').click(function(){  
+            $('.delete-force-farmstay').click(function(){  
                 let name = this.getAttribute("data-name");
                 
                 //$('#modalDeleteEquipment').modal('show');
