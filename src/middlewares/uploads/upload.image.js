@@ -1,6 +1,6 @@
 const multer = require("multer");
 const mkdirp = require('mkdirp');
-const {handleMultiImage,handleSingleImage} = require('../../utils/uploads/upload.image')
+const {handleMultiImage,handleSingleImage} = require('../../utils/uploads/image')
 const {HttpError, HttpError404}         = require('../../utils/errors')
 
 module.exports.uploadSingleImage = function({type, imageName=undefined, path=undefined}){
@@ -26,12 +26,14 @@ module.exports.uploadMultiImage = function({type, quantity, imageName=undefined,
     return function(req, res, next){
         upload(req, res, (err)=>{
             if (err instanceof multer.MulterError) {
+                console.log(err)
                 next(new HttpError(400))
             } else if (err) {
                 next(new HttpError(400))
             }else{
                 next()
             }
+            // next();
         })
     }
 }

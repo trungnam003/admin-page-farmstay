@@ -1,11 +1,36 @@
 const Router                            = require("express").Router();
+const editRouter                            = require("express").Router({mergeParams: true});
 const FarmstayController                = require('../controllers/farmstay.controller')
 const {HttpError, HttpError404}         = require('../utils/errors')
 const {authorization}                   = require('../middlewares/auths/authorization')
 const {authenticateJWT}                 = require('../middlewares/auths/authenticate.jwt')
-const {uploadMultiImage}                = require('../middlewares/uploads/upload.image');
+const {uploadMultiImage, uploadSingleImage}                = require('../middlewares/uploads/upload.image');
 const {validateParam, validateQuery,
      validateBody, Validate}            = require('../middlewares/validates')
+
+/**
+ * 
+ */
+Router.use('/edit/:id', editRouter)
+// editRouter.use(authenticateJWT);
+
+editRouter.route('/')
+.get(
+    FarmstayController.renderEditFarmstay
+).all((req, res, next)=>{
+    next(new HttpError(405))
+});
+
+/**
+ * 
+ */
+editRouter.route('/:edit')
+.put(
+    uploadMultiImage({type:'farmstay', quantity: 10,}),
+    FarmstayController.editFarmstay
+).all((req, res, next)=>{
+    next(new HttpError(405))
+});
 
 /**
  * 

@@ -45,7 +45,7 @@
                             <tr>
                                 <td>
                                     <ul class="action-list">
-                                        <li><a href="#" class="btn btn-primary"><i class="fa fa-pencil-alt"></i></a></li>
+                                        <li><a href="/farmstay/edit/{{this.id}}" class="btn btn-primary"><i class="fa fa-pencil-alt"></i></a></li>
                                         <li>
                                             <a data-name="{{this.name}}" data-id="{{this.id}}" href="#" class="btn btn-warning delete-farmstay" data-toggle="modal" data-target="#modalDeleteFarmstay">
                                             <i class="fas fa-trash"></i></a>
@@ -60,7 +60,7 @@
                                     <td>Chưa có</td>
                                 {{/if}}
                                 
-                                <td>{{this.rent_cost_per_day}}</td>
+                                <td><p class="text-dark d-inline money-vnd">{{this.rent_cost_per_day}}</p></td>
                                 <td><a href="#" class="btn btn-sm btn-success"><i class="fas fa-check-circle"></i></a></td>
                             </tr>
                         {{/each}}

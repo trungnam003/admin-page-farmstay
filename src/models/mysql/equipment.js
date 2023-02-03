@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     images: {
-      type: DataTypes.STRING(512),
+      type: DataTypes.JSON,
       allowNull: true
     },
     total_rented: {

@@ -97,8 +97,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Farmstay.prototype.addImageURL= function(url){
-    const array = [...this.images];
-    array.push(url);
+    const array = [...this.images, ...url];
     this.images = array;
   }
   Farmstay.addHook('beforeCreate', function(farmstay, options){

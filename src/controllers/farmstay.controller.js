@@ -1,17 +1,13 @@
-const {HttpError, HttpError404, HttpError400}                 = require('../utils/errors')
+const {HttpError, HttpError404, HttpError400}           = require('../utils/errors')
 const { Province, District, Ward, 
     Equipment, sequelize, Farmstay, Employee,
-    FarmstayEquipment, FarmstayAddress}         = require('../models/mysql')
-const {generateBufferUUIDV4, uuidToString}      = require('../helpers/generateUUID');
-const { QueryTypes, Op }                        = require('sequelize');
-const sharp                                     = require('sharp');
-const mkdirp                                    = require('mkdirp');
-const slug                                      = require('slug')
-const PromiseBlueBird                           = require('bluebird');
-const {arrayToJSON, objectToJSON}                             = require('../helpers/sequelize')
-const {deleteDiskImage, }  =require('../utils/image')
-const config = require('../config')
-const path = require('path')
+    FarmstayEquipment, FarmstayAddress}                 = require('../models/mysql')
+const {generateBufferUUIDV4, uuidToString}              = require('../helpers/generateUUID');
+const { QueryTypes, Op , fn}                                = require('sequelize');
+const slug                                              = require('slug')
+const PromiseBlueBird                                   = require('bluebird');
+const {arrayToJSON, objectToJSON}                       = require('../helpers/sequelize')
+const {imagekit, ImageKit}                              = require('../utils/uploads/image/upload_to_imagekit')
 
 class FarmstayController{
 
@@ -70,7 +66,7 @@ class FarmstayController{
                     }),
                     Equipment.findAll(
                         {
-                            attributes: ['id', 'name', 'quantity', [sequelize.literal('`quantity`-`total_rented`'), 'remain']]
+                            attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_rented`'), 'remain']]
                         }
                     ),
                 ]
@@ -82,7 +78,7 @@ class FarmstayController{
             equipments = equipments.map(v=>{
                 return v.toJSON() 
             })
-            // console.log(equipments)
+            // console.log(equipments)s
             const fakeManager = [
                 {id: 1, 'name': "Trung Nam"},
                 {id: 2, 'name': "Nam Anh"},
@@ -105,7 +101,7 @@ class FarmstayController{
     async createFarmstay(req, res, next){
         
         let transaction;
-        const diskPathList = [];
+        const images = [];
         try { 
             // Lấy các thông tin client gửi lên
             let {
@@ -125,22 +121,31 @@ class FarmstayController{
             transaction = await sequelize.transaction();
             // Lấy toàn bộ file ảnh được gửi lên và lưu vào thư mục uploads
             const {files} = req;
-            const images_url = [];
-            const pathDisk = path.join(config.__path.app.public.uploads+'', 'farmstay')
-            mkdirp.sync(pathDisk) // Tạo thư mục đường dẫn nếu không tồn tại
+            
             const IMAGES = [] // mảng chứa buffer và đường dẫn file
-            for (let index = 0; index < files.length; index++) {
-                const {buffer, originalname, fieldname} = files[index];
-                const uniqueSuffix = Date.now()+ `(${index+1})` + '-' + slug(farmstay_name, '_');
+            for (const element of files) {
+                const {buffer, originalname, fieldname} = element;
+                const uniqueSuffix = Date.now()+'_'+slug(farmstay_name, '_');
                 const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
-                images_url.push(`/uploads/farmstay/${filename}`); 
+                console.log(filename)
                 IMAGES.push([buffer, filename])
-                diskPathList.push(path.join(pathDisk, filename));
             }
             // Lưu các file ảnh
-            await PromiseBlueBird.map(IMAGES, async(image)=>{
-                return sharp(image[0]).toFile(`${pathDisk}/${image[1]}`);
-            });
+            const uploadImageResp = await PromiseBlueBird.map(IMAGES, async(image)=>{
+                // return sharp(image[0]).toFile(`${pathDisk}/${image[1]}`);
+                const [buffer, filename] = image;
+                return imagekit.upload({
+                    file : buffer, //required
+                    fileName : filename,   //required
+                    folder: 'Farmstay',
+                    useUniqueFileName: true,
+                })
+            })
+            
+            uploadImageResp.forEach(v=>{
+                const {url, fileId} = v;
+                images.push({url, fileId});
+            })
             
             // Tách mảng chuỗi equipments là id và số lượng ['1-2', '2-3', ...]
             equipmentsStr = JSON.parse(equipmentsStr);
@@ -192,7 +197,7 @@ class FarmstayController{
                     embedded_link: link_embedded_ggmap
                 },
                 list_equipment: farmstay_equipments,
-                images: images_url
+                images: images
             }
             await Promise.all(
                 equipments.map(equipment=>equipment.save({transaction: transaction}))
@@ -217,9 +222,11 @@ class FarmstayController{
 
             res.redirect('/farmstay');
         } catch (error) {
+            console.log(error)
             if(transaction) {
                 await transaction.rollback();
-                deleteDiskImage({pathList: diskPathList});
+                await imagekit.bulkDeleteFiles(images.map(v=>v.fileId));
+
             }
             
             next(new HttpError(500, "Có lỗi xảy ra"));
@@ -299,15 +306,7 @@ class FarmstayController{
                 paranoid: false
             })
             const {images} = farmstay;
-            const imagePaths = []
-            const diskPath = config.__path.app.public.uploads+''
-            images.forEach(image=>{
-                const filename = image.split('/').at(-1);
-                
-                imagePaths.push(path.join(diskPath,  'farmstay', filename))
-            })
-            
-            await deleteDiskImage({pathList: imagePaths});
+            await imagekit.bulkDeleteFiles(images.map(v=>v.fileId));
 
             await Farmstay.destroy({
                 where: {
@@ -347,6 +346,184 @@ class FarmstayController{
             
         }
     }
+
+    /**
+     * [GET] Render Page Edit Farmstay
+     */
+    async renderEditFarmstay(req, res, next){
+        try {
+            const {id} = req.params;
+            const farmstay = await Farmstay.findOne({
+                where: {id},
+                attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt', 'uuid', 'slug'] },
+                include:[
+                    {   
+                        model: FarmstayAddress,
+                        as: 'address_of_farmstay',
+                        include:[{
+                            model: Ward, as:'ward', attributes: ['code', 'name'], 
+                            include: [{
+                                model: District, as: 'district', attributes: ['code', 'name'],
+                                include: [{model: Province, as: 'province', attributes: ['code', 'name'],}]
+                            }]
+                        }],
+
+                    },
+                    {
+                        model: FarmstayEquipment,
+                        as: 'list_equipment',
+                        attributes: ['equipment_id', [sequelize.fn('count', sequelize.col('equipment_id')), 'amount']],
+                        include: [
+                            {
+                                model: Equipment,
+                                as: 'is_equipment',
+                                attributes: ['id', 'name', 'quantity', 'images', 'deletedAt',[sequelize.literal('`quantity`-`total_rented`'), 'remain']],
+                                paranoid: false
+                            }
+                        ]
+                    }
+                ],
+                group: ['list_equipment.equipment_id'],
+            });
+            const provinces = await Province.findAll({
+                attributes: ['code', 'name'],
+            });
+            
+            const districts = await District.findAll({
+                where: {province_code: farmstay.address_of_farmstay.ward.district.province.code},
+                attributes: ['code', 'name'],
+            });
+            const wards = await Ward.findAll({
+                where: {district_code: farmstay.address_of_farmstay.ward.district.code},
+                attributes: ['code', 'name'],
+            });
+            const equipments = await Equipment.findAll(
+                {
+                    attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_rented`'), 'remain']]
+                }
+            );
+            // res.json(farmstay)
+            res.render('pages/farmstay/edit', {
+                farmstay: objectToJSON(farmstay),
+                provinces: arrayToJSON(provinces),
+                districts: arrayToJSON(districts),
+                wards: arrayToJSON(wards),
+                equipments: arrayToJSON(equipments),
+
+            })
+        } catch (error) {
+            console.log(error)
+            next(new HttpError(500, "Có lỗi xảy ra"));
+        }
+    }
+
+    /**
+     * [PUT] edit Farmstay
+     */
+    async editFarmstay(req, res, next){
+        try {
+            const {edit, id} = req.params;
+            if(edit === 'edit_info'){
+                const {name, rent_cost} = req.body
+                await Farmstay.update({
+                        name: name,
+                        rent_cost_per_day: rent_cost,
+                    },
+                    {
+                        where: {id},
+                    }
+                );
+                res.redirect('back')
+            }else if(edit === 'edit_address'){
+                const {ward_code:code_ward,
+                    link_ggmap:link,
+                    link_embedded_ggmap:embedded_link,
+                    address: specific_address,
+                } = req.body;
+                await FarmstayAddress.update({code_ward, link, embedded_link, specific_address},{
+                    where: {
+                        farm_id:id
+                    }
+                });
+                res.redirect('back')
+            }else if(edit === 'edit_images'){
+                const imagesBeforeAdd = [];
+                let transaction;
+                try {
+                    transaction = await sequelize.transaction();
+                    let {list_img_delete} = req.body;
+                    list_img_delete = JSON.parse(list_img_delete)
+                    const farmstay = await Farmstay.findOne({
+                        where: {id},
+                        attributes: ['images', 'id', 'name'],
+                        transaction
+                    })
+                    
+
+                    const {files} = req;
+                    if(files.length){
+                        const IMAGES = [] // mảng chứa buffer và đường dẫn file
+                        for (const element of files) {
+                            const {buffer, originalname, fieldname} = element;
+                            const uniqueSuffix = Date.now()+'_'+slug(farmstay.name, '_');
+                            const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
+                            IMAGES.push([buffer, filename])
+                        }
+                        // Lưu các file ảnh
+                        const uploadImageResp = await PromiseBlueBird.map(IMAGES, async(image)=>{
+                            // return sharp(image[0]).toFile(`${pathDisk}/${image[1]}`);
+                            const [buffer, filename] = image;
+                            return imagekit.upload({
+                                file : buffer, //required
+                                fileName : filename,   //required
+                                folder: 'Farmstay',
+                                useUniqueFileName: true,
+                            })
+                        })
+                        
+                        uploadImageResp.forEach(v=>{
+                            const {url, fileId} = v;
+                            imagesBeforeAdd.push({url, fileId});
+                        })
+                        farmstay.addImageURL(imagesBeforeAdd);
+                    }
+
+                    const {images} = farmstay;
+                    if(Array.isArray(list_img_delete)&&list_img_delete.length>0){
+                        const imagesDeleted = Array.from(images).filter((value, index,)=>{
+                            const {fileId} = value;
+                            let id = list_img_delete.findIndex((value, index)=>{
+                                return value === fileId;
+                            })
+                            return id===-1 
+                        })
+                        if(imagesDeleted.length < images.length){
+                            
+                            await imagekit.bulkDeleteFiles(list_img_delete);
+                            farmstay.images = imagesDeleted;
+                        }
+                        
+                    }
+                    await farmstay.save({transaction});
+                    await transaction.commit();
+                    res.redirect('back')
+
+                } catch (error) {
+                    if(transaction) {
+                        await transaction.rollback();
+                        await imagekit.bulkDeleteFiles(imagesBeforeAdd.map(v=>v.fileId));
+                    }
+                    throw error
+                }
+            }
+            
+        } catch (error) {
+            console.log(error)
+            next(new HttpError(500, "Có lỗi xảy ra"));
+        }
+        
+    }
+
 
     /**
      * [API-GET] Lấy toàn bộ tỉnh
@@ -400,7 +577,6 @@ class FarmstayController{
         })
         res.json({wards})
     }
-
 
 }
 

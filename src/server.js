@@ -23,6 +23,9 @@ const Handlebar = require('handlebars')
 const redisClient = new Redis()
 const app = express();
 const PORT = config.server.port;
+Handlebar.registerHelper('ifEquals', function(arg1, arg2, options) {
+    return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
 
 const main = async()=>{
     // Use middleware library
@@ -70,6 +73,10 @@ const main = async()=>{
             },
             minus(a,b){
                 return a-b;
+            },
+            compareString(a,b){
+                
+                return a+''.localeCompare(b+'')
             },
             page(page, limit_page, limit, max){
                 let str = '';

@@ -10,20 +10,20 @@
 <div class="mt-4">
     <form id='form-create-farmstay' method="post" enctype='multipart/form-data'action="/farmstay/create" >
         <div class="alert alert-success" role="alert">
-            <h4  class="text-center text-success" >Tạo Farmstay</h4>
+            <h4  class="text-center text-success" >Sửa Farmstay</h4>
         </div>
        
 
         <div class="form-group">
             <label for="inputFarmstay">Tên Farmstay</label>
-            <input type="text" class="form-control" id="inputFarmstay" name='farmstay_name' placeholder="Nhập tên farmstay">
+            <input value="{{farmstay.name}}" type="text" class="form-control" id="inputFarmstay" name='farmstay_name' placeholder="Nhập tên farmstay">
             <span class="form-message"></span>
         </div>
 
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="inputRentCost">Giá thuê/ngày</label>
-                <input type="text" class="form-control" id="inputRentCost" name='rent_cost' placeholder="Nhập giá thuê / ngày">
+                <input value="{{farmstay.rent_cost_per_day}}" type="text" class="form-control" id="inputRentCost" name='rent_cost' placeholder="Nhập giá thuê / ngày">
                 <span class="form-message"></span>
             </div>
             <div class="form-group col-md-6">
@@ -42,7 +42,7 @@
 
         <div class="form-group">
             <label for="inputDescription">Nhập mô tả</label>
-            <textarea type="text" class="form-control" id="inputDescription" name='description' placeholder="Nhập mô tả cho farmstay"></textarea>
+            <textarea  type="text" class="form-control" id="inputDescription" name='description' placeholder="Nhập mô tả cho farmstay">{{farmstay.description}}</textarea>
         </div>
 
         <div class="alert alert-primary" role="alert">
@@ -52,26 +52,51 @@
             <div class="form-group col-md-4">
                 <label for="inputProvince ">Chọn tỉnh</label>
                 <select name='province_code' id="inputProvince" class="form-control">
-                <option value="" selected>Choose...</option>
+                <option value="" >Choose...</option>
                 {{#each provinces}}
-                    <option value="{{this.code}}">{{this.name}}</option>
+                    {{#ifEquals ../farmstay.address_of_farmstay.ward.district.province.code this.code}}
+                        <option value="{{this.code}}" selected>{{this.name}}</option>
+                    {{else}}
+                        <option value="{{this.code}}">{{this.name}}</option>
+                    {{/ifEquals}}
+                    
                 {{/each}}
                 </select>
+                
+
                 <span class="form-message"></span>
             </div>
 
             <div class="form-group col-md-4">
                 <label for="inputDistrict">Chọn huyện</label>
-                <select name='district_code' id="inputDistrict" class="form-control" disabled>
-                <option selected>Choose...</option>
+                <select name='district_code' id="inputDistrict" class="form-control">
+                <option>Choose...</option>
+                {{#each districts}}
+                    {{#ifEquals ../farmstay.address_of_farmstay.ward.district.code this.code}}
+                        <option value="{{this.code}}" selected>{{this.name}}</option>
+                    {{else}}
+                        <option value="{{this.code}}">{{this.name}}</option>
+                    {{/ifEquals}}
+                    
+                {{/each}}
+                
                 </select>
+                
                 <span class="form-message"></span>
             </div>
 
             <div class="form-group col-md-4">
                 <label for="inputWard">Chọn xã</label>
-                <select name='ward_code' id="inputWard" class="form-control" disabled>
-                <option selected>Choose...</option>
+                <select name='ward_code' id="inputWard" class="form-control">
+                <option>Choose...</option>
+                {{#each wards}}
+                    {{#ifEquals ../farmstay.address_of_farmstay.ward.code this.code}}
+                        <option value="{{this.code}}" selected>{{this.name}}</option>
+                    {{else}}
+                        <option value="{{this.code}}">{{this.name}}</option>
+                    {{/ifEquals}}
+                    
+                {{/each}}
                 </select>
                 <span class="form-message"></span>
             </div>
@@ -79,19 +104,19 @@
         </div>
         <div class="form-group">
             <label for="inputAddress">Địa chỉ cụ thể</label>
-            <input type="text" class="form-control" id="inputAddress" name='address' placeholder="Nhập địa chỉ cụ thể">
+            <input value="{{farmstay.address_of_farmstay.specific_address}}" type="text" class="form-control" id="inputAddress" name='address' placeholder="Nhập địa chỉ cụ thể">
         </div>
 
         
         
         <div class="form-group">
             <label for="inputLinkGGMAP">Nhập link địa chỉ trên GoogleMap</label>
-            <input type="text" class="form-control" id="inputLinkGGMAP" name="link_ggmap">
+            <input value="{{farmstay.address_of_farmstay.link}}" type="text" class="form-control" id="inputLinkGGMAP" name="link_ggmap">
             
         </div>
         <div class="form-group">
             <label for="inputLinkEmbeddedGGMAP">Nhập link nhúng trên GoogleMap</label>
-            <input type="text" class="form-control" id="inputLinkEmbeddedGGMAP" name="link_embedded_ggmap">
+            <input value="{{farmstay.address_of_farmstay.embedded_link}}" type="text" class="form-control" id="inputLinkEmbeddedGGMAP" name="link_embedded_ggmap">
             
         </div>
         <div class="form-group">
@@ -134,9 +159,21 @@
             </div>
         </div>
 
-        <div id="carouselExampleIndicators" class="carousel slide sr-only" data-ride="carousel">
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
             
             <div id="image-slide-view" class="carousel-inner">
+                {{#each farmstay.images}}
+                    {{#if @first}}
+                        <div class="carousel-item active">
+                        <img class="d-block w-100 img-test" src="{{this.url}}" alt="First slide">
+                        </div>
+                    {{else}}
+                        <div class="carousel-item">
+                        <img class="d-block w-100 img-test" src="{{this.url}}" alt="First slide">
+                    </div>
+                    {{/if}}
+                    
+                {{/each}}
             </div>
             <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -235,4 +272,4 @@
     );
 
 </script>
-<script src="/js/farmstay/create_farmstay.js"></script>
+<script src="/js/farmstay/edit_farmstay.js"></script>
