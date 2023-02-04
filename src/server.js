@@ -11,7 +11,7 @@ const flash                             = require('connect-flash');
 const session                           = require('express-session');
 const Redis                             = require("ioredis")
 const RedisStore                        = require("connect-redis")(session)
-var favicon = require('serve-favicon');
+const favicon = require('serve-favicon');
 
 const ErrorMiddlewares                  = require('./middlewares/errors')
 const router                            = require('./routers')

@@ -1,4 +1,4 @@
-const {Farmstay, Equipment, FarmstayEquipment, FarmstayAddress, Ward, District, Province } = require('../../models/mysql')
+const {Farmstay, Equipment, FarmstayEquipment, FarmstayAddress, Ward, District, Province , sequelize} = require('../../models/mysql')
 const {generateBufferUUIDV4, uuidToString} = require('../../helpers/generateUUID')
 const slug = require('slug');
 
@@ -74,4 +74,43 @@ const slug = require('slug');
 
 // }
 // abc().then(console.log).catch(console.log)
+
+async function abc(){
+    const data = await Farmstay.findAll({
+        where: {id:47},
+        attributes: { 
+            
+            exclude: ['createdAt', 'updatedAt', 'deletedAt', 'uuid', 'slug', ] },
+        include:[
+            {
+                model: FarmstayEquipment,
+                as: 'list_equipment',
+                attributes: ['equipment_id', [sequelize.fn('count', sequelize.col('equipment_id')), 'amount']],
+                include: [
+                    {
+                        model: Equipment,
+                        as: 'is_equipment',
+                        attributes: ['name', 'quantity', 'images', 'deletedAt',[sequelize.literal('`quantity`-`total_rented`'), 'remain']],
+                        paranoid: false,
+                        required: true
+                    }
+                ],
+                required: true
+
+            }
+        ],
+        group: ['list_equipment.equipment_id'],
+        nest: true,
+        raw: true,
+        
+    });
+
+    const [farmstay] = data;
+    farmstay.list_equipment = data.map(value=>{
+        const {list_equipment} = value;
+        return list_equipment
+    })
+    console.log(farmstay.list_equipment)
+}
+abc().then().catch(console.log)
 

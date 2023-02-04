@@ -10,6 +10,74 @@
     opacity: 40%;
     filter: grayscale(100%);
 }
+
+
+.numberstyle-qty {
+  position: relative;
+  border-radius: 6px;
+  background-color: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(116, 116, 116, 0.25);
+}
+
+.numberstyle-qty input,
+.numberstyle-qty .qty-btn {
+  position: relative;
+  display: block;
+  float: left;
+  height: 40px;
+  padding: 0;
+  margin: 0;
+  border: 0px;
+  text-align: center;
+  line-height: 40px;
+  outline: 0;
+  box-shadow: 0px;
+}
+
+.numberstyle-qty .qty-btn {
+  width: 24px;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 2;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  transition: all 250ms ease;
+}
+
+.numberstyle-qty .qty-btn.disabled {
+  cursor: default;
+  color: rgba(116, 116, 116, 0.5);
+}
+
+.numberstyle-qty input {
+  width: 24px;
+  border-left: 0;
+  border-right: 0;
+  color: #747474;
+  font-size: 16px;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.numberstyle-qty input:focus {
+  outline: 0;
+  box-shadow: 0px;
+}
+
+.numberstyle-qty input[type=number]::-webkit-inner-spin-button,
+.numberstyle-qty input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.numberstyle-qty input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 </style>
 <div class="mt-4">
     <div class="alert alert-success col-sm-12" role="alert">
@@ -285,7 +353,78 @@
         <div class="col-sm-12 mt-4">
             <div class="card w-100">
                 <div class="card-header text-primary alert alert-primary m-0">
-                    Danh sách thiết bị
+                    <div class="row">
+                        <div class="col-sm-10 text-primary">Danh sách thiết bị</div>
+                        <div class="col-sm-2 d-flex flex-row-reverse">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong">Chỉnh sửa</button>
+                        </div>
+                        <!-- Modal -->
+                        <div class="modal fade " id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Chỉnh sửa thiết bị</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <h6>Thiết bị hiện tại</h6>
+                                            <ul class="p-0">
+                                                {{#each farmstay.list_equipment}}
+                                                    {{#with this.is_equipment}}
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <div class="d-flex align-items-center">
+                                                                <img src="{{images.url}}" alt="" style="width: 45px; height: 45px"
+                                                                    class="rounded-circle" />
+                                                                <div class="ml-3">
+                                                                    <p class="fw-bold mb-1 text-dark">{{name}}</p>
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            <input data-original-value="{{../amount}}" data-id="{{id}}"class="numberstyle edit-current-equipments-farmstay" type="number" min="0" step="1" value="{{../amount}}" max="{{sum remain ../amount}}">
+                                                            
+                                                        </li>
+                                                    {{/with}}
+                                                {{/each}}
+                                            </ul>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <h6>Thiết bị sẵn có</h6>
+                                            <ul class="p-0">
+                                                {{#each equipments}}
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <div class="d-flex align-items-center">
+                                                                <img src="{{this.images.url}}" alt="" style="width: 45px; height: 45px"
+                                                                    class="rounded-circle" />
+                                                                <div class="ml-3">
+                                                                    <p class="fw-bold mb-1 text-dark">{{this.name}}</p>
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            <input data-id="{{this.id}}" class="numberstyle add-equipments-farmstay" type="number" min="0" step="1" value="0" max="{{remain}}">
+                                                            
+                                                        </li>
+                                                {{/each}}
+                                                
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <form id="formSubmitEditEquipmentsFarmstay"  method="POST" action="/farmstay/edit/{{farmstay.id}}/edit_equipments?_method=PUT">
+                                        <input class="sr-only" type="text" name="current_equipments" id="inputEditCurrentEquipments">
+                                        <input class="sr-only" type="text" name="add_equipments" id="inputAddCurrentEquipments">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" id="btnSubmitEditEquipmentsFarmstay" class="btn btn-primary">Save changes</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <ul class="list-group list-group-light">
                     {{#each farmstay.list_equipment}}

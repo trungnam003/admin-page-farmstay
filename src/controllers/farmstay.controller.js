@@ -353,7 +353,7 @@ class FarmstayController{
     async renderEditFarmstay(req, res, next){
         try {
             const {id} = req.params;
-            const farmstay = await Farmstay.findOne({
+            const data = await Farmstay.findAll({
                 where: {id},
                 attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt', 'uuid', 'slug'] },
                 include:[
@@ -384,6 +384,13 @@ class FarmstayController{
                     }
                 ],
                 group: ['list_equipment.equipment_id'],
+                raw: true,
+                nest: true,
+            });
+            const [farmstay] = data;
+            farmstay.list_equipment = data.map(value=>{
+                const {list_equipment} = value;
+                return list_equipment
             });
             const provinces = await Province.findAll({
                 attributes: ['code', 'name'],
@@ -397,22 +404,28 @@ class FarmstayController{
                 where: {district_code: farmstay.address_of_farmstay.ward.district.code},
                 attributes: ['code', 'name'],
             });
+            const listIdEquipment = Array.from(farmstay.list_equipment).map(v=>v.is_equipment.id);
             const equipments = await Equipment.findAll(
                 {
-                    attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_rented`'), 'remain']]
+                    attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_rented`'), 'remain']],
+                    where: {
+                        id: {
+                            [Op.notIn]: listIdEquipment
+                        }
+                    }
                 }
             );
             // res.json(farmstay)
             res.render('pages/farmstay/edit', {
-                farmstay: objectToJSON(farmstay),
+                farmstay: farmstay,
                 provinces: arrayToJSON(provinces),
                 districts: arrayToJSON(districts),
                 wards: arrayToJSON(wards),
                 equipments: arrayToJSON(equipments),
 
-            })
+            });
         } catch (error) {
-            console.log(error)
+            console.log(error);
             next(new HttpError(500, "Có lỗi xảy ra"));
         }
     }
@@ -458,9 +471,13 @@ class FarmstayController{
                         attributes: ['images', 'id', 'name'],
                         transaction
                     })
-                    
-
+                    const {images} = farmstay;
                     const {files} = req;
+                    const maxImage = 10
+                    if(Array.isArray(list_img_delete)&& ((images.length-list_img_delete.length)+files.length)>maxImage){
+                        return next(new HttpError400);
+                    }
+                    
                     if(files.length){
                         const IMAGES = [] // mảng chứa buffer và đường dẫn file
                         for (const element of files) {
@@ -488,7 +505,7 @@ class FarmstayController{
                         farmstay.addImageURL(imagesBeforeAdd);
                     }
 
-                    const {images} = farmstay;
+                    
                     if(Array.isArray(list_img_delete)&&list_img_delete.length>0){
                         const imagesDeleted = Array.from(images).filter((value, index,)=>{
                             const {fileId} = value;
@@ -513,6 +530,94 @@ class FarmstayController{
                         await transaction.rollback();
                         await imagekit.bulkDeleteFiles(imagesBeforeAdd.map(v=>v.fileId));
                     }
+                    throw error
+                }
+            }else if(edit === 'edit_equipments'){
+                try {
+                    let {add_equipments, current_equipments} = req.body;
+                    add_equipments = JSON.parse(add_equipments);
+                    current_equipments = JSON.parse(current_equipments);
+
+                    const farmstayEquipments = await FarmstayEquipment.findAll({
+                        where: {farm_id: id}
+                    })
+                    const equipments = await Equipment.findAll({
+                        attributes: ['id', 'quantity', 'total_rented', [sequelize.literal('`quantity`-`total_rented`'), 'remain']]
+                    });
+                    // array Add
+                    const arrayAddEquipment = [];
+                    const arrayIdAddEquipment = [];
+                    // array Delete
+                    const arrayDecreaseEquipment = [];
+                    const arrayIdEquipmentDecrease = [];
+                    // Duyệt qua mảng chứa id và value equipment cần sửa
+                    Array.from(current_equipments).forEach((value, index, array)=>{
+                        const {id:idEditEquipment, value:valueEdit} = value;
+
+                        // Lấy ra số lượng thuê thiết bị hiện tại của farmstay
+                        const equimentCurrent = farmstayEquipments.filter(fe=>{
+                            const {equipment_id} = fe;
+                            return equipment_id == idEditEquipment;
+                        })
+
+                        // Lấy ra index equipment cần sửa hiện tại
+                        const indexEquipment = Array.from(equipments).findIndex(v=>{
+                            return idEditEquipment == v.id
+                        })
+
+                        // kiểm tra số lượng thuê của farmstay hiện tại với giá trị sửa
+                        const quantityEdit = equimentCurrent.length - valueEdit; 
+                        // giá trị kiểm tra <0 là thêm
+                        if(quantityEdit<0){
+                            console.log('add')
+                            const quantityAdd = Math.abs(quantityEdit);
+                            if(equipments[indexEquipment]['total_rented']+quantityAdd<=equipments[indexEquipment]['quantity']){
+                                equipments[indexEquipment]['total_rented']+=quantityAdd;
+                                arrayIdAddEquipment.push(indexEquipment);
+                                for(let i =0; i<quantityAdd; i++){
+                                    arrayAddEquipment.push({
+                                        farm_id: id,
+                                        equipment_id: idEditEquipment
+                                    })
+                                }
+                            }
+                        }else if(quantityEdit>0){
+                            const quantityDecreasee = Math.abs(quantityEdit);
+                            equipments[indexEquipment]['total_rented']-=quantityDecreasee;
+                            arrayIdEquipmentDecrease.push(indexEquipment);
+                            const array = equimentCurrent.slice(-1*quantityDecreasee)
+                            array.forEach(v=>{
+                                const {id} = v;
+                                arrayDecreaseEquipment.push(id);
+                            })
+
+                        }
+                    })
+                    
+                    if(arrayAddEquipment.length>0){
+                        await FarmstayEquipment.bulkCreate(arrayAddEquipment);
+                        await PromiseBlueBird.map(arrayIdAddEquipment, (item)=>{
+                            return equipments[item].save();
+                        })
+                    }
+                    if(arrayDecreaseEquipment.length>0){
+                        console.log("các id cần xóa",arrayDecreaseEquipment);
+                        console.log('các cc')
+                        arrayIdEquipmentDecrease.forEach(v=>{
+                            console.log(equipments[v].total_rented)
+                        })
+                        await FarmstayEquipment.destroy({
+                            where: {
+                                id: arrayDecreaseEquipment
+                            }
+                        })
+                        await PromiseBlueBird.map(arrayIdEquipmentDecrease, (item)=>{
+                            return equipments[item].save();
+                        })
+                        
+                    }
+                    res.redirect('back')
+                } catch (error) {
                     throw error
                 }
             }
