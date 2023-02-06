@@ -24,7 +24,7 @@ class EquipmentController{
                     attributes: ['id', 'name']
                 }),
                 Equipment.findAll({
-                    attributes: ['id', 'name', 'total_rented', 'quantity', 'rent_cost', ],
+                    attributes: ['id', 'name', 'total_used', 'quantity', 'rent_cost', ],
                     include: [
                         {
                             model: Category,
@@ -155,7 +155,7 @@ class EquipmentController{
         
         try {
             const equipments = await Equipment.findAll({
-                attributes: ['id', 'name', 'total_rented', 'quantity', 'rent_cost', ],
+                attributes: ['id', 'name', 'total_used', 'quantity', 'rent_cost', ],
                 include: [
                     {
                         model: Category,
@@ -245,7 +245,7 @@ class EquipmentController{
             const farmstayEquipment = await FarmstayEquipment.findAll(
                 {
                     where: {equipment_id: id},
-                    attributes: ['id'],
+                    // attributes: ['id'],
                     include: [
                         {
                             model: Farmstay,
@@ -265,6 +265,8 @@ class EquipmentController{
                 }
             );
         } catch (error) {
+            console.log(error)
+
             next(new HttpError(500, "Có lỗi xảy ra"));
 
         }
@@ -281,8 +283,8 @@ class EquipmentController{
                 },
                 attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
             })
-            const {total_rented, } = equipment;
-            if(quantityChange >= total_rented){
+            const {total_used, } = equipment;
+            if(quantityChange >= total_used){
                 equipment.quantity = quantityChange
                 await equipment.save();
             }

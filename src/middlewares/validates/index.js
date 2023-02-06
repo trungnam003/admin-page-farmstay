@@ -1,5 +1,5 @@
 const {HttpError, HttpError404, HttpError400} = require('../../utils/errors')
-const {Validate} = require('../../helpers/validate_request')
+const {Validate, Joi} = require('../../helpers/validate_request')
 /**
 * 
 * @param {object} source object cần được validate vd req.params, req.body, req.query
@@ -43,3 +43,4 @@ module.exports.validateQuery = function (target){
     }
 }
 module.exports.Validate = Validate;
+module.exports.Joi = Joi

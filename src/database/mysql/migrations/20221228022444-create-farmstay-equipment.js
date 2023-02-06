@@ -3,15 +3,10 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('farmstay_equipments', {
-      id:{
-        type: Sequelize.INTEGER.UNSIGNED,
-        primaryKey: true,
-        allowNull: false,
-        autoIncrement: true
-      },
       farm_id: {
+        primaryKey: true,
         type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true,
+        allowNull: false,
         references:{
           model: 'farmstays',
           key: 'id',
@@ -21,6 +16,7 @@ module.exports = {
         onUpdate: 'CASCADE',
       },
       equipment_id: {
+        primaryKey: true,
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         references:{
@@ -30,6 +26,10 @@ module.exports = {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
+      quantity_used:{
+        type: Sequelize.INTEGER.UNSIGNED,
+        allowNull: false,
+      }
     });
   },
   async down(queryInterface, Sequelize) {

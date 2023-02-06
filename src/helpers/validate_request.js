@@ -1,6 +1,7 @@
 const Joi = require('@hapi/joi');
 
 
+
 /**
  * 
  * @param {object} source object cần được validate vd req.params, req.body, req.query
@@ -20,6 +21,15 @@ function Validate(source, target){
          * Lấy các key cần validate trong source bỏ qua các key không cần validate
          * Sau đó gán Schema key validate cho key được bóc ra
          */
+        const {type:typeTarget} = target[key];
+        if(typeTarget === Validate.isArray()['type'] && typeof source[key] === 'string'){
+            try {
+                source[key] = JSON.parse(source[key]);
+            } catch (error) {
+                
+            }
+        }
+        
         objSource[key] = source[key]
         return {[key]: target[key], ...obj}
     }, {})
@@ -61,21 +71,50 @@ Validate.isUsername = function({require=true}={}){
     
     return validate;
 }
+Validate.isArray = function({require=true}={}){
+    let validate = Joi.array();//.items(Joi.string())
+    if(require){
+        return validate.required();
+    }
+    return validate;
+}
+Validate.isArrayString = function({require=true}={}){
+    let validate = Validate.isArray({require: require?true:false}).items(Joi.string())
+    return validate;
+}
+Validate.isObject = function({require=true}={}){
+    let validate = Joi.object();
+    return validate;
+}
 
+// Validate.isArrayObject = function({require=true}={}){
+//     let validate = Validate.isArray({require: require?true:false}).items(
+//         Validate.isObject({require, target:{
+
+//         }})
+//     )
+//     return validate;
+// }
 
 // const req = {};
 // req.body = {
-//     email: 'thtntrungnamgmail.com',
-//     username: 'tutunana123',
-//     test: '12'
+//     // email: 'thtntrungnamgmail.com',
+//     // username: 'tutunana123',
+//     // test: '12'
+//     array: [{a:12, b:22}, {b:22, a:'z22'}]
 // }
 // const a = Validate(req.body, {
-//     'email': Validate.isEmail({require: false}),
+//     'array': Validate.isArray().items(Validate.isObject().keys({
+//         a: Joi.number(),
+//         b: Joi.number()
+//     })),
 //     // 'username': Validate.isUsername(),
 //     // 'test': Validate.isNumber()
 // });
+
+
 // console.log(a)
 module.exports = {
-    Validate,
+    Validate, Joi
 }
 

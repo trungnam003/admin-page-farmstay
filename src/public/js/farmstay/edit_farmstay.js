@@ -199,7 +199,7 @@ $( document ).ready(function(){
                     for (const element of districts) {
                         
                         $('#inputDistrict').append(
-                            `<option value="${element.code}">${element.name}</option>`
+                            `<option value="${element.code}">${element.full_name}</option>`
                         )
                     }
                     
@@ -236,7 +236,7 @@ $( document ).ready(function(){
                     for (const element of wards) {
                         
                         $('#inputWard').append(
-                            `<option value="${element.code}">${element.name}</option>`
+                            `<option value="${element.code}">${element.full_name}</option>`
                         )
                     }
                 })

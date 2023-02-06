@@ -21,7 +21,7 @@ module.exports = {
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: true
       },
-      total_rented: {
+      total_used: {
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         defaultValue: 0

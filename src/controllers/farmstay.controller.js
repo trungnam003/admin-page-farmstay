@@ -62,11 +62,11 @@ class FarmstayController{
             const data = await Promise.all(
                 [
                     Province.findAll({
-                        attributes: ['code', 'name']
+                        attributes: ['code', 'full_name','name' ]
                     }),
                     Equipment.findAll(
                         {
-                            attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_rented`'), 'remain']]
+                            attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_used`'), 'remain']]
                         }
                     ),
                 ]
@@ -157,7 +157,7 @@ class FarmstayController{
             }, [[],[]]);
 
             const equipments = await Equipment.findAll({
-                attributes: ['id', 'quantity', 'total_rented'],
+                attributes: ['id', 'quantity', 'total_used'],
                 where:{
                     id: equipments_id
                 },
@@ -166,19 +166,18 @@ class FarmstayController{
 
             const farmstay_equipments = [];
             equipments.forEach((element, index) => {
-                const {quantity, total_rented, id}= element;
+                const {quantity, total_used, id}= element;
+                const farmstay_equipment = {}
                 const index_equip = equipments_id.findIndex((value)=>{
                     return value==id
                 })
-                if(equipments_quantity[index_equip]>quantity-total_rented){
+                if(equipments_quantity[index_equip]>quantity-total_used){
                     throw new HttpError400('Không đủ số lượng')
                 }else{
-                    for(let i=0; i<equipments_quantity[index_equip]; i++){
-                        farmstay_equipments.push({
-                            equipment_id: id
-                        })
-                    }
-                    equipments[index].total_rented = total_rented+equipments_quantity[index_equip];
+                    farmstay_equipment['equipment_id'] = id;
+                    farmstay_equipment['quantity_used'] = equipments_quantity[index_equip];
+                    equipments[index].total_used = total_used+equipments_quantity[index_equip];
+                    farmstay_equipments.push(farmstay_equipment)
                 }
             });
             
@@ -306,7 +305,40 @@ class FarmstayController{
                 paranoid: false
             })
             const {images} = farmstay;
-            await imagekit.bulkDeleteFiles(images.map(v=>v.fileId));
+            try {
+                await imagekit.bulkDeleteFiles(images.map(v=>v.fileId));
+            } catch (error) {
+                console.log(error)
+                
+            }
+
+            let {list_equipment} = objectToJSON(farmstay)
+            // console.log(list_equipment)
+
+            const data = list_equipment.reduce((prev, curr)=>{
+                const {equipment_id, quantity_used} = curr;
+                if(equipment_id){
+                    prev.push({
+                        equipment_id,
+                        quantity_used
+                    })
+                    return prev;
+                }
+            }, [])
+            console.log(data)
+            await Promise.all(
+                data.map(v=>{
+                    const {equipment_id, quantity_used} = v;
+                    console.log(v)
+                    return Equipment.update({
+                        total_used: sequelize.literal(`total_used-${quantity_used}`)
+                    },{
+                        where: {
+                            id: parseInt(equipment_id)
+                        }
+                    })
+                })
+            )
 
             await Farmstay.destroy({
                 where: {
@@ -314,38 +346,16 @@ class FarmstayController{
                 },
                 force: true,
             })
-            let {list_equipment} = objectToJSON(farmstay)
-            const data = list_equipment.reduce((prev, curr)=>{
-                const {equipment_id} = curr;
-                if(equipment_id){
-                    if(prev.hasOwnProperty(equipment_id)){
-                        prev[equipment_id] +=1;
-                    }else{
-                        prev[equipment_id] = 1;
-                    }
-                    return prev;
-                }
-            }, {})
             
-            await Promise.all(
-                Object.keys(data).map(v=>{
-                    const total = data[v];
-                    return Equipment.update({
-                        total_rented: sequelize.literal(`total_rented-${total}`)
-                    },{
-                        where: {
-                            id: parseInt(v)
-                        }
-                    })
-                })
-            )
             
             res.redirect('/farmstay/trash')
         } catch (error) {
+            console.log(error)
             next(new HttpError(500, "Có lỗi xảy ra"));
             
         }
     }
+    
 
     /**
      * [GET] Render Page Edit Farmstay
@@ -353,7 +363,7 @@ class FarmstayController{
     async renderEditFarmstay(req, res, next){
         try {
             const {id} = req.params;
-            const data = await Farmstay.findAll({
+            const farmstay = await Farmstay.findOne({
                 where: {id},
                 attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt', 'uuid', 'slug'] },
                 include:[
@@ -361,10 +371,10 @@ class FarmstayController{
                         model: FarmstayAddress,
                         as: 'address_of_farmstay',
                         include:[{
-                            model: Ward, as:'ward', attributes: ['code', 'name'], 
+                            model: Ward, as:'ward', attributes: ['code', 'name', 'full_name'], 
                             include: [{
-                                model: District, as: 'district', attributes: ['code', 'name'],
-                                include: [{model: Province, as: 'province', attributes: ['code', 'name'],}]
+                                model: District, as: 'district', attributes: ['code', 'name', 'full_name'],
+                                include: [{model: Province, as: 'province', attributes: ['code', 'name', 'full_name'],}]
                             }]
                         }],
 
@@ -372,42 +382,37 @@ class FarmstayController{
                     {
                         model: FarmstayEquipment,
                         as: 'list_equipment',
-                        attributes: ['equipment_id', [sequelize.fn('count', sequelize.col('equipment_id')), 'amount']],
+                        attributes: ['equipment_id', 'quantity_used'],
                         include: [
                             {
                                 model: Equipment,
                                 as: 'is_equipment',
-                                attributes: ['id', 'name', 'quantity', 'images', 'deletedAt',[sequelize.literal('`quantity`-`total_rented`'), 'remain']],
+                                attributes: ['id', 'name', 'quantity', 'images', 'deletedAt',[sequelize.literal('`quantity`-`total_used`'), 'remain']],
                                 paranoid: false
                             }
                         ]
                     }
                 ],
-                group: ['list_equipment.equipment_id'],
-                raw: true,
-                nest: true,
             });
-            const [farmstay] = data;
-            farmstay.list_equipment = data.map(value=>{
-                const {list_equipment} = value;
-                return list_equipment
-            });
+            if(farmstay == null){
+                return next(new HttpError400());
+            }
             const provinces = await Province.findAll({
-                attributes: ['code', 'name'],
+                attributes: ['code', 'name', 'full_name'],
             });
             
             const districts = await District.findAll({
                 where: {province_code: farmstay.address_of_farmstay.ward.district.province.code},
-                attributes: ['code', 'name'],
+                attributes: ['code', 'name', 'full_name'],
             });
             const wards = await Ward.findAll({
                 where: {district_code: farmstay.address_of_farmstay.ward.district.code},
-                attributes: ['code', 'name'],
+                attributes: ['code', 'name', 'full_name'],
             });
             const listIdEquipment = Array.from(farmstay.list_equipment).map(v=>v.is_equipment.id);
             const equipments = await Equipment.findAll(
                 {
-                    attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_rented`'), 'remain']],
+                    attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_used`'), 'remain']],
                     where: {
                         id: {
                             [Op.notIn]: listIdEquipment
@@ -417,7 +422,7 @@ class FarmstayController{
             );
             // res.json(farmstay)
             res.render('pages/farmstay/edit', {
-                farmstay: farmstay,
+                farmstay: objectToJSON(farmstay),
                 provinces: arrayToJSON(provinces),
                 districts: arrayToJSON(districts),
                 wards: arrayToJSON(wards),
@@ -433,195 +438,250 @@ class FarmstayController{
     /**
      * [PUT] edit Farmstay
      */
-    async editFarmstay(req, res, next){
+    async editInfoFarmstay(req, res, next){
         try {
-            const {edit, id} = req.params;
-            if(edit === 'edit_info'){
-                const {name, rent_cost} = req.body
-                await Farmstay.update({
-                        name: name,
-                        rent_cost_per_day: rent_cost,
-                    },
-                    {
-                        where: {id},
+            const {id} = req.params;
+            const {name, rent_cost} = req.body
+            await Farmstay.update({
+                    name: name,
+                    rent_cost_per_day: rent_cost,
+                },
+                {
+                    where: {id},
+                }
+            );
+            res.redirect('back')
+        } catch (error) {
+            console.log(error);
+            next(new HttpError(500, "Có lỗi xảy ra"));
+        }
+    }
+
+    /**
+     * [PUT] edit Farmstay
+     */
+    async editAddressFarmstay(req, res, next){
+        try {
+            const {id} = req.params;
+            const {ward_code:code_ward,
+                link_ggmap:link,
+                link_embedded_ggmap:embedded_link,
+                address: specific_address,
+            } = req.body;
+            await FarmstayAddress.update({code_ward, link, embedded_link, specific_address},{
+                where: {
+                    farm_id:id
+                }
+            });
+            res.redirect('back')
+        } catch (error) {
+            console.log(error);
+            next(new HttpError(500, "Có lỗi xảy ra"));
+        }
+    }
+
+    /**
+     * [PUT] edit Farmstay
+     */
+    async editImagesFarmstay(req, res, next){
+        try {
+            const {id} = req.params;
+            const imagesBeforeAdd = [];
+            let transaction;
+            try {
+                
+                transaction = await sequelize.transaction();
+                let {list_img_delete} = req.body;
+                
+                const farmstay = await Farmstay.findOne({
+                    where: {id},
+                    attributes: ['images', 'id', 'name'],
+                    transaction
+                })
+                const {images} = farmstay;
+                const {files} = req;
+                const maxImage = 10
+                if(Array.isArray(list_img_delete)&& ((images.length-list_img_delete.length)+files.length)>maxImage){
+                    return next(new HttpError400);
+                }
+                
+                if(files.length){
+                    
+                    const IMAGES = [] // mảng chứa buffer và đường dẫn file
+                    for (const element of files) {
+                        const {buffer, originalname, fieldname} = element;
+                        const uniqueSuffix = Date.now()+'_'+slug(farmstay.name, '_');
+                        const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
+                        IMAGES.push([buffer, filename])
                     }
-                );
+                    // Lưu các file ảnh
+                    const uploadImageResp = await PromiseBlueBird.map(IMAGES, async(image)=>{
+                        // return sharp(image[0]).toFile(`${pathDisk}/${image[1]}`);
+                        const [buffer, filename] = image;
+                        return imagekit.upload({
+                            file : buffer, //required
+                            fileName : filename,   //required
+                            folder: 'Farmstay',
+                            useUniqueFileName: true,
+                        })
+                    })
+                    
+                    uploadImageResp.forEach(v=>{
+                        const {url, fileId} = v;
+                        imagesBeforeAdd.push({url, fileId});
+                    })
+                    farmstay.addImageURL(imagesBeforeAdd);
+                    
+                }
+
+                
+                if(Array.isArray(list_img_delete)&&list_img_delete.length>0){
+                    
+                    const imagesDeleted = Array.from(farmstay.images).filter((value, index,)=>{
+                        const {fileId} = value;
+                        let id = list_img_delete.findIndex((value, index)=>{
+                            return value === fileId;
+                        })
+                        return id===-1 
+                    })
+                    
+                    if(imagesDeleted.length < farmstay.images.length){
+                        
+                        await imagekit.bulkDeleteFiles(list_img_delete);
+                        farmstay.images = imagesDeleted;
+                    }
+                    
+                }
+                
+                await farmstay.save({transaction});
+
+                await transaction.commit();
                 res.redirect('back')
-            }else if(edit === 'edit_address'){
-                const {ward_code:code_ward,
-                    link_ggmap:link,
-                    link_embedded_ggmap:embedded_link,
-                    address: specific_address,
-                } = req.body;
-                await FarmstayAddress.update({code_ward, link, embedded_link, specific_address},{
-                    where: {
-                        farm_id:id
+
+            } catch (error) {
+                if(transaction) {
+                    await transaction.rollback();
+                    await imagekit.bulkDeleteFiles(imagesBeforeAdd.map(v=>v.fileId));
+                }
+                throw error
+            }
+        } catch (error) {
+            console.log(error);
+            next(new HttpError(500, "Có lỗi xảy ra"));
+        }
+    }
+    /**
+     * [PUT] edit Farmstay
+     */
+    async editFarmstayEquipment(req, res, next){
+        
+        try {
+            let transaction;
+            const {id} = req.params;
+            try {
+                transaction = await sequelize.transaction();
+                let {add_equipments, current_equipments} = req.body;
+
+                // try {
+                //     add_equipments = JSON.parse(add_equipments);
+                //     current_equipments = JSON.parse(current_equipments);
+                // } catch (error) {
+                //     return next(new HttpError400());
+                // }
+                console.log(current_equipments)
+                const [farmstayEquipments, equipments] = await Promise.all([
+                    FarmstayEquipment.findAll({
+                        where: {farm_id: id},
+                        transaction
+                    }),
+                    Equipment.findAll({
+                        attributes: ['id', 'quantity', 'total_used', [sequelize.literal('`quantity`-`total_used`'), 'remain']],
+                        transaction
+                    }),
+                ]);
+                    
+                // array 
+                const arrayIdEditFarmstayEquipment = [];
+                const arrayIdEditEquipment = [];
+                const arrayDeleteFarmstayEquipment = [];
+                // Duyệt qua mảng chứa id và value equipment cần sửa
+                Array.from(current_equipments).forEach((value, index, array)=>{
+                    const {id:idEditEquipment, value:valueEdit} = value;
+
+                    // Lấy ra id thiết bị hiện tại của farmstay
+                    const indexFarmstayEquipment = farmstayEquipments.findIndex(value=>{
+                        const {equipment_id} = value;
+                        return equipment_id == idEditEquipment;
+                    });
+                    
+                    // Lấy ra index equipment cần sửa hiện tại
+                    const indexEquipment = Array.from(equipments).findIndex(v=>{
+                        return idEditEquipment == v.id
+                    })
+                    // kiểm tra số lượng thuê của farmstay hiện tại với giá trị sửa
+                    const quantityEdit = -1*(farmstayEquipments[indexFarmstayEquipment]['quantity_used'] - valueEdit); 
+                    
+                    const checkEquipmentQuantity = (equipments[indexEquipment]['total_used']+quantityEdit)<=equipments[indexEquipment]['quantity'];
+                    const checkFarmstayEquipment = (farmstayEquipments[indexFarmstayEquipment]['quantity_used']+quantityEdit) === 0;
+                    if(checkEquipmentQuantity){
+                        if(checkFarmstayEquipment){
+                            arrayDeleteFarmstayEquipment.push(idEditEquipment);
+                        }else{
+                            farmstayEquipments[indexFarmstayEquipment]['quantity_used']+=quantityEdit;
+                            arrayIdEditFarmstayEquipment.push(indexFarmstayEquipment);
+                        }
+                        
+                        equipments[indexEquipment]['total_used']+=quantityEdit;
+                        arrayIdEditEquipment.push(indexEquipment);
+                    }
+                })
+                
+                const arrayAddFarmstayEquipment = [];
+                const arrayAddEquipment = [];
+                Array.from(add_equipments).forEach((value)=>{
+                    const {id:idAdd, value:valueAdd} = value;
+                    const indexEquipment = Array.from(equipments).findIndex(v=>{
+                        return idAdd == v.id
+                    })
+                    const checkEquipmentQuantity = (equipments[indexEquipment]['total_used']+parseInt(valueAdd))<=equipments[indexEquipment]['quantity'];
+                    if(checkEquipmentQuantity){
+                        equipments[indexEquipment]['total_used']+=parseInt(valueAdd);
+                        arrayAddEquipment.push(indexEquipment);
+                        arrayAddFarmstayEquipment.push({
+                            farm_id: id,
+                            equipment_id: idAdd,
+                            quantity_used: valueAdd
+                        })
                     }
                 });
-                res.redirect('back')
-            }else if(edit === 'edit_images'){
-                const imagesBeforeAdd = [];
-                let transaction;
-                try {
-                    transaction = await sequelize.transaction();
-                    let {list_img_delete} = req.body;
-                    list_img_delete = JSON.parse(list_img_delete)
-                    const farmstay = await Farmstay.findOne({
-                        where: {id},
-                        attributes: ['images', 'id', 'name'],
+                await Promise.all([
+                    PromiseBlueBird.map(arrayIdEditFarmstayEquipment, (item)=>{
+                        return farmstayEquipments[item].save({transaction});
+                    }),
+                    PromiseBlueBird.map(arrayIdEditEquipment, (item)=>{
+                        return equipments[item].save({transaction});
+                    }),
+                    FarmstayEquipment.destroy({
+                        where: {
+                            farm_id: id,
+                            equipment_id: arrayDeleteFarmstayEquipment
+                        },
                         transaction
-                    })
-                    const {images} = farmstay;
-                    const {files} = req;
-                    const maxImage = 10
-                    if(Array.isArray(list_img_delete)&& ((images.length-list_img_delete.length)+files.length)>maxImage){
-                        return next(new HttpError400);
-                    }
-                    
-                    if(files.length){
-                        const IMAGES = [] // mảng chứa buffer và đường dẫn file
-                        for (const element of files) {
-                            const {buffer, originalname, fieldname} = element;
-                            const uniqueSuffix = Date.now()+'_'+slug(farmstay.name, '_');
-                            const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
-                            IMAGES.push([buffer, filename])
-                        }
-                        // Lưu các file ảnh
-                        const uploadImageResp = await PromiseBlueBird.map(IMAGES, async(image)=>{
-                            // return sharp(image[0]).toFile(`${pathDisk}/${image[1]}`);
-                            const [buffer, filename] = image;
-                            return imagekit.upload({
-                                file : buffer, //required
-                                fileName : filename,   //required
-                                folder: 'Farmstay',
-                                useUniqueFileName: true,
-                            })
-                        })
-                        
-                        uploadImageResp.forEach(v=>{
-                            const {url, fileId} = v;
-                            imagesBeforeAdd.push({url, fileId});
-                        })
-                        farmstay.addImageURL(imagesBeforeAdd);
-                    }
+                    }),
+                    PromiseBlueBird.map(arrayAddEquipment, (item)=>{
+                        return equipments[item].save({transaction});
+                    }),
+                    FarmstayEquipment.bulkCreate(arrayAddFarmstayEquipment, {transaction})
 
-                    
-                    if(Array.isArray(list_img_delete)&&list_img_delete.length>0){
-                        const imagesDeleted = Array.from(images).filter((value, index,)=>{
-                            const {fileId} = value;
-                            let id = list_img_delete.findIndex((value, index)=>{
-                                return value === fileId;
-                            })
-                            return id===-1 
-                        })
-                        if(imagesDeleted.length < images.length){
-                            
-                            await imagekit.bulkDeleteFiles(list_img_delete);
-                            farmstay.images = imagesDeleted;
-                        }
-                        
-                    }
-                    await farmstay.save({transaction});
-                    await transaction.commit();
-                    res.redirect('back')
-
-                } catch (error) {
-                    if(transaction) {
-                        await transaction.rollback();
-                        await imagekit.bulkDeleteFiles(imagesBeforeAdd.map(v=>v.fileId));
-                    }
-                    throw error
+                ]);
+                await transaction.commit();
+                res.redirect('back')
+            } catch (error) {
+                if(transaction){
+                    await transaction.rollback();
                 }
-            }else if(edit === 'edit_equipments'){
-                try {
-                    let {add_equipments, current_equipments} = req.body;
-                    add_equipments = JSON.parse(add_equipments);
-                    current_equipments = JSON.parse(current_equipments);
-
-                    const farmstayEquipments = await FarmstayEquipment.findAll({
-                        where: {farm_id: id}
-                    })
-                    const equipments = await Equipment.findAll({
-                        attributes: ['id', 'quantity', 'total_rented', [sequelize.literal('`quantity`-`total_rented`'), 'remain']]
-                    });
-                    // array Add
-                    const arrayAddEquipment = [];
-                    const arrayIdAddEquipment = [];
-                    // array Delete
-                    const arrayDecreaseEquipment = [];
-                    const arrayIdEquipmentDecrease = [];
-                    // Duyệt qua mảng chứa id và value equipment cần sửa
-                    Array.from(current_equipments).forEach((value, index, array)=>{
-                        const {id:idEditEquipment, value:valueEdit} = value;
-
-                        // Lấy ra số lượng thuê thiết bị hiện tại của farmstay
-                        const equimentCurrent = farmstayEquipments.filter(fe=>{
-                            const {equipment_id} = fe;
-                            return equipment_id == idEditEquipment;
-                        })
-
-                        // Lấy ra index equipment cần sửa hiện tại
-                        const indexEquipment = Array.from(equipments).findIndex(v=>{
-                            return idEditEquipment == v.id
-                        })
-
-                        // kiểm tra số lượng thuê của farmstay hiện tại với giá trị sửa
-                        const quantityEdit = equimentCurrent.length - valueEdit; 
-                        // giá trị kiểm tra <0 là thêm
-                        if(quantityEdit<0){
-                            console.log('add')
-                            const quantityAdd = Math.abs(quantityEdit);
-                            if(equipments[indexEquipment]['total_rented']+quantityAdd<=equipments[indexEquipment]['quantity']){
-                                equipments[indexEquipment]['total_rented']+=quantityAdd;
-                                arrayIdAddEquipment.push(indexEquipment);
-                                for(let i =0; i<quantityAdd; i++){
-                                    arrayAddEquipment.push({
-                                        farm_id: id,
-                                        equipment_id: idEditEquipment
-                                    })
-                                }
-                            }
-                        }else if(quantityEdit>0){
-                            const quantityDecreasee = Math.abs(quantityEdit);
-                            equipments[indexEquipment]['total_rented']-=quantityDecreasee;
-                            arrayIdEquipmentDecrease.push(indexEquipment);
-                            const array = equimentCurrent.slice(-1*quantityDecreasee)
-                            array.forEach(v=>{
-                                const {id} = v;
-                                arrayDecreaseEquipment.push(id);
-                            })
-
-                        }
-                    })
-                    
-                    if(arrayAddEquipment.length>0){
-                        await FarmstayEquipment.bulkCreate(arrayAddEquipment);
-                        await PromiseBlueBird.map(arrayIdAddEquipment, (item)=>{
-                            return equipments[item].save();
-                        })
-                    }
-                    if(arrayDecreaseEquipment.length>0){
-                        console.log("các id cần xóa",arrayDecreaseEquipment);
-                        console.log('các cc')
-                        arrayIdEquipmentDecrease.forEach(v=>{
-                            console.log(equipments[v].total_rented)
-                        })
-                        await FarmstayEquipment.destroy({
-                            where: {
-                                id: arrayDecreaseEquipment
-                            }
-                        })
-                        await PromiseBlueBird.map(arrayIdEquipmentDecrease, (item)=>{
-                            return equipments[item].save();
-                        })
-                        
-                    }
-                    res.redirect('back')
-                } catch (error) {
-                    throw error
-                }
+                throw error
             }
-            
         } catch (error) {
             console.log(error)
             next(new HttpError(500, "Có lỗi xảy ra"));
@@ -654,7 +714,7 @@ class FarmstayController{
             where: {
                 province_code: province_code
             },
-            attributes: ['code', 'name']
+            attributes: ['code', 'name', 'full_name']
         });
         districts = districts.map(v=>{
             return v.toJSON() 
@@ -675,7 +735,7 @@ class FarmstayController{
             where: {
                 district_code: district_code
             },
-            attributes: ['code', 'name']
+            attributes: ['code', 'name', 'full_name']
         });
         wards = wards.map(v=>{
             return v.toJSON() 

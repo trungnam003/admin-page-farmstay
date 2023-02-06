@@ -108,11 +108,13 @@
                                         <div class="form-group">
                                             <label for="inputAddress">Tên</label>
                                             <input name="name" value="{{farmstay.name}}"type="text" class="form-control" id="inputEditNameFarmstay" placeholder="Nhập tên farmstay">
+                                            <p class="form-message"></p>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                             <label for="inputEmail4">Giá thuê/ngày</label>
                                             <input name="rent_cost" value="{{farmstay.rent_cost_per_day}}" type="text" class="form-control" id="inputEditRentFarmstay" placeholder="Nhập giá thuê">
+                                            <p class="form-message"></p>
                                             </div>
                                             <div class="form-group col-md-6">
                                             <label for="inputPassword4">Người quản lý</label>
@@ -168,9 +170,9 @@
                                                 <option value="" >Choose...</option>
                                                 {{#each provinces}}
                                                     {{#ifEquals ../farmstay.address_of_farmstay.ward.district.province.code this.code}}
-                                                        <option value="{{this.code}}" selected>{{this.name}}</option>
+                                                        <option value="{{this.code}}" selected>{{this.full_name}}</option>
                                                     {{else}}
-                                                        <option value="{{this.code}}">{{this.name}}</option>
+                                                        <option value="{{this.code}}">{{this.full_name}}</option>
                                                     {{/ifEquals}}
                                                     
                                                 {{/each}}
@@ -186,9 +188,9 @@
                                                 <option>Choose...</option>
                                                 {{#each districts}}
                                                     {{#ifEquals ../farmstay.address_of_farmstay.ward.district.code this.code}}
-                                                        <option value="{{this.code}}" selected>{{this.name}}</option>
+                                                        <option value="{{this.code}}" selected>{{this.full_name}}</option>
                                                     {{else}}
-                                                        <option value="{{this.code}}">{{this.name}}</option>
+                                                        <option value="{{this.code}}">{{this.full_name}}</option>
                                                     {{/ifEquals}}
                                                     
                                                 {{/each}}
@@ -204,9 +206,9 @@
                                                 <option>Choose...</option>
                                                 {{#each wards}}
                                                     {{#ifEquals ../farmstay.address_of_farmstay.ward.code this.code}}
-                                                        <option value="{{this.code}}" selected>{{this.name}}</option>
+                                                        <option value="{{this.code}}" selected>{{this.full_name}}</option>
                                                     {{else}}
-                                                        <option value="{{this.code}}">{{this.name}}</option>
+                                                        <option value="{{this.code}}">{{this.full_name}}</option>
                                                     {{/ifEquals}}
                                                     
                                                 {{/each}}
@@ -247,7 +249,7 @@
                 </div>
                 <ul class="list-group list-group-flush">
                     {{#with farmstay.address_of_farmstay}}
-                        <li class="list-group-item">Địa chỉ: {{ward.name}}, {{ward.district.name}}, {{ward.district.province.name}}</li>
+                        <li class="list-group-item">Địa chỉ: {{ward.full_name}}, {{ward.district.full_name}}, {{ward.district.province.full_name}}</li>
                         <li class="list-group-item">Địa chỉ cụ thể: {{specific_address}}</li>
                         <li class="list-group-item">GoogleMap: <a href="{{link}}" class="text-primary">link</a></li>
                     {{/with}}
@@ -384,7 +386,7 @@
                                                                 </div>
                                                             
                                                             </div>
-                                                            <input data-original-value="{{../amount}}" data-id="{{id}}"class="numberstyle edit-current-equipments-farmstay" type="number" min="0" step="1" value="{{../amount}}" max="{{sum remain ../amount}}">
+                                                            <input data-original-value="{{../quantity_used}}" data-id="{{id}}"class="numberstyle edit-current-equipments-farmstay" type="number" min="0" step="1" value="{{../quantity_used}}" max="{{sum remain ../quantity_used}}">
                                                             
                                                         </li>
                                                     {{/with}}
@@ -435,7 +437,7 @@
                                     class="rounded-circle" />
                                 <div class="ml-3">
                                     <p class="fw-bold mb-1 text-dark">{{name}}</p>
-                                    <p class="text-muted mb-0">Số lượng: {{../this.amount}}</p>
+                                    <p class="text-muted mb-0">Số lượng: {{../this.quantity_used}}</p>
                                 </div>
                                 </div>
                                 {{#if deletedAt}}
@@ -460,20 +462,30 @@
 <script>
     Validator(
     {
-        form: '#form-create-farmstay',
+        form: '#formEditInfoFarmstay',
         errorSelector: '.form-message',
         formGroupSelector: '.form-group',
         rules:[
-            Validator.isRequired('#inputFarmstay'),
-            Validator.isRequired('#inputRentCost'),
-            Validator.isRequired('#inputManager'),
-            Validator.isRequired('#inputProvince'),
-            Validator.isRequired('#inputDistrict'),
-            Validator.isRequired('#inputWard'),
+            Validator.isRequired('#inputEditNameFarmstay'),
+            Validator.isRequired('#inputEditRentFarmstay'),
+            
 
         ],
     }
     );
+    Validator(
+    {
+        form: '#formEditAddressFarmstay',
+        errorSelector: '.form-message',
+        formGroupSelector: '.form-group',
+        rules:[
+            Validator.isRequired('#inputProvince'),
+            Validator.isRequired('#inputDistrict'),
+            Validator.isRequired('#inputWard'),
+            
 
+        ],
+    }
+    );
 </script>
 <script src="/js/farmstay/edit_farmstay.js"></script>

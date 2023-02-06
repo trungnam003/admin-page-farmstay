@@ -32,13 +32,20 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   FarmstayEquipment.init({
-    id: {
+    farm_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
     },
-    
+    equipment_id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      primaryKey: true,
+    },
+    quantity_used:{
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    }
   }, {
     sequelize,
     modelName: 'FarmstayEquipment',

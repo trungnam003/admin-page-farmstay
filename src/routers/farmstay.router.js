@@ -6,13 +6,16 @@ const {authorization}                   = require('../middlewares/auths/authoriz
 const {authenticateJWT}                 = require('../middlewares/auths/authenticate.jwt')
 const {uploadMultiImage, uploadSingleImage}                = require('../middlewares/uploads/upload.image');
 const {validateParam, validateQuery,
-     validateBody, Validate}            = require('../middlewares/validates')
+     validateBody, Validate, Joi}            = require('../middlewares/validates')
 
 /**
  * 
  */
-Router.use('/edit/:id', editRouter)
-// editRouter.use(authenticateJWT);
+Router.use('/edit/:id', editRouter);
+editRouter.use(validateParam({
+    id: Validate.isNumber(),
+}));
+editRouter.use(authenticateJWT);
 
 editRouter.route('/')
 .get(
@@ -24,10 +27,62 @@ editRouter.route('/')
 /**
  * 
  */
-editRouter.route('/:edit')
+editRouter.route('/edit_info')
+.put(
+    validateBody({
+        name: Validate.isString(),
+        rent_cost: Validate.isNumber(),
+    }),
+    FarmstayController.editInfoFarmstay
+).all((req, res, next)=>{
+    next(new HttpError(405))
+});
+
+/**
+ * 
+ */
+editRouter.route('/edit_address')
+.put(
+    validateBody({
+        link_embedded_ggmap: Validate.isString().allow(''),
+        link_ggmap: Validate.isString().allow(''),
+        address: Validate.isString().allow(''),
+        ward_code: Validate.isString(),
+        
+    }),
+    FarmstayController.editAddressFarmstay
+).all((req, res, next)=>{
+    next(new HttpError(405))
+});
+/**
+ * 
+ */
+editRouter.route('/edit_images')
 .put(
     uploadMultiImage({type:'farmstay', quantity: 10,}),
-    FarmstayController.editFarmstay
+    validateBody({
+        list_img_delete: Validate.isArrayString(),
+    }),
+    FarmstayController.editImagesFarmstay
+).all((req, res, next)=>{
+    next(new HttpError(405))
+});
+/**
+ * 
+ */
+editRouter.route('/edit_equipments')
+.put(
+    validateBody({
+        add_equipments: Validate.isArray().items(Joi.object().keys({
+            id: Joi.number().min(1),
+            value: Joi.number().min(0),
+        })), 
+        current_equipments: Validate.isArray().items(Joi.object().keys({
+            id: Joi.number().min(1),
+            value: Joi.number().min(0),
+        })), 
+    }),
+    FarmstayController.editFarmstayEquipment
 ).all((req, res, next)=>{
     next(new HttpError(405))
 });

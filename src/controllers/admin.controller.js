@@ -1,4 +1,4 @@
-const {uploadImage}                     = require('../middlewares/uploads/upload.image')
+const {handleSingleImage}                     = require('../utils/uploads/image')
 const multer                            = require("multer");
 const sharp                             = require('sharp')
 const {public_path}                     = require('../path_file')
@@ -37,7 +37,7 @@ class UserController{
         
         const user = req.user;
         
-        const uploadImg = uploadImage({type:'avatar'});
+        const uploadImg = handleSingleImage({type:'avatar'});
         uploadImg(req, res, async(err)=>{
             // Sau khi gọi middleware của multer mới truy cập đến form kiểu multipart/form-data
             if(!req.file){
@@ -105,7 +105,7 @@ class UserController{
                 let ciphertext = AES.encrypt(payload, config.secret_key.verify_email).toString();
                 ciphertext = encodeURIComponent(ciphertext);
 
-                let html = htmlContentEmail(`http://192.168.56.101:8888/user/me/active/${ciphertext}?_method=PUT`)
+                let html = htmlContentEmail(`http://192.168.56.101:3000/user/me/active/${ciphertext}?_method=PUT`)
                 await sendMail(req.user.email,"Kích hoạt tài khoản AdminFarmstay", html);
                 
                 res.status(200).render('pages/site/active_user')

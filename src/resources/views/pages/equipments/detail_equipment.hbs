@@ -31,11 +31,11 @@
                         
                     </div>
                     <div class="col-6 mt-1">
-                        <p class="card-text text-dark">Đã sử dụng: {{equipment.total_rented}}</p>
+                        <p class="card-text text-dark">Đã sử dụng: {{equipment.total_used}}</p>
 
                     </div>
                     <div class="col-6 mt-1">
-                        <p class="card-text text-dark">Còn lại: {{minus equipment.quantity equipment.total_rented}}</p>
+                        <p class="card-text text-dark">Còn lại: {{minus equipment.quantity equipment.total_used}}</p>
                     </div>
                     <div class="col-12 mt-1">
                         <p class="card-text text-dark">Loại thiết bị: {{equipment.belong_to_category.name}}</p>
@@ -58,8 +58,9 @@
             <thead>
                 <tr>
                 <th scope="col">#</th>
-                <th scope="col">id</th>
+                
                 <th scope="col">Farmstay sử dụng</th>
+                <th scope="col">Số lượng</th>
                 <th scope="col">Trạng thái</th>
                 </tr>
             </thead>
@@ -67,13 +68,14 @@
                 {{#each farmstayEquipment}}
                     <tr>
                         <th scope="row">{{sum @index 1}}</th>
-                        <td>{{this.id}}</td>
+                        
                         {{#if this.used_by}}
                             <td>{{this.used_by.name}}</td>
                             
                         {{else}}
                             <td class="text-danger">Chưa có</td>
                         {{/if}}
+                        <td>{{this.quantity_used}}</td>
                         {{#if this.used_by.deletedAt}}
                             <td class="badge badge-warning"> <i class="far fa-times-circle"></i> Farmstay đã xóa</td>
                         {{else}}
@@ -103,7 +105,7 @@
             <form id="formEditQuantityEquipment" action="/equipment/detail/{{equipment.id}}" method="POST">
                 <div class="form-group">
                     <label for="inputEditQuantityEquipment">Nhập số lượng</label>
-                    <input name="quantity" type="number" class="form-control" id="inputEditQuantityEquipment" min="{{equipment.total_rented}}" max="1000" value="{{equipment.quantity}}">
+                    <input name="quantity" type="number" class="form-control" id="inputEditQuantityEquipment" min="{{equipment.total_used}}" max="1000" value="{{equipment.quantity}}">
                     <span class="form-message"></span>
 
                 </div>
