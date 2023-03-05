@@ -11,23 +11,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {RoleHasPermission, ApiMethod, ApiEndpoint} = models;
+      const {RoleHasPermission, ApiEndpoint} = models;
       Permission.hasMany(RoleHasPermission, {
         foreignKey: {name: 'permission_id'},
         sourceKey: 'id',
         as: 'permission_has_roles'
-      })
-
-      Permission.belongsTo(ApiMethod, {
-        foreignKey: {name: 'api_method_id'},
-        targetKey: 'id',
-        as: 'api_method'
-      })
+      });
       Permission.belongsTo(ApiEndpoint, {
         foreignKey: {name: 'api_endpoint_id'},
         targetKey: 'id',
-        as: 'api_endpoint'
-      })
+        as: 'api_endpoint',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      });
     }
   }
   Permission.init({
@@ -37,17 +33,14 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER.UNSIGNED
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     description: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    api_method_id:{
+    method:{
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
+      defaultValue:1,
      
     },
     api_endpoint_id:{

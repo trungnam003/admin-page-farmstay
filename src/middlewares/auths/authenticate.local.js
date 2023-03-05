@@ -17,6 +17,8 @@ async function authenticateLocal(req, res, next){
             if(isAuth){
                 
                 req.user = user
+                const {avatar_url, username} = user
+                res.locals.user = {avatar_url, username};
                 next()
             }else{
                 

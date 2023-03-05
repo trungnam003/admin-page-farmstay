@@ -1,0 +1,79 @@
+<div class="col-md-offset-1 col-md-12">
+    <div class="panel">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-sm-10 col-xs-10">
+                    <a href="/farmstay/create" class="btn btn-sm btn-primary pull-left"><i class="fa fa-plus-circle"></i>Thêm farmstay</a>
+                    <a href = "/farmstay/trash" class="btn btn-primary position-relative">
+                        <i class="fas fa-trash"></i>
+                        <p class="badge badge-warning position-absolute" style="top: -4px;right: -4px;">{{total_farmstay_deleted}}</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel-body table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>#</th>
+                        <th>Tên</th>
+                        <th>Người quản lý</th>
+                        <th>Giá thuê</th>
+                        <th>Trạng thái</th>
+                        <th>Thời gian cập nhật</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each farmstays}}
+                        <tr>
+                            <td>
+                                <ul class="action-list">
+                                    <li><a href="/farmstay/edit/{{this.id}}" class="btn btn-primary"><i class="fa fa-pencil-alt"></i></a></li>
+                                    <li>
+                                        <a data-name="{{this.name}}" data-id="{{this.id}}" href="#" class="btn btn-warning delete-farmstay" data-toggle="modal" data-target="#modalDeleteFarmstay">
+                                        <i class="fas fa-trash"></i></a>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>{{sum @index 1}}</td>
+                            <td>{{this.name}}</td>
+                            {{#if this.management_staff}}
+                                <td>{{this.management_staff.name}}</td>
+                            {{else}}
+                                <td>Chưa có</td>
+                            {{/if}}
+                            
+                            <td><p class="text-dark d-inline money-vnd">{{this.rent_cost_per_day}}</p></td>
+                            <td><a href="#" class="btn btn-sm btn-success"><i class="fas fa-check-circle"></i></a></td>
+                            <td>{{prettifyDate this.updatedAt}}</td>
+
+                        </tr>
+                    {{else}}
+                        <tr>
+                            <td colspan="8" class="text-center">
+                                Chưa có farmstay nào
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer">
+            <div class="row">
+                <div class="col-sm-8 col-xs-8">Hiển thị <b>{{_pagination.totalDataShowing}}</b> / <b>{{_pagination.totalData}}</b></div>
+                <div class="col-sm-4 col-xs-4">
+                    <ul class="pagination hidden-xs pull-right pag">
+                        <li><a href="#">«</a></li>
+                        
+                        {{page _pagination.page 5 _pagination.limit _pagination.totalData}}
+                        <li><a href="#">»</a></li>
+                    </ul>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

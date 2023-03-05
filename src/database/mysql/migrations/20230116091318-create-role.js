@@ -11,20 +11,12 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
+        unique: true,
         allowNull: false
       },
       description: {
         type: Sequelize.STRING,
         allowNull: true,
-      },
-      is_active: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-      },
-      piority:{
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: false
       },
       createdAt: {
         allowNull: false,

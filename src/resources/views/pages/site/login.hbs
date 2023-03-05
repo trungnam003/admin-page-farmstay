@@ -1,62 +1,64 @@
 <link rel="stylesheet" href="/css/validate.css">
-<section class="h-100 gradient-form" style="background-color: transparent;">
-  <div class="h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-xl-10">
-        <div class="card rounded-3 text-black">
-          <div class="row g-0">
-            <div class="col-lg-6">
+<div class="container">
+    <section class="h-100 gradient-form" style="background-color: transparent;">
+        <div class="h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-10">
+                <div class="card rounded-3 text-black">
+                <div class="row g-0">
+                    <div class="col-lg-6">
 
-              <div class="card-body p-md-3 mx-md-3">
+                    <div class="card-body p-md-3 mx-md-3">
 
-                <div class="text-center">
-                  <img src="/img/logo1.png"
-                    style="width: 120px;" alt="logo">
+                        <div class="text-center">
+                        <img src="/img/logo1.png"
+                            style="width: 120px;" alt="logo">
+                        </div>
+                        
+                        <form class = "mt-4"  id="form-login" method="POST">
+                        <p style="color: black; text-align: center; font-weight: 550; font-size: 20px;">Đăng nhập vào Admin Page</p>
+                        
+                        <div class="form-outline mb-1 form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <input name="email" type="email" id="email" class="form-control" placeholder="Email"/>
+                            <span class="form-message"></span>
+                        </div>
+                    
+                        <div class="form-outline mb-1 form-group">
+                            <label class="form-label" for="password">Mật khẩu</label>
+                            <input name="password" id="password" type="password" class="form-control" placeholder = "Password"/>
+                            <span class="form-message"></span>
+                        </div>
+
+                        <div class="text-center pt-1 mb-1 pb-1">
+                            <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" form="form-login" type="submit" style = "font-size: 14px; padding: 12px;">LOGIN</button>
+                            <a class="text-muted" href="#!">Forgot password?</a>
+                            <br>
+                            <a class="text-primary" href="/auth/register">Đăng kí tài khoản</a>
+                        </div>
+
+                        <div class="text-center pt-1 mb-1 pb-1">
+                            <p id = "warning-input" class="text-danger font-italic" style="height: 28px; font-size: 14px"> {{error_msg}} </p>
+                        </div>
+
+                        </form>
+
+                    </div>
+                    </div>
+
+                    <div class="col-lg-6 d-flex align-items-center gradient-custom-2" style = "background-clip: content-box;">
+                    <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                        <img src="/img/logo_nobrand.png"
+                            style="width: 100%;" alt="logo">
+                    </div>
+
                 </div>
-                
-                <form class = "mt-4"  id="form-login" method="POST">
-                  <p style="color: black; text-align: center; font-weight: 550; font-size: 20px;">Đăng nhập vào Admin Page</p>
-                  
-                  <div class="form-outline mb-1 form-group">
-                    <label class="form-label" for="email">Email</label>
-                    <input name="email" type="email" id="email" class="form-control" placeholder="Email"/>
-                    <span class="form-message"></span>
-                  </div>
-               
-                  <div class="form-outline mb-1 form-group">
-                    <label class="form-label" for="password">Mật khẩu</label>
-                    <input name="password" id="password" type="password" class="form-control" placeholder = "Password"/>
-                    <span class="form-message"></span>
-                  </div>
-
-                  <div class="text-center pt-1 mb-1 pb-1">
-                    <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" form="form-login" type="submit" style = "font-size: 14px; padding: 12px;">LOGIN</button>
-                    <a class="text-muted" href="#!">Forgot password?</a>
-                    <br>
-                    <a class="text-primary" href="/auth/register">Đăng kí tài khoản</a>
-                  </div>
-
-                  <div class="text-center pt-1 mb-1 pb-1">
-                    <p id = "warning-input" class="text-danger font-italic" style="height: 28px; font-size: 14px"> {{error_msg}} </p>
-                  </div>
-
-                </form>
-
-              </div>
+                </div>
             </div>
-
-            <div class="col-lg-6 d-flex align-items-center gradient-custom-2" style = "background-clip: content-box;">
-              <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                <img src="/img/logo_nobrand.png"
-                    style="width: 100%;" alt="logo">
             </div>
-
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
+</div>
 {{> js}}
 <script>
   Validator(

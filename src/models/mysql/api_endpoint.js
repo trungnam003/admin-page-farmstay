@@ -16,17 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: {name: 'api_endpoint_id'},
         sourceKey: 'id',
         as: 'endpoint_permissions'
-      })
-      ApiEndpoint.hasMany(ApiEndpoint, {
-        foreignKey:{name: 'parent_id'},
-         sourceKey: 'id',
-         as: 'childs'
-      })
-      ApiEndpoint.belongsTo(ApiEndpoint, {
-        foreignKey:{name: 'parent_id', allowNull: true},
-         targetKey: 'id',
-         as: 'parent'
-      })
+      });
     }
   }
   ApiEndpoint.init({
@@ -36,12 +26,14 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER.UNSIGNED
     },
-    parent_id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
-    },
     api_endpoint: {
       type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
+    method:{
+      type: DataTypes.INTEGER.UNSIGNED,
+      defaultValue: 1,
       allowNull: false,
     },
     description: {

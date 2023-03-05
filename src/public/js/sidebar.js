@@ -1,6 +1,7 @@
 $(document).ready(function () {
     $("#sidebar").mCustomScrollbar({
-        theme: "minimal"
+        theme: "minimal",
+        scrollInertia:600
     });
 
     $('#dismiss, .overlay').on('click', function () {

@@ -1,6 +1,5 @@
 'use strict';
 const { Buffer } = require('node:buffer');
-var uuid = require('uuid');
 const uuidBuffer = require('uuid-buffer');
 const bcrypt = require('bcrypt')
 const {HttpError, HttpError404} = require('../../utils/errors')

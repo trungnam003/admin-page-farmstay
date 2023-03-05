@@ -50,7 +50,8 @@ const verify = async function(req, res, next){
         return next(new HttpError(401, 'Tài khoản không tồn tại'))
     }else{
         req.user = user;
-        
+        const {avatar_url, username} = user
+        res.locals.user = {avatar_url, username};
         return next();
     }
     
@@ -68,7 +69,7 @@ const refesh = async function(req, res, next){
             token_rf = req.cookies['jwt_refesh'];
         } 
         if(!token_rf){
-            return next(HttpError(401));
+            return next(new HttpError(401));
         }
         
         let err_rf, payload_rf;
@@ -104,6 +105,8 @@ const refesh = async function(req, res, next){
                 // Nếu hợp lệ tạo jwt mới và tiếp tục đăng nhập
 
                 req.user = user;
+                const {avatar_url, username} = user
+                res.locals.user = {avatar_url, username};
                 const JWT = jwt.sign({
                     sub: user.user_uuid,
                 }, config.secret_key.jwt , {expiresIn: config.jwt.exp, issuer:config.jwt.issuer})

@@ -1,12 +1,13 @@
 const Router                            = require("express").Router();
 const editRouter                            = require("express").Router({mergeParams: true});
-const FarmstayController                = require('../controllers/farmstay.controller')
+const FarmstayController                = require('../controllers/farmstay_controller')
 const {HttpError, HttpError404}         = require('../utils/errors')
 const {authorization}                   = require('../middlewares/auths/authorization')
 const {authenticateJWT}                 = require('../middlewares/auths/authenticate.jwt')
 const {uploadMultiImage, uploadSingleImage}                = require('../middlewares/uploads/upload.image');
 const {validateParam, validateQuery,
-     validateBody, Validate, Joi}            = require('../middlewares/validates')
+     validateBody, Validate, Joi}            = require('../middlewares/validates');
+const {pagination} = require('../middlewares/handlebarHelper')
 
 /**
  * 
@@ -118,6 +119,11 @@ Router.route('/create').all(authenticateJWT)
  */
 Router.route('/trash').all(authenticateJWT)
 .get(
+    validateQuery({
+        limit: Validate.isNumber({require: false}),
+        page: Validate.isNumber({require: false})
+    }),
+    pagination,
     FarmstayController.renderTrashFarmstay
 )
 .put(
@@ -161,6 +167,11 @@ Router.route('/api/get_wards')
  */
 Router.route('/').all(authenticateJWT)
 .get(
+    validateQuery({
+        limit: Validate.isNumber({require: false}),
+        page: Validate.isNumber({require: false})
+    }),
+    pagination,
     FarmstayController.renderFarmstays
 )
 .delete(

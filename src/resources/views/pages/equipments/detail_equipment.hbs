@@ -1,124 +1,127 @@
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="alert alert-primary text-center" role="alert">
-            <h4>Thông tin thiết bị</h4>
-        </div>
-    </div>
-    <div class="col-4">
-        
-            <img 
-            style="width: 400px; object-fit: contain; max-height: 400px;"
-            src="{{equipment.images.url}}"
-            class="img-thumbnail">
-        
-        
-    </div>
-    <div class="col-8">
-        <div class="card">
-            <div class="card-header">
-                Thông tin
+<div class="container">
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-primary text-center" role="alert">
+                <h4>Thông tin thiết bị</h4>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12"><h5 class="card-title text-dark">Tên: {{equipment.name}}</h5></div>
-                    <div class="col-6 mt-1">
-                        <p class="card-text text-dark">Giá thuê: {{equipment.rent_cost}} VNĐ</p>
-                    </div>
-                    <div class="col-6 mt-1">
-                        <p class="card-text text-dark">Số lượng: {{equipment.quantity}} 
-                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalEditQuantity"><i class="fas fa-plus"></i></button>
-                        </p>
-                        
-                    </div>
-                    <div class="col-6 mt-1">
-                        <p class="card-text text-dark">Đã sử dụng: {{equipment.total_used}}</p>
-
-                    </div>
-                    <div class="col-6 mt-1">
-                        <p class="card-text text-dark">Còn lại: {{minus equipment.quantity equipment.total_used}}</p>
-                    </div>
-                    <div class="col-12 mt-1">
-                        <p class="card-text text-dark">Loại thiết bị: {{equipment.belong_to_category.name}}</p>
-                    </div>
+        </div>
+        <div class="col-4">
+            
+                <img 
+                style="width: 400px; object-fit: contain; max-height: 400px;"
+                src="{{equipment.images.url}}"
+                class="img-thumbnail">
+            
+            
+        </div>
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header">
+                    Thông tin
                 </div>
-                
-                
-                
-                
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12"><h5 class="card-title text-dark">Tên: {{equipment.name}}</h5></div>
+                        <div class="col-6 mt-1">
+                            <p class="card-text text-dark">Giá thuê: <span class="money-vnd">{{equipment.rent_cost}}</span></p>
+                        </div>
+                        <div class="col-6 mt-1">
+                            <p class="card-text text-dark">Số lượng: {{equipment.quantity}} 
+                            <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalEditQuantity"><i class="fas fa-plus"></i></button>
+                            </p>
+                            
+                        </div>
+                        <div class="col-6 mt-1">
+                            <p class="card-text text-dark">Đã sử dụng: {{equipment.total_used}}</p>
+
+                        </div>
+                        <div class="col-6 mt-1">
+                            <p class="card-text text-dark">Còn lại: {{minus equipment.quantity equipment.total_used}}</p>
+                        </div>
+                        <div class="col-12 mt-1">
+                            <p class="card-text text-dark">Loại thiết bị: {{equipment.belong_to_category.name}}</p>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-12 mt-2">
-        <div class="alert alert-success text-center" role="alert">
-            Danh sách thiết bị đã sử dụng
+        <div class="col-12 mt-2">
+            <div class="alert alert-success text-center" role="alert">
+                Danh sách thiết bị đã sử dụng
+            </div>
         </div>
-    </div>
-    <div class="col-12">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                <th scope="col">#</th>
-                
-                <th scope="col">Farmstay sử dụng</th>
-                <th scope="col">Số lượng</th>
-                <th scope="col">Trạng thái</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each farmstayEquipment}}
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <th scope="row">{{sum @index 1}}</th>
-                        
-                        {{#if this.used_by}}
-                            <td>{{this.used_by.name}}</td>
-                            
-                        {{else}}
-                            <td class="text-danger">Chưa có</td>
-                        {{/if}}
-                        <td>{{this.quantity_used}}</td>
-                        {{#if this.used_by.deletedAt}}
-                            <td class="badge badge-warning"> <i class="far fa-times-circle"></i> Farmstay đã xóa</td>
-                        {{else}}
-                            <td class="badge badge-success"> <i class="fas fa-check-circle"></i> Đang được sử dụng </td>
-                            
-                            
-                        {{/if}}
+                    <th scope="col">#</th>
+                    
+                    <th scope="col">Farmstay sử dụng</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Trạng thái</th>
                     </tr>
-                {{/each}}
-                
-                
-            </tbody>
-        </table>
-    </div>
-</div>
-<!-- Modal -->
-<div class="modal fade" id="modalEditQuantity" tabindex="-1" role="dialog" aria-labelledby="modalEditQuantityTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="modalEditQuantityTitle">Tạo thêm thiết bị</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
+                </thead>
+                <tbody>
+                    {{#each farmstayEquipment}}
+                        <tr>
+                            <th scope="row">{{sum @index 1}}</th>
+                            
+                            {{#if this.used_by}}
+                                <td>{{this.used_by.name}}</td>
+                                
+                            {{else}}
+                                <td class="text-danger">Chưa có</td>
+                            {{/if}}
+                            <td>{{this.quantity_used}}</td>
+                            {{#if this.used_by.deletedAt}}
+                                <td class="badge badge-warning"> <i class="far fa-times-circle"></i> Farmstay đã xóa</td>
+                            {{else}}
+                                <td class="badge badge-success"> <i class="fas fa-check-circle"></i> Đang được sử dụng </td>
+                                
+                                
+                            {{/if}}
+                        </tr>
+                    {{/each}}
+                    
+                    
+                </tbody>
+            </table>
         </div>
-        <div class="modal-body">
-            <form id="formEditQuantityEquipment" action="/equipment/detail/{{equipment.id}}" method="POST">
-                <div class="form-group">
-                    <label for="inputEditQuantityEquipment">Nhập số lượng</label>
-                    <input name="quantity" type="number" class="form-control" id="inputEditQuantityEquipment" min="{{equipment.total_used}}" max="1000" value="{{equipment.quantity}}">
-                    <span class="form-message"></span>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="modalEditQuantity" tabindex="-1" role="dialog" aria-labelledby="modalEditQuantityTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditQuantityTitle">Tạo thêm thiết bị</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditQuantityEquipment" action="/equipment/detail/{{equipment.id}}" method="POST">
+                    <div class="form-group">
+                        <label for="inputEditQuantityEquipment">Nhập số lượng</label>
+                        <input name="quantity" type="number" class="form-control" id="inputEditQuantityEquipment" min="{{equipment.total_used}}" max="1000" value="{{equipment.quantity}}">
+                        <span class="form-message"></span>
 
-                </div>
-                
-                <p style="font-size: 0.8rem;" class="text-danger font-italic">Chú ý: Không được giảm số lượng nhỏ hơn thiết bị đã sử dụng</p>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button id="btnSubmitEditEquipment" type="button" class="btn btn-primary">Lưu</button>
-        </div>
+                    </div>
+                    
+                    <p style="font-size: 0.8rem;" class="text-danger font-italic">Chú ý: Không được giảm số lượng nhỏ hơn thiết bị đã sử dụng</p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="btnSubmitEditEquipment" type="button" class="btn btn-primary">Lưu</button>
+            </div>
+            </div>
         </div>
     </div>
 </div>
+
 {{> js}}
 <script src="/js/equipment/detail_equipment.js"></script>

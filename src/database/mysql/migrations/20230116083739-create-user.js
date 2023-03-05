@@ -37,18 +37,18 @@ module.exports = {
         allowNull: true,
         defaultValue: false
       },
-      group_id:{
+      role_id:{
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: true,
         references: {
-          model: 'groups',
+          model: 'roles',
           key: 'id'
         },
         onDelete: 'SET NULL',
         onUpdate: 'CASCADE'
       },
       user_type: {
-        type: Sequelize.ENUM('customer', 'employee'),
+        type: Sequelize.ENUM('customer', 'employee', 'admin'),
         allowNull: false,
       },
       createdAt: {

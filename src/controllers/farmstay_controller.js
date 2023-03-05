@@ -7,29 +7,29 @@ const { QueryTypes, Op , fn}                                = require('sequelize
 const slug                                              = require('slug')
 const PromiseBlueBird                                   = require('bluebird');
 const {arrayToJSON, objectToJSON}                       = require('../helpers/sequelize')
-const {imagekit, ImageKit}                              = require('../utils/uploads/image/upload_to_imagekit')
-
+const {imagekit, ImageKit}                              = require('../utils/uploads/image/upload_to_imagekit');
 class FarmstayController{
 
     async renderFarmstays(req, res, next){
         try {
-            let {limit, page} = req.query
-            limit = limit ? parseInt(limit):5;
-            page  = page ? parseInt(page):1;
+            
+            // let {_pagination:{limit, page}} = res.locals;
+            // limit = limit ? parseInt(limit):5;
+            // page  = page ? parseInt(page):1;
 
-            const [farmstays,total_farmstay, total_farmstay_deleted ] = await Promise.all([
+            const [farmstays, total_farmstay_deleted ] = await Promise.all([
                 Farmstay.findAll({
-                    attributes: ['id', 'name', 'uuid', 'rent_cost_per_day'],
+                    attributes: ['id', 'name', 'uuid', 'rent_cost_per_day', 'updatedAt'],
                     include: [
                         {
                             model: Employee,
                             as: 'management_staff'
                         }
                     ],
-                    limit: limit,
-                    offset: limit*(page-1)
+                    // limit: limit,
+                    // offset: limit*(page-1)
                 }),
-                Farmstay.count(),
+                // Farmstay.count(),
                 Farmstay.count({
                     where: {
                         deletedAt: {
@@ -39,14 +39,14 @@ class FarmstayController{
                     paranoid: false
                 })
             ])
+            // Object.assign(res.locals._pagination, {
+            //     totalData: total_farmstay,
+            //     totalDataShowing: farmstays.length
+            // })
             
             res.render('pages/farmstay/farmstays', {
                 farmstays: arrayToJSON(farmstays),
-                total_farmstay,
                 total_farmstay_deleted,
-                limit,
-                page,
-                total: farmstays.length
             })
             
         } catch (error) {
@@ -234,25 +234,31 @@ class FarmstayController{
 
     async renderTrashFarmstay(req, res, next){
         try {
-            const farmstays = await Farmstay.findAll({
-                attributes: ['id', 'name', 'uuid', 'rent_cost_per_day'],
-                include: [
-                    {
-                        model: Employee,
-                        as: 'management_staff'
-                    }
-                ],
-                where: {
-                    deletedAt: {
-                        [Op.not]: null
-                    }
-                },
-                paranoid: false
-            })
+            
+            const [farmstays,] = await Promise.all([
+                Farmstay.findAll({
+                    attributes: ['id', 'name', 'uuid', 'rent_cost_per_day', 'deletedAt'],
+                    include: [
+                        {
+                            model: Employee,
+                            as: 'management_staff'
+                        }
+                    ],
+                    where: {
+                        deletedAt: {
+                            [Op.not]: null
+                        }
+                    },
+                    paranoid: false,
+                }),
+                
+            ])
             res.status(200).render('pages/farmstay/trash', {
-                farmstays: arrayToJSON(farmstays)
+                farmstays: arrayToJSON(farmstays),
+
             })
         } catch (error) {
+            console.log(error)
             next(new HttpError(500, "Có lỗi xảy ra"));
         }
     }

@@ -7,11 +7,7 @@ const cookieParser                      = require('cookie-parser');
 const path                              = require('path');
 const methodOverride                    = require('method-override');
 const { createServer }                  = require('http');
-const flash                             = require('connect-flash');
-const session                           = require('express-session');
-const Redis                             = require("ioredis")
-const RedisStore                        = require("connect-redis")(session)
-const favicon = require('serve-favicon');
+const favicon                           = require('serve-favicon');
 
 const ErrorMiddlewares                  = require('./middlewares/errors')
 const router                            = require('./routers')
@@ -20,7 +16,7 @@ const {HttpError,
 
 const config                            = require('./config')
 const Handlebar = require('handlebars')
-const redisClient = new Redis()
+
 const app = express();
 const PORT = config.server.port;
 Handlebar.registerHelper('ifEquals', function(arg1, arg2, options) {
@@ -44,18 +40,6 @@ const main = async()=>{
     
     app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 
-    app.use(
-        session({
-            store: new RedisStore({ client: redisClient }),
-            secret: config.secret_key.cookie,
-            resave: false,
-            saveUninitialized: true,
-            cookie: {maxAge: 15000, secure: false}
-        })
-    );
-
-
-    app.use(flash())
     
     // Setup handlebars
     app.engine(
@@ -112,6 +96,39 @@ const main = async()=>{
                 }
                 
 
+            },
+            prettifyDate:  function(timestamp) {
+                function addZero(i) {
+                    if (i < 10) {
+                      i = "0" + i;
+                    }
+                    return i;
+                }
+    
+                let curr_date = timestamp.getDate();
+                let curr_month = timestamp.getMonth();
+                curr_month++;
+                let curr_year = timestamp.getFullYear();
+    
+                let curr_hour = timestamp.getHours();
+                let curr_minutes = timestamp.getMinutes();
+                let curr_seconds = timestamp.getSeconds();
+    
+                let result = addZero(curr_date)+ "/" + addZero(curr_month) + "/" + addZero(curr_year)+ '   ' +addZero(curr_hour)+':'+addZero(curr_minutes)+':'+addZero(curr_seconds);
+                return result;
+            },
+            convertApiMethod(api_method){
+                let num = parseInt(api_method)
+                const methods = ["GET", "POST", "PUT", "DELETE"];
+                let hasMethod = '';
+                num = num.toString(2).split("").reverse().join("");
+                
+                for (let i = 0; i < num.length; i++) {
+                    if(parseInt(num.charAt(i))===1){
+                        hasMethod+=methods[i]+' ';
+                    }
+                }
+                return hasMethod.trim();
             }
         }
     }),

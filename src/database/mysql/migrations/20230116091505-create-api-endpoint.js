@@ -12,18 +12,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER.UNSIGNED
       },
-      parent_id: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true,
-        references: {
-          model: 'api_endpoints',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-      },
       api_endpoint: {
         type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      method:{
+        type: Sequelize.INTEGER.UNSIGNED,
+        defaultValue: 1,
         allowNull: false,
       },
       description: {

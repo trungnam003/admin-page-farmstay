@@ -15,16 +15,13 @@ class EquipmentController{
      */
     async renderEquipmentManager(req, res, next){
         try {
-            let {limit, page} = req.query
-            limit = limit ? parseInt(limit):5;
-            page  = page ? parseInt(page):1;
             
-            const [category, equipments, count, countDeleted] = await Promise.all([
+            const [category, equipments, countDeleted] = await Promise.all([
                 Category.findAll({
                     attributes: ['id', 'name']
                 }),
                 Equipment.findAll({
-                    attributes: ['id', 'name', 'total_used', 'quantity', 'rent_cost', ],
+                    attributes: ['id', 'name', 'total_used', 'quantity', 'rent_cost','updatedAt' ],
                     include: [
                         {
                             model: Category,
@@ -32,10 +29,7 @@ class EquipmentController{
                             attributes: ['id','name']
                         }
                     ],
-                    limit: limit,
-                    offset: limit*(page-1)
                 }),
-                Equipment.count(),
                 Equipment.count({
                     where: {
                         deletedAt: {
@@ -49,11 +43,7 @@ class EquipmentController{
             res.render('pages/equipments/equipments', {
                 category: arrayToJSON(category), 
                 equipments: arrayToJSON(equipments),
-                total_equipment: count, // số lượng của toàn bộ thiết bị
-                total_equipment_deleted: countDeleted, // số lượng thiết bị đã xóa
-                limit: limit,
-                page: page,
-                total: equipments.length // số lượng thiết bị được lấy ra
+                total_equipment_deleted: countDeleted, // số lượng thiết bị đã xóaS
             })
         } catch (error) {
             
@@ -154,8 +144,9 @@ class EquipmentController{
     async renderTrashEquipment(req, res, next){
         
         try {
+            
             const equipments = await Equipment.findAll({
-                attributes: ['id', 'name', 'total_used', 'quantity', 'rent_cost', ],
+                attributes: ['id', 'name', 'total_used', 'quantity', 'rent_cost', 'deletedAt'],
                 include: [
                     {
                         model: Category,
@@ -168,10 +159,13 @@ class EquipmentController{
                         [Op.not]: null
                     }
                 },
-                paranoid: false
+                paranoid: false,
+                
             })
             
-            res.render('pages/equipments/trash', {equipments: arrayToJSON(equipments)})
+            res.render('pages/equipments/trash', {
+                equipments: arrayToJSON(equipments),
+            })
         } catch (error) {
             next(new HttpError(500, "Có lỗi xảy ra"));
         }
@@ -204,8 +198,11 @@ class EquipmentController{
                 },
                 paranoid: false
             })
-            const {images:{fileId}} = equipment;
-            await imagekit.deleteFile(fileId);
+
+            const {images} = equipment;
+            if(images){
+                await imagekit.deleteFile(images);
+            }
 
             await Equipment.destroy({
                 where: {
@@ -216,7 +213,7 @@ class EquipmentController{
 
             res.redirect('/equipment/trash') 
         } catch (error) {
-            
+            console.log(error)
             next(new HttpError(500, "Có lỗi xảy ra"));
         }
     }

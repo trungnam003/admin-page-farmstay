@@ -1,5 +1,5 @@
 const Router                        = require("express").Router();
-const AdminController                = require('../controllers/admin.controller')
+const AdminController                = require('../controllers/admin_controller')
 const {HttpError, HttpError404}     = require('../utils/errors')
 const {authorization}               = require('../middlewares/auths/authorization')
 const {authenticateJWT}             = require('../middlewares/auths/authenticate.jwt')

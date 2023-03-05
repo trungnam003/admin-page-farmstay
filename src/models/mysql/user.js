@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {Employee, Customer, Group} = models
+      const {Employee, Customer, Role} = models
       // hasOne
       User.hasOne(Employee, {
         foreignKey: {name: 'user_id'},
@@ -23,10 +23,10 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: 'id',
         as: 'user_customer'
       })
-      User.belongsTo(Group, {
-        foreignKey: {name: 'group_id', allowNull: true},
+      User.belongsTo(Role, {
+        foreignKey: {name: 'role_id', allowNull: true},
         targetKey: 'id',
-        as: 'belong_to_group'
+        as: 'role'
       })
     }
   }
@@ -65,7 +65,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: false
     },
-    group_id:{
+    role_id:{
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       
@@ -74,10 +74,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('customer', 'employee'),
       allowNull: false,
     },
+    
   }, {
     sequelize,
     modelName: 'User',
-    tableName: 'users'
+    tableName: 'users',
+    paranoid: true
   });
   return User;
 };

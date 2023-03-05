@@ -11,12 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {GroupHasRole, RoleHasPermission} = models;
-      Role.hasMany(GroupHasRole, {
-        foreignKey: {name: 'role_id'},
-        sourceKey: 'id',
-        as: 'roles_with_groups'
-      });
+      const { RoleHasPermission} = models;
+      
       Role.hasMany(RoleHasPermission, {
         foreignKey: {name: 'role_id'},
         sourceKey: 'id',
@@ -33,20 +29,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING,
+      unique: true,
       allowNull: false
     },
     description: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
-    is_active: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
-    },
-    piority:{
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false
     },
   }, {
     sequelize,

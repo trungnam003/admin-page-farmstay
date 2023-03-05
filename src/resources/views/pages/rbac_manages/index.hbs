@@ -1,0 +1,1049 @@
+<script defer src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.js'></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.css">
+
+<div class="container mt-2">
+    <div class="row">
+        {{!-- <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <i class="fas fa-users"></i>
+                            Groups
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="d-flex flex-row-reverse">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <h6 class="card-title mt-1">Total: 12 group</h6>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div> --}}
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <i class="fas fa-user-cog"></i>
+                            Roles
+                        </div>
+                        <div class="col-lg-4">
+                            <div class=" position-relative d-flex flex-row-reverse">
+                                <span style="cursor: pointer;" class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </span>
+                                
+                                <div class="dropdown-menu-right position-absolute dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" style="cursor: pointer;" type="button" data-toggle="modal" data-target="#modalCreateRole"><i class="fas fa-plus-circle"></i> Thêm Role</a>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                        <div class="col-lg-12">
+                            <h6 class="card-title mt-1">Total: {{Roles.length}} role</h6>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <i class="fas fa-user-lock"></i>
+                            Permissons
+                        </div>
+                        <div class="col-lg-4">
+                            <div class=" position-relative d-flex flex-row-reverse">
+                                <span style="cursor: pointer;" class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </span>
+                                
+                                <div class="dropdown-menu-right position-absolute dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" style="cursor: pointer;" type="button" data-toggle="modal" data-target="#modalCreatePermission"><i class="fas fa-plus-circle"></i> Thêm Permission</a>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                        <div class="col-lg-12">
+                            <h6 class="card-title mt-1">Total: {{Permissions.length}} permission</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card text-dark bg-warning mb-3">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <i class="fab fa-chrome"></i>
+                            APIs
+                        </div>
+                        <div class="col-lg-4">
+                            <div class=" position-relative d-flex flex-row-reverse">
+                                <span style="cursor: pointer;" class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </span>
+                                
+                                <div class="dropdown-menu-right position-absolute dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" style="cursor: pointer;" type="button" data-toggle="modal" data-target="#exampleModalCenter"><i class="fas fa-plus-circle"></i> Thêm API</a>
+                                </div>
+                                
+                            </div>
+
+                            
+                        </div>
+                        <div class="col-lg-12">
+                            <h6 class="card-title mt-1">Total: {{APIs.length}} API</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class=" wrap-table p-3">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    {{!-- <li class="nav-item">
+                        <a class="nav-link active text-dark" id="home-tab" data-toggle="tab" href="#tabTableGroup" role="tab" aria-controls="groups" aria-selected="true">Groups</a>
+                    </li> --}}
+                    <li class="nav-item">
+                        <a class="nav-link active text-dark" id="profile-tab" data-toggle="tab" href="#tabTableRole" role="tab" aria-controls="roles" aria-selected="false"><i class="fas fa-user-cog"></i> Roles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" id="profile-tab" data-toggle="tab" href="#tabTablePermission" role="tab" aria-controls="roles" aria-selected="false"><i class="fas fa-user-lock"></i> Permissons</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" id="profile-tab" data-toggle="tab" href="#tabTableAPI" role="tab" aria-controls="roles" aria-selected="false"><i class="fab fa-chrome"></i> APIs</a>
+                    </li>
+                </ul>
+                {{!-- <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a href="#tab-table1" data-toggle="tab">Table 1</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tab-table2" data-toggle="tab">Table 2</a>
+                    </li>
+                </ul> --}}
+                <div class="tab-content mt-3">
+                    
+                    <div class="tab-pane active" id="tabTableRole">
+                        <table id="tableRole" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Actions</th>
+                                    <th>STT</th>
+                                    <th>Tên role</th>
+                                    <th>Mô tả</th>
+                                    <th>Số lượng Permission</th>
+                                    <th>Thời gian cập nhật</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each Roles}}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex justify-content-center">
+                                                <a class="btn btn-sm btn-primary mr-1"
+                                                    href="/rbac/role/{{this.id}}"
+                                                ><i class="fa fa-pencil-alt"></i>
+                                                </a>
+                                                <span
+                                                    data-name="{{this.name}}"
+                                                    data-id="{{this.id}}"
+                                                    class="btn btn-sm btn-danger ml-1" 
+                                                    data-toggle="modal" 
+                                                    data-target="#modalDeleteRole">
+                                                    <i class="fas fa-trash"></i>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">{{sum @index 1}}</td>
+                                        <td>{{this.name}}</td>
+                                        <td>{{this.description}}</td>
+                                        <td>{{this.role_has_permissions.length}}</td>
+                                        <td>{{prettifyDate this.updatedAt}}</td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+
+                    <div class="tab-pane " id="tabTablePermission">
+                        <table id="tablePermission" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                            <thead>
+                                <tr class="bg-secondary text-white">
+                                    <th>Actions</th>
+                                    <th>STT</th>
+                                   
+                                    <th>Mô tả</th>
+                                    <th>API endpoint</th>
+                                    <th>Method Permission</th>
+                                    <th>Thời gian cập nhật</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each Permissions}}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex justify-content-center">
+                                                <button class="btn btn-sm btn-primary mr-1"
+                                                    data-id="{{this.id}}"
+                                                    data-api-endpoint-id="{{this.api_endpoint.id}}"
+                                                    data-method="{{this.method}}"
+                                                    data-description="{{this.description}}"
+                                                    data-toggle="modal" data-target="#modalEditPermission"><i class="fa fa-pencil-alt"></i></button>
+                                                <span data-api-endpoint="{{this.api_endpoint.api_endpoint}}"
+                                                    data-method="{{convertApiMethod this.method}}"
+                                                    data-id="{{this.id}}"
+                                                    class="btn btn-sm btn-warning ml-1" 
+                                                    data-toggle="modal" 
+                                                    data-target="#modalDeletePermission">
+                                                    <i class="fas fa-trash"></i>
+                                                </span>
+                                            </div>
+                                            
+                                            
+                                        </td>
+                                        <td class="text-center">{{sum @index 1}}</td>
+                                        <td>{{this.description}}</td>
+                                        <td>{{this.api_endpoint.api_endpoint}}</td>
+                                        <td>{{convertApiMethod this.method}}</td>
+                                        <td>{{prettifyDate this.updatedAt}}</td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane" id="tabTableAPI">
+                        <table id="tableAPI" class="table-striped table-bordered" style="width:100%">
+                            <thead class="bg-secondary text-white">
+                                <tr>
+                                    <th>Actions</th>
+                                    <th class="th-sm">STT</th>
+                                    <th>API endpoint</th>
+                                    <th>API method</th>
+                                    <th>Mô tả</th>
+                                    <th>Thời gian cập nhật</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each APIs}}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex justify-content-center">
+                                                <button class="btn btn-sm btn-primary mr-1"
+                                                    data-id="{{this.id}}"
+                                                    data-api-endpoint="{{this.api_endpoint}}"
+                                                    data-method="{{this.method}}"
+                                                    data-description="{{this.description}}"
+                                                    data-toggle="modal" data-target="#modalEditAPI"><i class="fa fa-pencil-alt"></i></button>
+                                                <span data-api-endpoint="{{this.api_endpoint}}" data-total-permission="{{this.endpoint_permissions.length}}" data-id="{{this.id}}" class="btn btn-sm btn-warning ml-1" data-toggle="modal" data-target="#modalDeleteAPI">
+                                                <i class="fas fa-trash"></i></span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">{{sum @index 1}}</td>
+                                        <td>{{this.api_endpoint}}</td>
+                                        <td>{{convertApiMethod this.method}}</td>
+                                        <td>{{this.description}}</td>
+                                        <td>{{prettifyDate this.updatedAt}}</td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{!-- API --}}
+    <!-- Modal Create API-->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title text-dark" id="exampleModalLongTitle "><i class="fab fa-chrome"></i> Thêm API</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-dark">
+                <form id="formCreateAPI" action="/rbac/api" method="POST">
+                    <div class="form-group">
+                        <label for="inputStringApiEndpoint">Đường dẫn API</label>
+                        <input name="api_endpoint" type="text" class="form-control" id="inputStringApiEndpoint" aria-describedby="apiHelp" placeholder="Nhập đường dẫn API">
+                        <small id="apiHelp" class="form-text text-muted">Ví dụ: <small class="text-primary font-weight-bold">'/example/:params/*'</small></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDescApiEndpoint">Nhập mô tả</label>
+                        <input name="api_description" type="text" class="form-control" id="inputDescApiEndpoint" placeholder="Nhập mô tả API">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">API Method</label>
+                        <input name="api_method" type="text" id="inputMethodApiEndpoint" class="sr-only">
+                        <div class="">
+                            <!-- Default inline 1-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input value="1" type="checkbox" class="custom-control-input api-method-value" id="apiMethodGET">
+                                <label class="custom-control-label" for="apiMethodGET">GET</label>
+                            </div>
+
+                            <!-- Default inline 2-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input  value="2" type="checkbox" class="custom-control-input api-method-value" id="apiMethodPOST">
+                                <label class="custom-control-label" for="apiMethodPOST">POST</label>
+                            </div>
+
+                            <!-- Default inline 3-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input  value="4" type="checkbox" class="custom-control-input api-method-value" id="apiMethodPUT">
+                                <label class="custom-control-label" for="apiMethodPUT">PUT</label>
+                            </div>
+
+                            <!-- Default inline 3-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input  value="8" type="checkbox" class="custom-control-input api-method-value" id="apiMethodDELETE">
+                                <label class="custom-control-label" for="apiMethodDELETE">DELETE</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitCreateAPI" class="btn btn-primary">Thêm</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Edit API -->
+    <div class="modal fade" id="modalEditAPI" tabindex="-1" role="dialog" aria-labelledby="modalEditAPITitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title text-dark" id="modalEditAPITitle "><i class="fab fa-chrome"></i> Chỉnh sửa API</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-dark">
+                <form id="formEditAPI" action="/rbac/api?_method=PUT" method="POST">
+                    <input name="id" type="number" class="form-control sr-only" id="idEditAPI">
+                    <div class="form-group">
+                        <label for="editStringApiEndpoint">Đường dẫn API</label>
+                        <input name="api_endpoint" type="text" class="form-control" id="editStringApiEndpoint" aria-describedby="apiHelp" placeholder="Nhập đường dẫn API">
+                        <small id="apiHelp" class="form-text text-muted">Ví dụ: <small class="text-primary font-weight-bold">'/example/:params/*'</small></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescApiEndpoint">Nhập mô tả</label>
+                        <input name="api_description" type="text" class="form-control" id="editDescApiEndpoint" placeholder="Nhập mô tả API">
+                    </div>
+                    <div class="form-group">
+                        <label for="editMethodApiEndpoint">API Method</label>
+                        <input name="api_method" type="text" id="editMethodApiEndpoint" class="sr-only">
+                        <div class="">
+                            <!-- Default inline 1-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input value="1" type="checkbox" class="custom-control-input edit-api-method-value" id="editApiMethodGET">
+                                <label class="custom-control-label" for="editApiMethodGET">GET</label>
+                            </div>
+                            
+                            <!-- Default inline 2-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input  value="2" type="checkbox" class="custom-control-input edit-api-method-value" id="editApiMethodPOST">
+                                <label class="custom-control-label" for="editApiMethodPOST">POST</label>
+                            </div>
+
+                            <!-- Default inline 3-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input  value="4" type="checkbox" class="custom-control-input edit-api-method-value" id="editApiMethodPUT">
+                                <label class="custom-control-label" for="editApiMethodPUT">PUT</label>
+                            </div>
+
+                            <!-- Default inline 3-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input  value="8" type="checkbox" class="custom-control-input edit-api-method-value " id="editApiMethodDELETE">
+                                <label class="custom-control-label" for="editApiMethodDELETE">DELETE</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitEditAPI" class="btn btn-primary">Sửa</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Delete API -->
+    <div class="modal fade" id="modalDeleteAPI" tabindex="-1" role="dialog" aria-labelledby="modalDeleteAPILabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDeleteAPILabel">Bạn có muốn xóa?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger modal-title-danger" role="alert">
+                        Bạn có muốn xóa API <a class="alert-link" id="titleModalDeleteAPI"></a> không?
+                    </div>
+                    <form id="formDeleteAPI" method="POST"></form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnDeleteAPI"type="button" class="btn btn-danger">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{!-- MODAL PERMISSION --}}
+    <!-- Modal Create Permission -->
+    <div class="modal fade" id="modalCreatePermission" tabindex="-1" role="dialog" aria-labelledby="modalCreatePermissionTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title text-light" id="modalCreatePermissionTitle "><i class="fas fa-user-lock"></i> Thêm Permission</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" class="text-light">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-dark">
+                <form id="formCreatePermission" action="/rbac/permission" method="POST">
+                    
+                    <div class="form-group">
+                        <label for="inputDescPermission">Nhập mô tả</label>
+                        <input name="description_permission" type="text" class="form-control" id="inputDescPermission" placeholder="Nhập mô tả permission">
+                    </div>
+                    <div class="form-group">
+                        <label for="selectApiForPermission">Chọn API</label>
+                        <select name="api_permission_id" class="form-control" id="selectApiForPermission">
+                            <option value="" selected>-- Chọn API --</option>
+                            {{#each APIs}}
+                                <option value="{{this.id}}" data-method-api="{{this.method}}">{{this.api_endpoint}} - ({{convertApiMethod this.method}})</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputMethodApiPermission">API Method</label>
+                        <input name="api_method_permission" type="text" id="inputMethodApiPermission" class="sr-only">
+                        <div class="">
+                            <!-- Default inline 1-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input disabled  value="1" type="checkbox" class="custom-control-input api-method-permission-value" id="permissionApiMethodGET">
+                                <label class="custom-control-label label-add-method-permission text-del" for="permissionApiMethodGET">GET</label>
+                            </div>
+
+                            <!-- Default inline 2-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input disabled  value="2" type="checkbox" class="custom-control-input api-method-permission-value" id="permissionApiMethodPOST">
+                                <label class="custom-control-label label-add-method-permission text-del" for="permissionApiMethodPOST">POST</label>
+                            </div>
+
+                            <!-- Default inline 3-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input disabled   value="4" type="checkbox" class="custom-control-input api-method-permission-value" id="permissionApiMethodPUT">
+                                <label class="custom-control-label label-add-method-permission text-del" for="permissionApiMethodPUT">PUT</label>
+                            </div>
+
+                            <!-- Default inline 3-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input disabled   value="8" type="checkbox" class="custom-control-input api-method-permission-value" id="permissionApiMethodDELETE">
+                                <label class="custom-control-label label-add-method-permission text-del" for="permissionApiMethodDELETE">DELETE</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitCreatePermission" class="btn btn-primary">Thêm</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Permission -->
+    <div class="modal fade" id="modalEditPermission" tabindex="-1" role="dialog" aria-labelledby="modalEditPermissionTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title text-light" id="modalEditPermissionTitle "><i class="fas fa-user-lock"></i> Sửa Permission</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" class="text-light">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-dark">
+                <form id="formEditPermission" action="/rbac/permission?_method=PUT" method="POST">
+                    <input name="id" type="number" class="form-control sr-only" id="idEditPermission">
+                    
+                    <div class="form-group">
+                        <label for="editDescPermission">Nhập mô tả</label>
+                        <input name="description_permission" type="text" class="form-control" id="editDescPermission" placeholder="Nhập mô tả permission">
+                    </div>
+                    <div class="form-group">
+                        <label for="selectEditApiForPermission">Chọn API</label>
+                        <select name="api_permission_id" class="form-control" id="selectEditApiForPermission">
+                            <option value="" selected>-- Chọn API --</option>
+                            {{#each APIs}}
+                                <option value="{{this.id}}" data-method-api="{{this.method}}">{{this.api_endpoint}} - ({{convertApiMethod this.method}})</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMethodApiPermission">API Method</label>
+                        <input name="api_method_permission" type="text" id="editMethodApiPermission" class="sr-only">
+                        <div class="">
+                            <!-- Default inline 1-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input disabled value="1" type="checkbox" class="custom-control-input edit-api-method-permission-value" id="editPermissionApiMethodGET">
+                                <label class="custom-control-label label-edit-method-permission text-del" for="editPermissionApiMethodGET">GET</label>
+                            </div>
+
+                            <!-- Default inline 2-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input disabled  value="2" type="checkbox" class="custom-control-input edit-api-method-permission-value" id="editPermissionApiMethodPOST">
+                                <label class="custom-control-label label-edit-method-permission text-del" for="editPermissionApiMethodPOST">POST</label>
+                            </div>
+
+                            <!-- Default inline 3-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input disabled   value="4" type="checkbox" class="custom-control-input edit-api-method-permission-value" id="editPermissionApiMethodPUT">
+                                <label class="custom-control-label label-edit-method-permission text-del" for="editPermissionApiMethodPUT">PUT</label>
+                            </div>
+
+                            <!-- Default inline 3-->
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input disabled   value="8" type="checkbox" class="custom-control-input edit-api-method-permission-value" id="editPermissionApiMethodDELETE">
+                                <label class="custom-control-label label-edit-method-permission text-del" for="editPermissionApiMethodDELETE">DELETE</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitEditPermission" class="btn btn-primary">Sửa</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete Permission -->
+    <div class="modal fade" id="modalDeletePermission" tabindex="-1" role="dialog" aria-labelledby="modalDeletePermissionLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDeletePermissionLabel">Bạn có muốn xóa?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger modal-title-danger" role="alert">
+                        Bạn có muốn xóa Permission <a class="alert-link" id="titleModalDeletePermission"></a> không?
+                    </div>
+                    <form id="formDeletePermission" method="POST"></form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnDeletePermission"type="button" class="btn btn-danger">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{!-- ROLE --}}
+    {{!-- Modal Create Role --}}
+    <div class="modal fade" id="modalCreateRole" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-user-cog"></i> Thêm Role</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span class="text-white" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCreateRole" class="m-2" action="/rbac/role" method="POST">
+
+                        <div class="form-group">
+                            <label for="inputNameRole">Tên Role</label>
+                            <input name="name_role" type="text" class="form-control" id="inputNameRole" placeholder="Nhập tên role">
+                            <small class="form-text text-danger">Tên role là duy nhất không được trùng.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDescRole">Mô tả Role</label>
+                            <input name="desc_role" type="text" class="form-control" id="inputDescRole" placeholder="Nhập mô tả cho role">
+                        </div>
+                        <div class="form-group sr-only">
+                            <input id="inputRoleHasPermission" name="role_has_permission" type="text" class="form-control">
+                        </div>
+                    </form>
+                    <div class="row m-2">
+                        
+                        <div class="col-lg-6">
+                            <h6>Danh sách Permission</h6>
+                            <div class="list-group list-group-scroll" id="permission" style="border: 2px solid #3c3c3c80; border-radius: 6px;">
+                                {{#each Permissions}}
+                                    <div disabled-move="false" data-id="{{this.id}}" data-api-endpoint="{{this.api_endpoint.api_endpoint}}" class="list-group-item list-group-item-action cursor-move item-permission">
+                                        <span style="font-size: 16px;" class="badge badge-success font-weight-normal">{{this.api_endpoint.api_endpoint}}</span> ({{convertApiMethod this.method}})
+                                    </div>
+
+                                {{/each}}
+                                
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <h6>Danh sách Permission của Role</h6>
+                            <div class="list-group list-group-scroll" id="roleHasPermission" style="border: 2px solid #28a745; border-radius: 6px;">
+                            </div>     
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnSubmitCreateRole" class="btn btn-primary">Thêm</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete Role -->
+    <div class="modal fade" id="modalDeleteRole" tabindex="-1" role="dialog" aria-labelledby="modalDeletePermissionLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDeleteRoleLabel">Bạn có muốn xóa?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger modal-title-danger" role="alert">
+                        Bạn có muốn xóa Role <a class="alert-link" id="titleModalDeleteRole"></a> không?
+                    </div>
+                    <form id="formDeleteRole" method="POST"></form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnDeleteRole"type="button" class="btn btn-danger">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+{{> js}}
+<script>
+$(document).ready(function () {
+
+    dragula([document.getElementById('permission'), document.getElementById('roleHasPermission')],
+        {
+            moves: function (el, source, handle, sibling) {
+                
+                const checkMoved = el.getAttribute('disabled-move')==='true' ? true: false;
+                return !checkMoved; 
+            },
+            
+        }
+    ).on('drop', (e,  target, source,)=>{
+        
+        if(target.id === source.id){
+            return;
+        }
+        const apiDrop = e.getAttribute('data-api-endpoint');
+        const idDrop = e.getAttribute('data-id');
+        if(source.id == 'permission'){
+            
+            $(`#${source.id} .item-permission`).each((i, el)=>{
+                const apiSource = el.getAttribute('data-api-endpoint');
+                const id = el.getAttribute('data-id');
+
+                if(apiSource === apiDrop && id !== idDrop){
+                    el.setAttribute('disabled-move', true);
+                    let disabledApi = el.children[0]
+                    disabledApi.classList.add('badge-danger')
+                    el.classList.add('disabled')
+                    el.classList.add('cursor-nodrop')
+                }
+            })
+        }else if(source.id == 'roleHasPermission'){
+            $(`#${target.id} .item-permission`).each((i, el)=>{
+                const apiTarget = el.getAttribute('data-api-endpoint');
+                const idTarget = el.getAttribute('data-id');
+
+                if(apiTarget === apiDrop && idTarget !== idDrop){
+                    el.setAttribute('disabled-move', false);
+                    let disabledApi = el.children[0]
+                    disabledApi.classList.remove('badge-danger')
+                    el.classList.remove('disabled')
+                    el.classList.remove('cursor-nodrop')
+                }
+            })
+        }
+        
+    })
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+    });
+ 
+    $('#tablePermission').DataTable({
+        scrollY: 250,
+        scrollCollapse: true,
+        scrollX: true,
+        scrollCollapse: true,
+    });
+    $('#tableRole').DataTable({
+        scrollY: 250,
+        scrollCollapse: true,
+        scrollX: true,
+        paging: true,
+        "columnDefs": [
+            { "width": "10px", "targets": 0 },
+            { "width": "10px", "targets": 1 },
+            { "width": "100px", "targets": 2 },
+            { "width": "350px", "targets": 3 },
+            { "width": "200px", "targets": 4 },
+            { "width": "200px", "targets": 5 },
+        ],
+    });
+    $('#tableAPI').removeAttr('width').DataTable({
+        scrollY: 250,
+        scrollCollapse: true,
+        scrollX: true,
+        paging: true,
+        "columnDefs": [
+            { "width": "10px", "targets": 0 },
+            { "width": "10px", "targets": 1 },
+            { "width": "100px", "targets": 2 },
+            { "width": "150px", "targets": 3 },
+            { "width": "350px", "targets": 4 },
+            { "width": "150px", "targets": 5 },
+        ],
+        
+    });
+    
+    // Thêm API
+    (function($){
+        $('#btnSubmitCreateAPI').on('click', (e)=>{
+            let method = 0;
+            Array.from($('.api-method-value')).forEach((element, index)=>{
+                const input = $('.api-method-value')[index];
+                const {checked} = input;
+                if(checked){
+                    const {value} = input
+                    method+=parseInt(value)
+                }
+                
+            })
+            $('#inputMethodApiEndpoint').val(method);
+            $('#formCreateAPI').submit()
+        })
+        
+    })(jQuery);
+
+    // Sửa API
+    (function($){
+         $('#modalEditAPI').on('show.bs.modal', function (e){
+            for(let i = 0; i<$('.edit-api-method-value').length; i++){
+                $('.edit-api-method-value')[i].checked = false
+            }
+            var button = $(e.relatedTarget) // Button that triggered the modal
+            let id = button.data('id')
+            let api_endpoint = button.data('api-endpoint');
+            let desc = button.data('description');
+            let method = button.data('method');
+
+            $('#editStringApiEndpoint').val(api_endpoint)
+            $('#editDescApiEndpoint').val(desc)
+            $("#idEditAPI").val(id);
+            method = method.toString(2).split("").reverse()
+            
+            for(let i = 0; i<$('.edit-api-method-value').length; i++){
+                
+                if( i< method.length && +method[i]===1){
+
+                    $('.edit-api-method-value')[i].checked = true
+                }else{
+
+                    $('.edit-api-method-value')[i].checked = false
+                }
+            }
+        });
+        $('#btnSubmitEditAPI').on('click', (e)=>{
+            let method = 0;
+            Array.from($('.edit-api-method-value')).forEach((element, index)=>{
+                const input = $('.edit-api-method-value')[index];
+                const {checked} = input;
+                if(checked){
+                    const {value} = input
+                    method+=parseInt(value)
+                }
+                
+            })
+            $('#editMethodApiEndpoint').val(method);
+            $('#formEditAPI').submit()
+        })
+
+    })(jQuery);
+
+    // Xóa API
+    (function($){
+        $('#modalDeleteAPI').on('show.bs.modal', function (e){
+            var button = $(e.relatedTarget) // Button that triggered the modal
+            let id = button.data('id')
+            let api_endpoint = button.data('api-endpoint');
+            let total_permission = button.data('total-permission');
+
+            $('#titleModalDeleteAPI').text(api_endpoint+` đang có ${total_permission} Permission phụ thuộc`)
+            $('#btnDeleteAPI').attr('data-id', id);
+        });
+        $('#btnDeleteAPI').click((e)=>{
+            const id = e.target.getAttribute('data-id')
+            $('#formDeleteAPI').attr('action', `/rbac/api?_method=DELETE&api_id=${id}`);
+            $('#formDeleteAPI').submit();
+        })
+
+    })(jQuery);
+
+
+    // Các hàm xử lý Permission
+    // Thêm
+    (function($){
+        $('#selectApiForPermission').on('change', function(){
+            $('.api-method-permission-value').each((index, element)=>{
+                element.checked = false
+            })
+            let selected = $(this).find('option:selected', this);
+            var method = selected.data('method-api');  
+            
+            if(!method || !$(this).val()){
+                $('.api-method-permission-value').attr('disabled', true);
+                $('.label-add-method-permission').each((index, element)=>{
+                    element.classList.add('text-del')
+                })
+                
+            }else{
+                method = method.toString(2).split("").reverse();
+                $('.api-method-permission-value').each((index, element)=>{
+                    if( index< method.length && +method[index]===1){
+                        $('.label-add-method-permission')[index].classList.remove('text-del')
+                        element.removeAttribute('disabled');
+                    }else{
+                        $('.label-add-method-permission')[index].classList.add('text-del')
+                        element.disabled = true;
+                    }
+                })
+                
+            }
+
+        })
+
+        $('#btnSubmitCreatePermission').on('click', ()=>{
+            let method = 0;
+            Array.from($('.api-method-permission-value')).forEach((element, index)=>{
+                const input = $('.api-method-permission-value')[index];
+                const {checked} = input;
+                if(checked){
+                    const {value} = input
+                    method+=parseInt(value)
+                }
+                
+            })
+            $('#inputMethodApiPermission').val(method);
+            $('#formCreatePermission').submit();
+        })
+
+    })(jQuery);
+    // Sửa Permission
+    (function($){
+        $('#modalEditPermission').on('show.bs.modal', function (e){
+        
+            var button = $(e.relatedTarget) // Button that triggered the modal
+            let id = button.data('id')
+            let api_endpoint_id = button.data('api-endpoint-id');
+            let desc = button.data('description');
+            let method = button.data('method');
+           
+            
+            $('#editDescPermission').val(desc)
+            $("#idEditPermission").val(id);
+
+            $("#selectEditApiForPermission option").each(function()
+            {
+                const id = $(this).val()? parseInt($(this).val()):0;
+                if(id!==0 && id === parseInt(api_endpoint_id)){
+                    $(this).attr('selected', true);
+                    let methodApi = $(this).data('method-api'); 
+                    
+                    if(!methodApi || !$(this).val()){
+                        $('.edit-api-method-permission-value').attr('disabled', true);
+                        $('.label-edit-method-permission').each((index, element)=>{
+                            element.classList.add('text-del')
+                        })
+                    }else{
+                        methodApi = methodApi.toString(2).split("").reverse();
+                        $('.edit-api-method-permission-value').each((index, element)=>{
+                            if( index< methodApi.length && +methodApi[index]===1){
+                                $('.label-edit-method-permission')[index].classList.remove('text-del')
+                                element.removeAttribute('disabled');
+                            }else{
+                                $('.label-edit-method-permission')[index].classList.add('text-del')
+                                element.disabled = true;
+                            }
+                        })
+                        method = method.toString(2).split("").reverse();
+                        for(let i = 0; i<$('.edit-api-method-permission-value').length; i++){
+                
+                            if( i< method.length && +method[i]===1){
+
+                                $('.edit-api-method-permission-value')[i].checked = true
+                            }else{
+
+                                $('.edit-api-method-permission-value')[i].checked = false
+                            }
+                        }
+                    }
+                }
+                
+            });
+        
+
+        });
+
+       
+        $('#selectEditApiForPermission').on('change', function(){
+            
+            $('.edit-api-method-permission-value').each((index, element)=>{
+                element.checked = false
+            })
+            let selected = $(this).find('option:selected', this);
+            
+            let method = selected.data('method-api');  
+            
+            if(!method || !$(this).val()){
+                $('.edit-api-method-permission-value').attr('disabled', true);
+                $('.label-edit-method-permission').each((index, element)=>{
+                    element.classList.add('text-del')
+                })
+                
+            }else{
+                
+                method = method.toString(2).split("").reverse();
+                $('.edit-api-method-permission-value').each((index, element)=>{
+                    
+                    if( index< method.length && +method[index]===1){
+                        
+                        $('.label-edit-method-permission')[index].classList.remove('text-del')
+                        element.removeAttribute('disabled');
+                    }else{
+                        
+                        $('.label-edit-method-permission')[index].classList.add('text-del')
+                        element.disabled = true;
+                    }
+                })
+                
+            }
+
+        })
+
+        $('#btnSubmitEditPermission').on('click', function(e){
+            let method = 0;
+            Array.from($('.edit-api-method-permission-value')).forEach((element, index)=>{
+                const input = $('.edit-api-method-permission-value')[index];
+                const {checked} = input;
+                if(checked){
+                    const {value} = input
+                    method+=parseInt(value)
+                }
+                
+            })
+            $('#editMethodApiPermission').val(method);
+            $('#formEditPermission').submit()
+        })
+
+    })(jQuery);
+    // Xóa Permission
+    (function($){
+        $('#modalDeletePermission').on('show.bs.modal', function (e){
+            var button = $(e.relatedTarget) // Button that triggered the modal
+            let id = button.data('id');
+            let api = button.data('api-endpoint');
+            let method = button.data('method')
+
+            $('#titleModalDeletePermission').text('API: ' + api + ' cho phép sử dụng ' + method)
+            $('#btnDeletePermission').attr('data-id', id);
+        });
+        $('#btnDeletePermission').click((e)=>{
+            const id = e.target.getAttribute('data-id')
+            $('#formDeletePermission').attr('action', `/rbac/permission?_method=DELETE&permission_id=${id}`);
+            $('#formDeletePermission').submit();
+        })
+
+    })(jQuery);
+
+    // Tạo Role
+    (function($){
+        $('#btnSubmitCreateRole').on('click', (e)=>{
+            const listPermissionId = []
+            $('#roleHasPermission .item-permission').each((index, item)=>{
+                const permissionId = $(item).data('id');
+                listPermissionId.push(permissionId)
+            })
+            $("#inputRoleHasPermission").val(listPermissionId.length ? JSON.stringify(listPermissionId) : '');
+            $('#formCreateRole').submit();
+        })
+
+    })(jQuery);
+
+    // Xóa Role
+    (function($){
+        $('#modalDeleteRole').on('show.bs.modal', function (e){
+            var button = $(e.relatedTarget) // Button that triggered the modal
+            let id = button.data('id')
+            let name = button.data('name');
+           
+            $('#titleModalDeleteRole').text(name)
+            $('#btnDeleteRole').attr('data-id', id);
+        });
+        $('#btnDeleteRole').click((e)=>{
+            const id = e.target.getAttribute('data-id')
+            $('#formDeleteRole').attr('action', `/rbac/role?_method=DELETE&role_id=${id}`);
+            $('#formDeleteRole').submit();
+        })
+
+    })(jQuery);
+
+    
+});
+</script>

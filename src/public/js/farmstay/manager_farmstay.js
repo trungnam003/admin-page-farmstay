@@ -1,17 +1,17 @@
 $( document ).ready(function(){
-    (function($){
-        'use strict';
+    // (function($){
+    //     'use strict';
         
         
-        for (let index = 0; index < $('.money-vnd').length; index++) {
-            const element = $('.money-vnd').get(index);
+    //     for (let index = 0; index < $('.money-vnd').length; index++) {
+    //         const element = $('.money-vnd').get(index);
             
-            const value = parseInt(element.innerText);
-            element.innerText = value.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
-        }
-        // $('.money-vnd').text(value.toLocaleString('it-IT', {style : 'currency', currency : 'VND'}));
+    //         const value = parseInt(element.innerText);
+    //         element.innerText = value.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+    //     }
+    //     // $('.money-vnd').text(value.toLocaleString('it-IT', {style : 'currency', currency : 'VND'}));
         
-    })(jQuery);
+    // })(jQuery);
     // Submit xóa thiết bị
     (function($){
         $('#btnDeleteFarmstay').on('click', function (e) {

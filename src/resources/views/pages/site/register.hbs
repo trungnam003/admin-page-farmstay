@@ -1,75 +1,77 @@
 <link rel="stylesheet" href="/css/validate.css">
 
-<section class="h-100 gradient-form" style="background-color: transparent;">
-  <div class="h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-xl-10">
-        <div class="card rounded-3 text-black">
-          <div class="row g-0">
-            <div class="col-lg-6">
-              <div class="card-body p-md-3 mx-md-3">
+<div class="container">
+    <section class="h-100 gradient-form" style="background-color: transparent;">
+        <div class="h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-10">
+                <div class="card rounded-3 text-black">
+                <div class="row g-0">
+                    <div class="col-lg-6">
+                    <div class="card-body p-md-3 mx-md-3">
 
-                {{!-- <div class="text-center">
-                  <img src="/img/logo1.png"
-                    style="width: 185px;" alt="logo">
-                </div> --}}
+                        {{!-- <div class="text-center">
+                        <img src="/img/logo1.png"
+                            style="width: 185px;" alt="logo">
+                        </div> --}}
 
-                <form class = "mt-4" style = "font-size: 16px;" id="form-register" method="POST">
-                  <p style="color: black; text-align: center; font-weight: 550; font-size: 1.4rem;">Đăng kí tài khoản Admin Page</p>
+                        <form class = "mt-4" style = "font-size: 16px;" id="form-register" method="POST">
+                        <p style="color: black; text-align: center; font-weight: 550; font-size: 1.4rem;">Đăng kí tài khoản Admin Page</p>
 
-                  <div class="form-outline mb-1 form-group">
-                    <label class="form-label" for="username">Username</label>
-                    <input name="username" type="text" id="username" class="form-control"
-                      placeholder="Username"/>
-                    <span class="form-message"></span>
-                  </div>
-                  <div class="form-outline mb-1 form-group">
-                    <label class="form-label" for="email">Email</label>
-                    <input name="email" type="email" id="email" class="form-control"
-                      placeholder="Email"/>
-                    <span class="form-message"></span>
-                  </div>
-
-
-                  <div class="form-outline mb-1 form-group">
-                    <label class="form-label" for="password">Mật khẩu</label>
-                    <input name="password" id="password" type="password" class="form-control" placeholder = "Mật khẩu" />
-                    <span class="form-message"></span>
-                  </div>
-
-                  <div class="form-outline mb-1 form-group">
-                    <label class="form-label" for="password_confirmation">Nhập lại mật khẩu</label>
-                    <input name="password_confirmation" id="password_confirmation" type="password" class="form-control" placeholder = "Nhập lại mật khẩu" />
-                    <span class="form-message"></span>
-                  </div>
-                  
-                  <div class="text-center pt-1 mb-1 pb-1">
-                    <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" form="form-register" type="submit" style = "font-size: 14px; padding: 12px;">LOGIN</button>
-                    <a class="text-muted" href="#!">Forgot password?</a>
-                  </div>
+                        <div class="form-outline mb-1 form-group">
+                            <label class="form-label" for="username">Username</label>
+                            <input name="username" type="text" id="username" class="form-control"
+                            placeholder="Username"/>
+                            <span class="form-message"></span>
+                        </div>
+                        <div class="form-outline mb-1 form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <input name="email" type="email" id="email" class="form-control"
+                            placeholder="Email"/>
+                            <span class="form-message"></span>
+                        </div>
 
 
+                        <div class="form-outline mb-1 form-group">
+                            <label class="form-label" for="password">Mật khẩu</label>
+                            <input name="password" id="password" type="password" class="form-control" placeholder = "Mật khẩu" />
+                            <span class="form-message"></span>
+                        </div>
 
-                  <div style="height: 28px">
-                    <p class = "text-danger mb-0"style="color: black; font-size: 14px;" id="warning-input">{{error_msg}}</p>
-                  </div>
-                </form>
-                
-              </div>
-              
+                        <div class="form-outline mb-1 form-group">
+                            <label class="form-label" for="password_confirmation">Nhập lại mật khẩu</label>
+                            <input name="password_confirmation" id="password_confirmation" type="password" class="form-control" placeholder = "Nhập lại mật khẩu" />
+                            <span class="form-message"></span>
+                        </div>
+                        
+                        <div class="text-center pt-1 mb-1 pb-1">
+                            <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" form="form-register" type="submit" style = "font-size: 14px; padding: 12px;">LOGIN</button>
+                            <a class="text-muted" href="#!">Forgot password?</a>
+                        </div>
+
+
+
+                        <div style="height: 28px">
+                            <p class = "text-danger mb-0"style="color: black; font-size: 14px;" id="warning-input">{{error_msg}}</p>
+                        </div>
+                        </form>
+                        
+                    </div>
+                    
+                    </div>
+                    <div class="col-lg-6 d-flex align-items-center gradient-custom-2" style = "background-clip: content-box;">
+                    <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                        <img src="/img/logo_nobrand.png"
+                            style="width: 100%;" alt="logo">
+                        
+                    </div>
+                </div>
+                </div>
             </div>
-            <div class="col-lg-6 d-flex align-items-center gradient-custom-2" style = "background-clip: content-box;">
-              <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                <img src="/img/logo_nobrand.png"
-                    style="width: 100%;" alt="logo">
-                
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
+</div>
 {{> js}}
 <script>
   Validator(

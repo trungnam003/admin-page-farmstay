@@ -19,7 +19,6 @@ function handleHttpError400(err, req, res, next){
 
 function handleHttpError401(err, req, res, next){
   if(err instanceof HttpError401 || err.statusCode ==401){
-    req.flash('error_msg', err.messageResponse)
     res.status(302).redirect('/auth/login')
     return;
   }
@@ -28,7 +27,6 @@ function handleHttpError401(err, req, res, next){
 
 function handleHttpError409(err, req, res, next){
   if(err instanceof HttpError409 || err.statusCode ==409){
-    req.flash('error_msg', err.messageResponse)
     res.status(302).redirect('/auth/register')
     return;
   }

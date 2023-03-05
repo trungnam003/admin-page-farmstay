@@ -7,214 +7,217 @@
     object-fit: cover;
 }
 </style>
+<div class="container">
 <div class="mt-4">
-    <form id='form-create-farmstay' method="post" enctype='multipart/form-data'action="/farmstay/create" >
-        <div class="alert alert-success" role="alert">
-            <h4  class="text-center text-success" >Tạo Farmstay</h4>
-        </div>
-       
+        <form id='form-create-farmstay' method="post" enctype='multipart/form-data'action="/farmstay/create" >
+            <div class="alert alert-success" role="alert">
+                <h4  class="text-center text-success" >Tạo Farmstay</h4>
+            </div>
+        
 
-        <div class="form-group">
-            <label for="inputFarmstay">Tên Farmstay</label>
-            <input type="text" class="form-control" id="inputFarmstay" name='farmstay_name' placeholder="Nhập tên farmstay">
-            <span class="form-message"></span>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="inputRentCost">Giá thuê/ngày</label>
-                <input type="text" class="form-control" id="inputRentCost" name='rent_cost' placeholder="Nhập giá thuê / ngày">
+            <div class="form-group">
+                <label for="inputFarmstay">Tên Farmstay</label>
+                <input type="text" class="form-control" id="inputFarmstay" name='farmstay_name' placeholder="Nhập tên farmstay">
                 <span class="form-message"></span>
             </div>
-            <div class="form-group col-md-6">
-                <label for="inputManager">Chọn người quản lý</label>
-                <select name="manager_id" id="inputManager" class="form-control">
-                <option value="0" selected>Chưa có</option>
-                {{#each managers}}
-                    <option value="{{this.id}}">{{this.name}}</option>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputRentCost">Giá thuê/ngày</label>
+                    <input type="text" class="form-control" id="inputRentCost" name='rent_cost' placeholder="Nhập giá thuê / ngày">
+                    <span class="form-message"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputManager">Chọn người quản lý</label>
+                    <select name="manager_id" id="inputManager" class="form-control">
+                    <option value="0" selected>Chưa có</option>
+                    {{#each managers}}
+                        <option value="{{this.id}}">{{this.name}}</option>
+                    {{/each}}
+
+                    </select>
+                    <span class="form-message"></span>
+                </div>
+                
+            </div>
+
+            <div class="form-group">
+                <label for="inputDescription">Nhập mô tả</label>
+                <textarea type="text" class="form-control" id="inputDescription" name='description' placeholder="Nhập mô tả cho farmstay"></textarea>
+            </div>
+
+            <div class="alert alert-primary" role="alert">
+                <h6  class="text-center text-primary" >Nhập địa chỉ</h6>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="inputProvince ">Chọn tỉnh</label>
+                    <select name='province_code' id="inputProvince" class="form-control">
+                    <option value="" selected>Choose...</option>
+                    {{#each provinces}}
+                        <option value="{{this.code}}">{{this.full_name}}</option>
+                    {{/each}}
+                    </select>
+                    <span class="form-message"></span>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="inputDistrict">Chọn huyện</label>
+                    <select name='district_code' id="inputDistrict" class="form-control" disabled>
+                    <option selected>Choose...</option>
+                    </select>
+                    <span class="form-message"></span>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="inputWard">Chọn xã</label>
+                    <select name='ward_code' id="inputWard" class="form-control" disabled>
+                    <option selected>Choose...</option>
+                    </select>
+                    <span class="form-message"></span>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label for="inputAddress">Địa chỉ cụ thể</label>
+                <input type="text" class="form-control" id="inputAddress" name='address' placeholder="Nhập địa chỉ cụ thể">
+            </div>
+
+            
+            
+            <div class="form-group">
+                <label for="inputLinkGGMAP">Nhập link địa chỉ trên GoogleMap</label>
+                <input type="text" class="form-control" id="inputLinkGGMAP" name="link_ggmap">
+                
+            </div>
+            <div class="form-group">
+                <label for="inputLinkEmbeddedGGMAP">Nhập link nhúng trên GoogleMap</label>
+                <input type="text" class="form-control" id="inputLinkEmbeddedGGMAP" name="link_embedded_ggmap">
+                
+            </div>
+            <div class="form-group">
+                <a class = "text-primary"href="https://www.google.com/maps" target="_blank">Mở GoogleMap</a>
+            </div>
+            <div class="alert alert-primary" role="alert">
+                <h6  class="text-center text-primary" >Tải ảnh</h6>
+            </div>
+            
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                Thêm ảnh
+            </button>
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    
+                        <div  id='image-view'>
+                        </div>
+                        
+                        <label for="formFileMultiple" class="form-label">Tải ảnh lên</label>
+                        <input name="farmstay" class="form-control" type="file" id="input_multi_image" onchange="readURL(this);"  accept="image/*" multiple/>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="btn-get-image-list" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="carouselExampleIndicators" class="carousel slide sr-only" data-ride="carousel">
+                
+                <div id="image-slide-view" class="carousel-inner">
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+            
+            <div class="alert alert-primary" role="alert">
+                <h6  class="text-center text-primary" >Chọn trang thiết bị</h6>
+            </div>
+            
+
+            <div class="form-group">
+                <input id = "equipments" name ="equipments" type="text" class="sr-only">
+                {{#each equipments}}
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <img style="width: 60px;height: 60px;object-fit: contain;"src="{{this.images.url}}" class="img-thumbnail" alt="Cinque Terre">
+                            <div class="input-group-text">
+                                {{#if this.remain}}
+                                    
+                                    <input  class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
+                                    
+                                {{else}}
+                                    <input class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input" disabled>
+                                    
+                                {{/if}}
+                            </div>
+                        </div>
+                        <div style="flex:1;" class=" border border-secondary mt-0 mb-0 text-dark pl-4">
+                            <p class="text-dark"  for="flexCheckChecked">{{this.name}}
+                                {{#if this.remain}}{{else}}<span class="badge badge-pill badge-warning">không đủ số lượng</span>{{/if}}
+                            </p>
+
+                        </div>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <input class="input_equipment_quantity"  type="number" value="0" min="1" max="{{this.remain}}" disabled>
+                            
+                            </div>
+                        </div>
+                    </div>
                 {{/each}}
-
-                </select>
-                <span class="form-message"></span>
-            </div>
-            
-        </div>
-
-        <div class="form-group">
-            <label for="inputDescription">Nhập mô tả</label>
-            <textarea type="text" class="form-control" id="inputDescription" name='description' placeholder="Nhập mô tả cho farmstay"></textarea>
-        </div>
-
-        <div class="alert alert-primary" role="alert">
-            <h6  class="text-center text-primary" >Nhập địa chỉ</h6>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-4">
-                <label for="inputProvince ">Chọn tỉnh</label>
-                <select name='province_code' id="inputProvince" class="form-control">
-                <option value="" selected>Choose...</option>
-                {{#each provinces}}
-                    <option value="{{this.code}}">{{this.full_name}}</option>
-                {{/each}}
-                </select>
-                <span class="form-message"></span>
+                
             </div>
 
-            <div class="form-group col-md-4">
-                <label for="inputDistrict">Chọn huyện</label>
-                <select name='district_code' id="inputDistrict" class="form-control" disabled>
-                <option selected>Choose...</option>
-                </select>
-                <span class="form-message"></span>
-            </div>
+            {{!-- <button id="btn-create"type="submit" class="btn btn-primary">Tạo farmstay</button> --}}
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-submid-form">
+            Launch demo modal
+            </button>
 
-            <div class="form-group col-md-4">
-                <label for="inputWard">Chọn xã</label>
-                <select name='ward_code' id="inputWard" class="form-control" disabled>
-                <option selected>Choose...</option>
-                </select>
-                <span class="form-message"></span>
-            </div>
-
-        </div>
-        <div class="form-group">
-            <label for="inputAddress">Địa chỉ cụ thể</label>
-            <input type="text" class="form-control" id="inputAddress" name='address' placeholder="Nhập địa chỉ cụ thể">
-        </div>
-
-        
-        
-        <div class="form-group">
-            <label for="inputLinkGGMAP">Nhập link địa chỉ trên GoogleMap</label>
-            <input type="text" class="form-control" id="inputLinkGGMAP" name="link_ggmap">
-            
-        </div>
-        <div class="form-group">
-            <label for="inputLinkEmbeddedGGMAP">Nhập link nhúng trên GoogleMap</label>
-            <input type="text" class="form-control" id="inputLinkEmbeddedGGMAP" name="link_embedded_ggmap">
-            
-        </div>
-        <div class="form-group">
-            <a class = "text-primary"href="https://www.google.com/maps" target="_blank">Mở GoogleMap</a>
-        </div>
-        <div class="alert alert-primary" role="alert">
-            <h6  class="text-center text-primary" >Tải ảnh</h6>
-        </div>
-        
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-            Thêm ảnh
-        </button>
-
-
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <!-- Modal -->
+            <div class="modal fade" id="modal-submid-form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn tạo Farmstay này không?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                
-                    <div  id='image-view'>
-                    </div>
-                    
-                    <label for="formFileMultiple" class="form-label">Tải ảnh lên</label>
-                    <input name="farmstay" class="form-control" type="file" id="input_multi_image" onchange="readURL(this);"  accept="image/*" multiple/>
-
+                    Nhấn nút lưu để tạo
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="btn-get-image-list" type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" id='btn-submit-form' class="btn btn-primary">Save changes</button>
                 </div>
                 </div>
             </div>
-        </div>
-
-        <div id="carouselExampleIndicators" class="carousel slide sr-only" data-ride="carousel">
-            
-            <div id="image-slide-view" class="carousel-inner">
             </div>
-            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
-        
-        <div class="alert alert-primary" role="alert">
-            <h6  class="text-center text-primary" >Chọn trang thiết bị</h6>
-        </div>
-        
-
-        <div class="form-group">
-            <input id = "equipments" name ="equipments" type="text" class="sr-only">
-            {{#each equipments}}
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <img style="width: 60px;height: 60px;object-fit: contain;"src="{{this.images.url}}" class="img-thumbnail" alt="Cinque Terre">
-                        <div class="input-group-text">
-                            {{#if this.remain}}
-                                
-                                <input  class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
-                                
-                            {{else}}
-                                <input class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input" disabled>
-                                
-                            {{/if}}
-                        </div>
-                    </div>
-                    <div style="flex:1;" class=" border border-secondary mt-0 mb-0 text-dark pl-4">
-                        <p class="text-dark"  for="flexCheckChecked">{{this.name}}
-                            {{#if this.remain}}{{else}}<span class="badge badge-pill badge-warning">không đủ số lượng</span>{{/if}}
-                        </p>
-
-                    </div>
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <input class="input_equipment_quantity"  type="number" value="0" min="1" max="{{this.remain}}" disabled>
-                        
-                        </div>
-                    </div>
-                </div>
-            {{/each}}
-            
-        </div>
-
-        {{!-- <button id="btn-create"type="submit" class="btn btn-primary">Tạo farmstay</button> --}}
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-submid-form">
-        Launch demo modal
-        </button>
-
-        <!-- Modal -->
-        <div class="modal fade" id="modal-submid-form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn tạo Farmstay này không?</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Nhấn nút lưu để tạo
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" id='btn-submit-form' class="btn btn-primary">Save changes</button>
-            </div>
-            </div>
-        </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
+    
 {{> js}}
 <script>
     Validator(

@@ -9,13 +9,13 @@ class AuthController{
     /* [GET] render login page */
     renderLogin(req, res, next){
         res.locals.noRenderHeader = true
-        res.render('pages/site/login', {'error_msg': req.flash('error_msg')})
+        res.render('pages/site/login', {'error_msg': ""})
     }
 
     /* [GET] render register page */
     renderRegister(req, res, next){
         res.locals.noRenderHeader = true
-        res.render('pages/site/register', {'error_msg': req.flash('error_msg')})
+        res.render('pages/site/register', {'error_msg': ""})
         
     }
 

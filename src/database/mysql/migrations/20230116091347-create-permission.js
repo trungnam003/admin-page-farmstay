@@ -9,23 +9,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER.UNSIGNED
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
       description: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      api_method_id:{
+      method:{
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
-        references: {
-          model: 'api_methods',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
+        defaultValue: 1,
       },
       api_endpoint_id:{
         type: Sequelize.INTEGER.UNSIGNED,

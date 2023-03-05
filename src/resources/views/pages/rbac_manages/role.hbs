@@ -1,0 +1,177 @@
+<script defer src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.js'></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.css">
+
+<div class="container mt-2">
+    <div class="row">
+        <div class="alert alert-success col-sm-12" role="alert">
+            <h4  class="text-center text-success" >Thông tin Role</h4>
+        </div>
+        <div class="col-sm-6">
+            <div class="card w-100">
+                <div class="card-header alert alert-primary m-0">
+                    <div class="row">
+                        <div class="col-sm-10 text-primary">Thông tin chung</div>
+                        <div class="col-sm-2 d-flex flex-row-reverse">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalEditRole">Chỉnh sửa</button>
+                        </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="modalEditRole" tabindex="-1" role="dialog" aria-labelledby="modalEditRoleLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalEditRoleLabel">Chỉnh sửa Role</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formEditInfoRole" method="POST" action="/rbac/role/{{role.id}}?_method=PUT&edit=info">
+                                        <div class="form-group">
+                                            <label for="inputAddress">Tên role</label>
+                                            <input name="name_role" value="{{role.name}}"type="text" class="form-control" id="editNameRole" placeholder="Nhập tên role">
+                                            <p class="form-message"></p>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="inputEmail4">Mô tả</label>
+                                            <input name="desc_role" value="{{role.description}}" type="text" class="form-control" id="editDescRole" placeholder="Nhập mô tả role">
+                                            <p class="form-message"></p>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" form="formEditInfoRole"class="btn btn-primary">Save changes</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Tên role: <p class="d-inline text-danger font-weight-bold">{{role.name}}</p></li>
+                    <li class="list-group-item">Mô tả: {{role.description}}</li>
+                    
+                </ul>
+            </div>
+        
+           
+        </div>
+        <div class="col-sm-6">
+             <div class="card w-100">
+                <div class="card-header alert alert-primary m-0">
+                    <div class="row">
+                        <div class="col-sm-10 text-primary">Thống kê</div>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Tổng Permission: {{role.role_has_permissions.length}}</li>
+                    <li class="list-group-item">Tổng user của role: Đang cập nhật</li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2 mb-4">        
+        <div class="alert alert-success col-sm-12" role="alert">
+            <h6  class="text-center text-success" >Role Permission</h6>
+        </div>
+        <div class="col-lg-6">
+            <h6>Danh sách Permission</h6>
+            <div class="list-group list-group-scroll" id="permission" style="border: 2px solid #3c3c3c80; border-radius: 6px;">
+                {{#each Permissions}}
+                    <div disabled-move="false" data-id="{{this.id}}" data-api-endpoint="{{this.api_endpoint.api_endpoint}}" class="list-group-item list-group-item-action cursor-move item-permission">
+                        <span style="font-size: 16px;" class="badge badge-success font-weight-normal">{{this.api_endpoint.api_endpoint}}</span> ({{convertApiMethod this.method}})
+                    </div>
+
+                {{/each}}
+                
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h6>Danh sách Permission của Role</h6>
+            <div class="list-group list-group-scroll" id="roleHasPermission" style="border: 2px solid #28a745; border-radius: 6px;">
+                {{#each role.role_has_permissions}}
+                    <div disabled-move="false" data-id="{{this.belong_to_permission.id}}" data-api-endpoint="{{this.belong_to_permission.api_endpoint.api_endpoint}}" class="list-group-item list-group-item-action cursor-move item-permission">
+                        <span style="font-size: 16px;" class="badge badge-success font-weight-normal">{{this.belong_to_permission.api_endpoint.api_endpoint}}</span> ({{convertApiMethod this.belong_to_permission.method}})
+                    </div>
+                {{/each}}
+            </div>     
+        </div>
+    </div>
+</div>
+
+{{> js}}
+<script>
+    $(document).ready(function () {
+
+        (function($){
+            $(`#roleHasPermission .item-permission`).each((i, el)=>{
+                const apiTarget = $(el).data('api-endpoint');
+                const idTarget = $(el).data('id');
+                $(`#permission .item-permission`).each((i, el)=>{
+                    const apiSource = el.getAttribute('data-api-endpoint');
+                    const id = el.getAttribute('data-id');
+
+                    if(apiSource === apiTarget && id !== idTarget){
+                        el.setAttribute('disabled-move', true);
+                        let disabledApi = el.children[0]
+                        disabledApi.classList.add('badge-danger')
+                        el.classList.add('disabled')
+                        el.classList.add('cursor-nodrop')
+                    }
+                })
+            });
+        })(jQuery);
+
+        const dragDrop = dragula([document.getElementById('permission'), document.getElementById('roleHasPermission')],
+            {
+                moves: function (el, source, handle, sibling) {
+                    
+                    const checkMoved = el.getAttribute('disabled-move')==='true' ? true: false;
+                    return !checkMoved; 
+                },
+                
+            }
+        )
+        dragDrop.on('drop', (e,  target, source,)=>{
+        
+            if(target.id === source.id){
+                return;
+            }
+            const apiDrop = e.getAttribute('data-api-endpoint');
+            const idDrop = e.getAttribute('data-id');
+            if(source.id == 'permission'){
+                
+                $(`#${source.id} .item-permission`).each((i, el)=>{
+                    const apiSource = el.getAttribute('data-api-endpoint');
+                    const id = el.getAttribute('data-id');
+
+                    if(apiSource === apiDrop && id !== idDrop){
+                        el.setAttribute('disabled-move', true);
+                        let disabledApi = el.children[0]
+                        disabledApi.classList.add('badge-danger')
+                        el.classList.add('disabled')
+                        el.classList.add('cursor-nodrop')
+                    }
+                })
+            }else if(source.id == 'roleHasPermission'){
+                $(`#${target.id} .item-permission`).each((i, el)=>{
+                    const apiTarget = el.getAttribute('data-api-endpoint');
+                    const idTarget = el.getAttribute('data-id');
+
+                    if(apiTarget === apiDrop && idTarget !== idDrop){
+                        el.setAttribute('disabled-move', false);
+                        let disabledApi = el.children[0]
+                        disabledApi.classList.remove('badge-danger')
+                        el.classList.remove('disabled')
+                        el.classList.remove('cursor-nodrop')
+                    }
+                })
+            }
+            
+        })
+        
+    });
+</script>

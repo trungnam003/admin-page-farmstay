@@ -1,5 +1,5 @@
 const Router                                = require("express").Router();
-const EquipmentController                   = require('../controllers/equipment.controller')
+const EquipmentController                   = require('../controllers/equipment_controller')
 const {HttpError, HttpError404}             = require('../utils/errors')
 const {authorization}                       = require('../middlewares/auths/authorization')
 const {authenticateJWT}                     = require('../middlewares/auths/authenticate.jwt')
@@ -8,6 +8,7 @@ const {Validate, validateParam,
 const multer                                = require("multer");
 const {uploadSingleImage, uploadMultiImage} = require('../middlewares/uploads/upload.image')
 const config                                = require('../config')
+const {pagination} = require('../middlewares/handlebarHelper')
 
 // Router.post('/test', 
 // uploadMultiImage({type: 'test',quantity:12}),
@@ -42,6 +43,11 @@ Router.route('/detail/:id').all(authenticateJWT)
  */
 Router.route('/trash').all(authenticateJWT)
 .get(
+    validateQuery({
+        limit: Validate.isNumber({require: false}),
+        page: Validate.isNumber({require: false})
+    }),
+    pagination,
     EquipmentController.renderTrashEquipment
 )
 .put(
@@ -69,6 +75,7 @@ Router.route('/', ).all(authenticateJWT)
         limit: Validate.isNumber({require: false}),
         page: Validate.isNumber({require: false})
     }),
+    pagination,
     EquipmentController.renderEquipmentManager
 )
 .post(
