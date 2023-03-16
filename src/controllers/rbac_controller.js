@@ -169,7 +169,10 @@ class RbacController{
             } = req.body
             const checkPermissionExist = await Permission.findOne({
                 where: {
-                    api_endpoint_id, method
+                    api_endpoint_id, method, 
+                    id: {
+                        [Op.not]: id
+                    }
                 }
             })
             if(checkPermissionExist){

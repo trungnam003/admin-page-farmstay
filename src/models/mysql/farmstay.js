@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: 'id',
         as: 'employees_work',
       });
-      Farmstay.hasMany(RentFarmstay, 
+      Farmstay.hasOne(RentFarmstay, 
         {foreignKey: {name: 'farm_id'},
         sourceKey:'id', 
         as:'rental_info'
@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     uuid: {
-      type: 'BINARY(16)',
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true
     },

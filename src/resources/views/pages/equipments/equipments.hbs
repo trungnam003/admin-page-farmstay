@@ -40,6 +40,7 @@
                                     <span
                                     data-id="{{this.id}}",
                                     data-name="{{this.name}}",
+                                    data-name-en="{{this.name_en}}",
                                     data-rent-cost="{{this.rent_cost}}",
                                     data-quantity="{{this.quantity}}",
                                     data-category-name="{{this.belong_to_category.name}}",
@@ -85,6 +86,12 @@
                         <div class="form-group">
                             <label for="inputNameEquipment">Tên thiết bị</label>
                             <input name="name" type="text" class="form-control" id="inputNameEquipment" placeholder="Nhập tên thiết bị">
+                            <span class="form-message"></span>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="inputNameEquipment">Tên tiếng anh</label>
+                            <input name="name_en" type="text" class="form-control" id="inputNameEnEquipment" placeholder="Nhập tên tiếng anh của thiết bị">
                             <span class="form-message"></span>
 
                         </div>
@@ -165,6 +172,12 @@
                             <label for="inputEditNameEquipment">Tên thiết bị</label>
                             <input name="name" type="text" class="form-control" id="inputEditNameEquipment" placeholder="Nhập tên thiết bị">
                             <span class="form-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputNameEquipment">Tên tiếng anh</label>
+                            <input name="name_en" type="text" class="form-control" id="inputEditNameEnEquipment" placeholder="Nhập tên tiếng anh của thiết bị">
+                            <span class="form-message"></span>
+
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-12">
@@ -248,6 +261,8 @@
         formGroupSelector: '.form-group',
         rules:[
             Validator.isRequired('#inputNameEquipment'),
+            Validator.isRequired('#inputNameEnEquipment'),
+
             Validator.isRequired('#inputPriceEquipment'),
             Validator.isRequired('#inputQuantityEquipment'),
         ],

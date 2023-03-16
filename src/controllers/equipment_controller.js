@@ -21,7 +21,7 @@ class EquipmentController{
                     attributes: ['id', 'name']
                 }),
                 Equipment.findAll({
-                    attributes: ['id', 'name', 'total_used', 'quantity', 'rent_cost','updatedAt' ],
+                    attributes: ['id', 'name', 'total_used', 'quantity', 'rent_cost','updatedAt', 'name_en' ],
                     include: [
                         {
                             model: Category,
@@ -62,7 +62,7 @@ class EquipmentController{
             transaction = await sequelize.transaction();
             
             let {file} = req;
-            let {name, rent_cost, quantity, category_id} = req.body;
+            let {name, name_en, rent_cost, quantity, category_id} = req.body;
             if(category_id==0){
                 category_id=null;
             }
@@ -80,12 +80,11 @@ class EquipmentController{
             }
             
             await Equipment.create({
-                name, rent_cost, category_id, quantity,images, 
+                name, rent_cost, category_id, quantity,images, name_en, slug_en: slug(name_en, '_')
             },{transaction});
             await transaction.commit();
             res.redirect('back')
         } catch (error) {
-            console.log(error)
             if(transaction) {
                 const lst = [transaction.rollback(), ];
                 if(images){
@@ -122,10 +121,10 @@ class EquipmentController{
      */
     async editEquipment(req, res, next){
         try {
-            const {id, name, rent_cost, category_id} = req.body
+            const {id, name, rent_cost, category_id, name_en} = req.body
             
             await Equipment.update({
-                name, rent_cost, category_id
+                name, rent_cost, category_id, name_en, slug_en: slug(name_en, '_')
             }, {
                 where: {
                   id: id
@@ -201,7 +200,8 @@ class EquipmentController{
 
             const {images} = equipment;
             if(images){
-                await imagekit.deleteFile(images);
+                await imagekit.bulkDeleteFiles([images.fileId]);
+                // await imagekit.deleteFile(images);
             }
 
             await Equipment.destroy({
@@ -219,7 +219,7 @@ class EquipmentController{
     }
 
     /**
-     * [GET] 
+     * [GET] render giao diện chi tiết thiết bị
      */
     async renderDetailEquipment(req, res, next){
         try {
@@ -269,6 +269,9 @@ class EquipmentController{
         }
     }
 
+    /**
+     * [PUT] 
+     */
     async changeQuantityEquipment(req, res, next){
         try {
             const {id} = req.params;

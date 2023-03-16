@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Customer extends Model {
+  class FarmstayArea extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,48 +11,41 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {RentFarmstay, User} = models;
+      const {FarmstayEquipment} = models;
       // hasMany
-      Customer.hasOne(RentFarmstay, 
-        {foreignKey: {name: 'customer_id'},
+      FarmstayArea.hasMany(FarmstayEquipment, 
+        {foreignKey: {name: 'area_id'},
         sourceKey:'id', 
-        as:'rental_info'
+        as:'equipments'
       });
-      // belongTo
-      Customer.belongsTo(User, {
-        foreignKey: {name: 'user_id'},
-        targetKey: 'id',
-        as:'user_customer',
-      })
     }
   }
-  Customer.init({
+  FarmstayArea.init({
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: DataTypes.INTEGER.UNSIGNED
     },
-    fullname: {
+    name: {
       type: DataTypes.STRING,
-      allowNull: true
-    },
-    user_id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      unique: true,
       allowNull: false,
-      
     },
-    district_code:{
-      type: DataTypes.STRING(20),
-      allowNull: true,
-      
+    name_en:{
+      type: DataTypes.STRING,
+      defaultValue: 'farm',
+      allowNull: false,
+    },
+    slug_en: {
+      type: DataTypes.STRING,
+      defaultValue: 'farm',
+      allowNull: false,
     },
   }, {
     sequelize,
-    modelName: 'Customer',
-    tableName: "customers",
-    paranoid: true,
+    modelName: 'FarmstayArea',
+    tableName: 'farmstay_areas',
+    timestamps: false
   });
-  return Customer;
+  return FarmstayArea;
 };

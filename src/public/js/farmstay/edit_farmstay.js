@@ -334,6 +334,38 @@ $( document ).ready(function(){
     })(jQuery);
 
 
+
+    (function($){
+        
+
+        const table = $('#tableEquipmentDetails').DataTable({
+            
+            language: {
+                emptyTable: "Không có dữ liệu nào"
+            },
+        });
+       $('#modalDetailEquipmentFarmstay').on('show.bs.modal', function (e){
+            let button = $(e.relatedTarget) // Button that triggered the modal
+            let eDetails = button.data('details-equipment')
+            
+            if(Array.isArray(eDetails)){
+                // const table =  $('#tableEquipmentDetails').DataTable();
+                eDetails.forEach(value=>{
+                    const {mqtt_topic, field_name, id} = value;
+                    table.row.add([id, field_name, mqtt_topic]).draw(false);
+                    
+                })
+                
+                table.columns.adjust().draw(0);
+            }
+            
+            
+        });
+        $('#modalDetailEquipmentFarmstay').on('hide.bs.modal', function (e){
+            table.clear().draw();
+        });
+    })(jQuery);
+
     (function( $ ) {
 
         $.fn.numberstyle = function(options) {

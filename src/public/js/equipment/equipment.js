@@ -48,13 +48,16 @@ $( document ).ready(function(){
      (function($){
         $('.edit-equipment').click(function(){  
             let name = this.getAttribute("data-name");
+            let name_en = this.getAttribute("data-name-en");
+
             let rent = this.getAttribute("data-rent-cost");
             let quantity = this.getAttribute("data-quantity");
-            let categoryName = this.getAttribute("data-category-name");
+            
             let categoryId = this.getAttribute("data-category-id");
             let id = this.getAttribute("data-id");
 
             $('#inputEditNameEquipment').val(name)
+            $('#inputEditNameEnEquipment').val(name_en)
             $('#inputEditPriceEquipment').val(rent)
             $('#inputEditQuantityEquipment').val(quantity)
             $('#inputEditTypeEquipment').val(categoryId)

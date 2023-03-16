@@ -13,6 +13,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      name_en: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      slug_en: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false,
+      },
       rent_cost: {
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,

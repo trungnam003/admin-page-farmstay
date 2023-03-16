@@ -25,6 +25,9 @@ editRouter.route('/')
     next(new HttpError(405))
 });
 
+
+
+
 /**
  * 
  */
@@ -101,7 +104,13 @@ Router.route('/create').all(authenticateJWT)
     validateBody({
         farmstay_name: Validate.isString(),
         rent_cost: Validate.isNumber(),
-        equipments: Validate.isString(),
+        equipments: Validate.isArray().items(Joi.object().keys({
+            equipment_id: Joi.number().min(1).required(),
+            have_data: Joi.boolean().optional(),
+            number_of_field: Joi.number().min(1).optional(),
+            quantity: Joi.number().min(1).required(),
+            area_id: Joi.number().min(1).optional(),
+        })), 
         link_embedded_ggmap: Validate.isString({require: false}).allow(''),
         link_ggmap: Validate.isString({require: false}).allow(''),
         ward_code: Validate.isString(),
@@ -114,6 +123,16 @@ Router.route('/create').all(authenticateJWT)
     next(new HttpError(405))
 });
 
+
+Router.route('/generate_config')
+.post(
+    validateBody({
+        id: Validate.isNumber()
+    }),
+    FarmstayController.generateConfigFarmstay
+).all((req, res, next)=>{
+    next(new HttpError(405))
+});
 /**
  * 
  */

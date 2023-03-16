@@ -23,24 +23,31 @@
                     <div class="row">
                         <div class="col-12"><h5 class="card-title text-dark">Tên: {{equipment.name}}</h5></div>
                         <div class="col-6 mt-1">
+                            <p class="card-text text-dark">Tên tiếng anh: {{equipment.name_en}}</p>
+                        </div>
+                        <div class="col-6 mt-1">
+                            <p class="card-text text-dark">Slug: <span class="text-danger">{{equipment.slug_en}}</span></p>
+                        </div>
+                        <div class="col-6 mt-1">
                             <p class="card-text text-dark">Giá thuê: <span class="money-vnd">{{equipment.rent_cost}}</span></p>
                         </div>
                         <div class="col-6 mt-1">
+                            <p class="card-text text-dark">Loại thiết bị: {{equipment.belong_to_category.name}}</p>
+                        </div>
+                        <div class="col-6 mt-1">
                             <p class="card-text text-dark">Số lượng: {{equipment.quantity}} 
-                            <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalEditQuantity"><i class="fas fa-plus"></i></button>
+                            <button type="button" class="btn btn-warning btn-sm ml-2" data-toggle="modal" data-target="#modalEditQuantity"><i class="fas fa-plus"></i></button>
                             </p>
-                            
+                        </div>
+                        <div class="col-6 mt-1">
+                            <p class="card-text text-dark">Còn lại: {{minus equipment.quantity equipment.total_used}}</p>
                         </div>
                         <div class="col-6 mt-1">
                             <p class="card-text text-dark">Đã sử dụng: {{equipment.total_used}}</p>
 
                         </div>
-                        <div class="col-6 mt-1">
-                            <p class="card-text text-dark">Còn lại: {{minus equipment.quantity equipment.total_used}}</p>
-                        </div>
-                        <div class="col-12 mt-1">
-                            <p class="card-text text-dark">Loại thiết bị: {{equipment.belong_to_category.name}}</p>
-                        </div>
+                        
+                        
                     </div>
                     
                     

@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       const {Customer, Farmstay, Invoice} = models;
       // hasOne
       RentFarmstay.hasOne(Invoice, {
-        foreignKey: {name: 'rented_farmstay'},
+        foreignKey: {name: 'rented_farmstay_id'},
         sourceKey: 'id',
         as: 'invoice'
       })
@@ -47,11 +47,12 @@ module.exports = (sequelize, DataTypes) => {
     farm_id: {
       allowNull: false,
       type: DataTypes.INTEGER.UNSIGNED,
+      unique: true
       
     },
     customer_id: {
       allowNull: false,
-      
+      unique: true,
       type: DataTypes.INTEGER.UNSIGNED,
       
     },
@@ -59,32 +60,31 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.DATEONLY
     },
-    expiration_date: {
-      allowNull: false,
-      type: DataTypes.DATEONLY
-    },
-    total_rental_cost: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
+    // expiration_date: {
+    //   allowNull: false,
+    //   type: DataTypes.DATEONLY
+    // },
+    // total_rental_cost: {
+    //   type: DataTypes.INTEGER.UNSIGNED,
+    //   allowNull: true,
 
-    },
-    total_sensor_rental_cost:{
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
-    },
-    total_farmstay_rental_cost:{
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
-    },
-    paid:{
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
-    },
+    // },
+    // total_sensor_rental_cost:{
+    //   type: DataTypes.INTEGER.UNSIGNED,
+    //   allowNull: true,
+    // },
+    // total_farmstay_rental_cost:{
+    //   type: DataTypes.INTEGER.UNSIGNED,
+    //   allowNull: true,
+    // },
+    // paid:{
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: false
+    // },
     is_rented:{
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
     },
   }, {
     sequelize,

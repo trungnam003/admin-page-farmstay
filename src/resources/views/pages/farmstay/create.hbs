@@ -156,35 +156,58 @@
 
             <div class="form-group">
                 <input id = "equipments" name ="equipments" type="text" class="sr-only">
-                {{#each equipments}}
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <img style="width: 60px;height: 60px;object-fit: contain;"src="{{this.images.url}}" class="img-thumbnail" alt="Cinque Terre">
-                            <div class="input-group-text">
-                                {{#if this.remain}}
+                <table id="tableDynamicVerticalScroll" class="table table-striped table-bordered table-sm" cellspacing="0"
+  width="100%">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th class="th-sm">Hình ảnh</th>
+                            <th class="th-sm">Chọn</th>
+                            <th class="th-sm">Tên</th>
+                            <th class="th-sm">Khu vực</th>
+                            <th class="th-sm">Có dữ liệu</th>
+                            <th class="th-sm">Số trường dữ liệu</th>
+                            <th class="th-sm">Sô lượng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each equipments}}
+                            <tr>
+                                <td>
+                                    <img style="width: 60px;height: 60px;object-fit: contain;"src="{{this.images.url}}" class="img-thumbnail" alt="Cinque Terre">                             
+                                </td>
+                                <td>
+                                    {{#if this.remain}}
                                     
-                                    <input  class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
+                                        <input  class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input">
                                     
-                                {{else}}
-                                    <input class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input" disabled>
+                                    {{else}}
+                                        <input class="input_equipment"  type="checkbox" value='{{this.id}}' aria-label="Checkbox for following text input" disabled>
+                                        
+                                    {{/if}}
+                                </td>
+                                <td>{{this.name}}</td>
+                                <td><select name="area" class="select_area_id">
+                                    <option>--Chọn khu vực--</option>
+                                    {{#each ../areas}}
+                                        <option value="{{this.id}}">{{this.name}}</option>
+                                    {{/each}}
                                     
-                                {{/if}}
-                            </div>
-                        </div>
-                        <div style="flex:1;" class=" border border-secondary mt-0 mb-0 text-dark pl-4">
-                            <p class="text-dark"  for="flexCheckChecked">{{this.name}}
-                                {{#if this.remain}}{{else}}<span class="badge badge-pill badge-warning">không đủ số lượng</span>{{/if}}
-                            </p>
+                                </select></td>
+                                <td><input class="input_equipment_have_data" type="checkbox" disabled></td>
+                                
+                                <td><input class="input_equipment_number_data" value="0" min="1" type="number" disabled></td>
 
-                        </div>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <input class="input_equipment_quantity"  type="number" value="0" min="1" max="{{this.remain}}" disabled>
-                            
-                            </div>
-                        </div>
-                    </div>
-                {{/each}}
+                                <td ><input class="input_equipment_quantity"  type="number" value="0" min="1" max="{{this.remain}}" disabled></td>
+                                
+                                
+                            </tr>
+                        
+                        {{/each}}
+                        
+                    </tbody>
+                    
+                </table>
+               
                 
             </div>
 
@@ -239,3 +262,22 @@
 
 </script>
 <script src="/js/farmstay/create_farmstay.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var table = $('#tableDynamicVerticalScroll').DataTable({
+            "scrollY": "50vh",
+            "scrollCollapse": true,
+             "columnDefs": [
+            { "width": "60px", "targets": 0 },
+            { "width": "30px", "targets": 1 },
+            { "width": "120px", "targets": 2 },
+            { "width": "50px", "targets": 3 },
+            { "width": "30px", "targets": 4 },
+            { "width": "30px", "targets": 5 },
+            { "width": "30px", "targets": 6 },
+            ],
+        });
+       
+    });
+</script>

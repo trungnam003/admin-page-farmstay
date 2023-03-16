@@ -11,6 +11,7 @@ module.exports = {
       },
       farm_id: {
         allowNull: false,
+        unique: true,
         type: Sequelize.INTEGER.UNSIGNED,
         references:{
           model: "farmstays",
@@ -21,7 +22,7 @@ module.exports = {
       },
       customer_id: {
         allowNull: false,
-        
+        unique: true,
         type: Sequelize.INTEGER.UNSIGNED,
         references:{
           model: "customers",
@@ -34,32 +35,31 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATEONLY
       },
-      expiration_date: {
-        allowNull: false,
-        type: Sequelize.DATEONLY
-      },
-      total_rental_cost: {
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true,
+      // expiration_date: {
+      //   allowNull: false,
+      //   type: Sequelize.DATEONLY
+      // },
+      // total_rental_cost: {
+      //   type: Sequelize.INTEGER.UNSIGNED,
+      //   allowNull: true,
 
-      },
-      total_sensor_rental_cost:{
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true,
-      },
-      total_farmstay_rental_cost:{
-        type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: true,
-      },
-      paid:{
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-      },
+      // },
+      // total_sensor_rental_cost:{
+      //   type: Sequelize.INTEGER.UNSIGNED,
+      //   allowNull: true,
+      // },
+      // total_farmstay_rental_cost:{
+      //   type: Sequelize.INTEGER.UNSIGNED,
+      //   allowNull: true,
+      // },
+      // paid:{
+      //   type: Sequelize.BOOLEAN,
+      //   allowNull: false,
+      //   defaultValue: false
+      // },
       is_rented:{
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: false
       },
       createdAt: {
         allowNull: false,

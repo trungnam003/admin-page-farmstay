@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      const {Farmstay,Equipment} = models;
+      const {Farmstay,Equipment,FarmstayEquipmentDetail, FarmstayArea} = models;
       
       FarmstayEquipment.belongsTo(Farmstay, 
         {foreignKey: {name: 'farm_id'}, 
@@ -28,24 +28,45 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE', 
         onUpdate: 'CASCADE'
       });
+
+      FarmstayEquipment.hasMany(FarmstayEquipmentDetail, {
+        foreignKey: {name: 'farmstay_equipment_id'},
+        sourceKey: 'id',
+        as: 'details',
+      })
+      FarmstayEquipment.belongsTo(FarmstayArea, 
+        {
+          foreignKey: {name: 'area_id'}, 
+          targetKey:'id', 
+          as:'area', 
+          onDelete: 'SET NULL', 
+          onUpdate: 'CASCADE'
+        }
+      )
       
     }
   }
   FarmstayEquipment.init({
-    farm_id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
+    id: {
       primaryKey: true,
-    },
-    equipment_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
-      primaryKey: true,
+      autoIncrement: true
     },
-    quantity_used:{
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    have_data:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
+    number_of_field:{
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
-    }
+      defaultValue: 0
+    },
   }, {
     sequelize,
     modelName: 'FarmstayEquipment',

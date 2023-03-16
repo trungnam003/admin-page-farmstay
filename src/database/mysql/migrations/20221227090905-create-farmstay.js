@@ -11,7 +11,7 @@ module.exports = {
         allowNull: false,
       },
       uuid: {
-        type: 'BINARY(16)',
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },

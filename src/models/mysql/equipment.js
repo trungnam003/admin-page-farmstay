@@ -39,6 +39,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    name_en: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    slug_en: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
     rent_cost: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,

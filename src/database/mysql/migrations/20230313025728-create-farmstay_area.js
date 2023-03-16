@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('categories', {
+    await queryInterface.createTable('farmstay_areas', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,26 +13,20 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      name_code: {
+      name_en:{
         type: Sequelize.STRING,
+        defaultValue: 'farm',
         allowNull: false,
-        unique: true
       },
-      createdAt: {
+      slug_en: {
+        type: Sequelize.STRING,
+        defaultValue: 'farm',
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      deletedAt:{
-        allowNull: true,
-        type: Sequelize.DATE
-      }
+      
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('categories');
+    await queryInterface.dropTable('farmstay_areas');
   }
 };

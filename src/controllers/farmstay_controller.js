@@ -1,13 +1,20 @@
 const {HttpError, HttpError404, HttpError400}           = require('../utils/errors')
 const { Province, District, Ward, 
-    Equipment, sequelize, Farmstay, Employee,
-    FarmstayEquipment, FarmstayAddress}                 = require('../models/mysql')
+    Equipment, sequelize, Farmstay, Employee, FarmstayArea,
+    FarmstayEquipment, FarmstayAddress, Category, FarmstayEquipmentDetail
+                                    }                 = require('../models/mysql')
 const {generateBufferUUIDV4, uuidToString}              = require('../helpers/generateUUID');
 const { QueryTypes, Op , fn}                                = require('sequelize');
 const slug                                              = require('slug')
 const PromiseBlueBird                                   = require('bluebird');
 const {arrayToJSON, objectToJSON}                       = require('../helpers/sequelize')
 const {imagekit, ImageKit}                              = require('../utils/uploads/image/upload_to_imagekit');
+const FarmstayConfig                                    = require('../models/mongodb/FarmstayConfig')
+const FarmstayData                                    = require('../models/mongodb/FarmstayData')
+const uuid = require('uuid')
+const {customAlphabet} = require('nanoid')
+const nanoid = customAlphabet('1234567890qwertyuiopasdfghjkllzxcvbnm')
+
 class FarmstayController{
 
     async renderFarmstays(req, res, next){
@@ -69,9 +76,12 @@ class FarmstayController{
                             attributes: ['id', 'name', 'quantity', 'images', [sequelize.literal('`quantity`-`total_used`'), 'remain']]
                         }
                     ),
+                    FarmstayArea.findAll({
+                        attributes: ['id', 'name'] 
+                    })
                 ]
             )
-            let [provinces, equipments] = data
+            let [provinces, equipments, areas] = data
             provinces = provinces.map(v=>{
                 return v.toJSON() 
             })
@@ -84,7 +94,7 @@ class FarmstayController{
                 {id: 2, 'name': "Nam Anh"},
                 {id: 3, 'name': "Hoàng Ca"},
             ]
-            res.status(200).render('pages/farmstay/create', {provinces, equipments, managers: fakeManager})
+            res.status(200).render('pages/farmstay/create', {provinces, equipments, managers: fakeManager, areas: arrayToJSON(areas)})
 
         } catch (error) {
             console.log(error)
@@ -117,7 +127,7 @@ class FarmstayController{
             } = req.body;
             rent_cost = parseInt(rent_cost)
             manager_id = parseInt(manager_id);
-
+            
             transaction = await sequelize.transaction();
             // Lấy toàn bộ file ảnh được gửi lên và lưu vào thư mục uploads
             const {files} = req;
@@ -127,7 +137,7 @@ class FarmstayController{
                 const {buffer, originalname, fieldname} = element;
                 const uniqueSuffix = Date.now()+'_'+slug(farmstay_name, '_');
                 const filename = uniqueSuffix+'-'+fieldname+'.'+originalname.split('.').at(-1)
-                console.log(filename)
+               
                 IMAGES.push([buffer, filename])
             }
             // Lưu các file ảnh
@@ -147,43 +157,58 @@ class FarmstayController{
                 images.push({url, fileId});
             })
             
-            // Tách mảng chuỗi equipments là id và số lượng ['1-2', '2-3', ...]
-            equipmentsStr = JSON.parse(equipmentsStr);
-            let [equipments_id, equipments_quantity] = Array.from(equipmentsStr).reduce((array, value)=>{
-                const arr = value.split('-');
-                array[0].push(parseInt(arr[0])); // Mảng chứa id
-                array[1].push(parseInt(arr[1])); // Mảng chứa số lượng của id
-                return array;
-            }, [[],[]]);
-
+            // equipmentsStr = JSON.parse(equipmentsStr);
             const equipments = await Equipment.findAll({
-                attributes: ['id', 'quantity', 'total_used'],
+                attributes: ['id', 'quantity', 'total_used', 'slug_en'],
                 where:{
-                    id: equipments_id
+                    id: equipmentsStr.map(v=>v.equipment_id)
                 },
                 transaction: transaction
             })
-
+            const farm_uuid = uuid.v4();
             const farmstay_equipments = [];
-            equipments.forEach((element, index) => {
-                const {quantity, total_used, id}= element;
-                const farmstay_equipment = {}
-                const index_equip = equipments_id.findIndex((value)=>{
-                    return value==id
+            for (let index = 0; index < equipments.length; index++) {
+                const element = equipments[index];
+                const {quantity, total_used, id, slug_en,}= element;
+                
+                const index_equip = equipmentsStr.findIndex((value)=>{
+                    return value.equipment_id==id
                 })
-                if(equipments_quantity[index_equip]>quantity-total_used){
+                if(equipmentsStr[index_equip].quantity>quantity-total_used){
                     throw new HttpError400('Không đủ số lượng')
                 }else{
-                    farmstay_equipment['equipment_id'] = id;
-                    farmstay_equipment['quantity_used'] = equipments_quantity[index_equip];
-                    equipments[index].total_used = total_used+equipments_quantity[index_equip];
-                    farmstay_equipments.push(farmstay_equipment)
+                    
+                    for (let i = 0; i < equipmentsStr[index_equip].quantity; i++) {
+                        const farmstay_equipment = {}
+                        farmstay_equipment['equipment_id'] = id;
+                        const prefixName = `_${i}`;
+                        farmstay_equipment['name'] = `${slug_en}${prefixName}`;
+                        farmstay_equipment['area_id'] = equipmentsStr[index_equip].area_id
+                        if(equipmentsStr[index_equip]['have_data'] && equipmentsStr[index_equip]['number_of_field']>0){
+                            farmstay_equipment['have_data'] = true;
+                            farmstay_equipment['number_of_field'] = equipmentsStr[index_equip]['number_of_field']
+                            farmstay_equipment['details'] = [];
+                            for (let j = 0; j < farmstay_equipment['number_of_field']; j++) {
+                                
+                                const equipmentDetail = {};
+                                const id = nanoid(16);
+                                equipmentDetail['id'] = id
+                                const prefixName = `_${j}`;
+                                equipmentDetail['field_name'] = `${farmstay_equipment['name']}_data${prefixName}`;
+                                equipmentDetail['mqtt_topic'] = `farmstay/${farm_uuid}/${farmstay_equipment['name']}/${equipmentDetail['field_name']}`
+                                farmstay_equipment['details'].push(equipmentDetail);
+                            }
+                        }
+                        farmstay_equipments.push(farmstay_equipment)
+                    }
+                    equipments[index].total_used = parseInt(total_used)+parseInt(equipmentsStr[index_equip].quantity);
+                    
                 }
-            });
+            }
             
             // Obj farmstay cần tạo
             const FARMSTAY_ATTRS = {
-                uuid: generateBufferUUIDV4(),
+                uuid: farm_uuid,
                 name: farmstay_name,
                 rent_cost_per_day: rent_cost,
                 manager_id: manager_id===0?null:manager_id,
@@ -210,7 +235,11 @@ class FarmstayController{
                     },
                     {
                         model: FarmstayEquipment,
-                        as: 'list_equipment'
+                        as: 'list_equipment',
+                        include: [{
+                            model: FarmstayEquipmentDetail,
+                            as: 'details'
+                        }]
                     }
                 
                 ],
@@ -224,13 +253,143 @@ class FarmstayController{
             console.log(error)
             if(transaction) {
                 await transaction.rollback();
-                await imagekit.bulkDeleteFiles(images.map(v=>v.fileId));
-
+                if(images.length>0){
+                    try {
+                        await imagekit.bulkDeleteFiles(images.map(v=>v.fileId));
+                    } catch (error) {
+                    }
+                }
             }
             
-            next(new HttpError(500, "Có lỗi xảy ra"));
+            next(error);
         }
     }
+
+    async generateConfigFarmstay(req, res, next){
+        try {
+            const {id} = req.body
+            const farmstay = await Farmstay.findOne({
+                where: {id},
+                attributes: ['id', 'uuid', 'name'],
+                include:[
+                    {
+                        model: FarmstayEquipment,
+                        as: 'list_equipment',
+                        attributes: ['id', 'name', 'have_data', 'number_of_field', ],
+                        // where: {
+                        //     have_data: true
+                        // },
+                        include: [
+                            {
+                                model: Equipment,
+                                as: 'is_equipment',
+                                attributes: ['id', 'slug_en', ],
+                                required: true,
+                                include: [
+                                    {
+                                        model: Category,
+                                        attributes: ['id', 'name_code'],
+                                        as: 'belong_to_category',
+                                        required: true
+                                    }
+                                ]
+                            },
+                            {
+                                model: FarmstayArea,
+                                as: 'area',
+                                attributes: ['slug_en'],
+                                required: true
+                            },
+                            {
+                                model: FarmstayEquipmentDetail,
+                                as: 'details',
+                                required: true
+                                
+                            }
+                        ]
+                    }
+                ],
+            })
+            res.json(farmstay)
+            
+            if(farmstay){
+                const farmstay_id = farmstay['uuid'];
+                const {name: farmstay_name} = farmstay
+                try {
+                    const {list_equipment} = farmstay;
+                    const equipments = [];
+                    const equipmentsData = [];
+                    list_equipment.forEach((equipment)=>{
+                        const equipmentConfig = {};
+                        const {name, have_data, number_of_field,
+                                is_equipment:{
+                                    belong_to_category:{name_code:type}
+                                },
+                                area: {
+                                    slug_en: area
+                                },
+                                details
+                        } = equipment;
+                        equipmentConfig['name'] = name;
+                        equipmentConfig['alias_name'] = name;
+                        equipmentConfig['type'] = type;
+                        equipmentConfig['area'] = area;
+                        
+                        if(Array.isArray(details) && have_data && number_of_field===details.length){
+                            equipmentConfig['equipment_fields'] = [];
+                            details.forEach((detail, index)=>{
+                                const equipmentField = {}
+                                const equipmentData = {};
+                                const {id:hardware_id, field_name, mqtt_topic,} = detail;
+                                Object.assign(equipmentField, {
+                                    hardware_id, field_name, mqtt_topic,
+                                    alias_field_name: field_name,
+                                })
+                                Object.assign(equipmentData, {
+                                    hardware_id, farmstay_id,
+                                    equipments_data: []
+                                })
+                                equipmentsData.push(equipmentData);
+                                equipmentConfig['equipment_fields'].push(equipmentField)
+                            })
+                        }else{
+                            
+                        }
+                        equipments.push(equipmentConfig);
+
+                    })
+                    const farmstayConfig = new FarmstayConfig({
+                        farmstay_id,
+                        farmstay_name,
+                        equipments: equipments
+                    })
+                    
+                    await farmstayConfig.save()
+                    await FarmstayData.insertMany(equipmentsData)
+                    
+                } catch (error) {
+                    console.log(error)
+                    FarmstayConfig.findOne({
+                        farmstay_id
+                    }).then((config)=>{
+                        res.json({
+                            msg: "Tạo thất bại hoặc config đã tồn tại",
+                            config
+                        })
+                    })
+                    
+                }
+                
+            }else{
+                res.status(500).json("error")
+            }
+            
+        } catch (error) {
+            console.log(error)
+            res.json("error")
+        }
+    }
+
 
     async renderTrashFarmstay(req, res, next){
         try {
@@ -302,13 +461,15 @@ class FarmstayController{
                 where:{
                     id
                 },
-                include: [
-                    {
-                        model: FarmstayEquipment,
-                        as: 'list_equipment'
-                    }
-                ],
                 paranoid: false
+            })
+            const farmstayEquipments = await FarmstayEquipment.findAll({
+                where: {
+                    farm_id: id
+                },
+                attributes: [ 'equipment_id', [sequelize.fn('count', sequelize.col('equipment_id')), 'quantity_used']],
+                group: ['equipment_id'],
+                
             })
             const {images} = farmstay;
             try {
@@ -318,10 +479,11 @@ class FarmstayController{
                 
             }
 
-            let {list_equipment} = objectToJSON(farmstay)
-            // console.log(list_equipment)
-
-            const data = list_equipment.reduce((prev, curr)=>{
+            
+            
+            
+            const data = arrayToJSON(farmstayEquipments).reduce((prev, curr)=>{
+                
                 const {equipment_id, quantity_used} = curr;
                 if(equipment_id){
                     prev.push({
@@ -331,7 +493,7 @@ class FarmstayController{
                     return prev;
                 }
             }, [])
-            console.log(data)
+            
             await Promise.all(
                 data.map(v=>{
                     const {equipment_id, quantity_used} = v;
@@ -341,7 +503,8 @@ class FarmstayController{
                     },{
                         where: {
                             id: parseInt(equipment_id)
-                        }
+                        },
+                        paranoid: false
                     })
                 })
             )
@@ -388,18 +551,29 @@ class FarmstayController{
                     {
                         model: FarmstayEquipment,
                         as: 'list_equipment',
-                        attributes: ['equipment_id', 'quantity_used'],
+                        attributes: ['equipment_id', 'name', 'have_data', 'number_of_field'],
+                        required: true,
                         include: [
                             {
                                 model: Equipment,
                                 as: 'is_equipment',
                                 attributes: ['id', 'name', 'quantity', 'images', 'deletedAt',[sequelize.literal('`quantity`-`total_used`'), 'remain']],
-                                paranoid: false
+                                paranoid: false,
+                                required: true
+                            },{
+                                model: FarmstayEquipmentDetail,
+                                as: 'details',
+                                
+                            },
+                            {
+                                model: FarmstayArea,
+                                as: 'area'
                             }
-                        ]
+                        ],
                     }
                 ],
             });
+            
             if(farmstay == null){
                 return next(new HttpError400());
             }
@@ -426,7 +600,8 @@ class FarmstayController{
                     }
                 }
             );
-            // res.json(farmstay)
+            
+            
             res.render('pages/farmstay/edit', {
                 farmstay: objectToJSON(farmstay),
                 provinces: arrayToJSON(provinces),

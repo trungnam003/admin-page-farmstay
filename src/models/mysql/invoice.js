@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       const {RentFarmstay} = models;
       // belongTo
       Invoice.belongsTo(RentFarmstay, {
-        foreignKey: {name: 'rented_farmstay'},
+        foreignKey: {name: 'rented_farmstay_id'},
         targetKey: 'id',
         as: 'farmstay_rental_invoice_of',
         
@@ -28,9 +28,31 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER.UNSIGNED
     },
-    rented_farmstay: {
+    rented_farmstay_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
+    },
+    canceled_at: {
+      allowNull: false,
+      type: DataTypes.DATEONLY
+    },
+    total_rental_cost: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+
+    },
+    total_equipment_rental_cost:{
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    },
+    total_farmstay_rental_cost:{
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    },
+    paid:{
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
   }, {
     sequelize,
