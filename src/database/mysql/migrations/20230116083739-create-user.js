@@ -51,6 +51,10 @@ module.exports = {
         type: Sequelize.ENUM('customer', 'employee', 'admin'),
         allowNull: false,
       },
+      changed_password_at:{
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
