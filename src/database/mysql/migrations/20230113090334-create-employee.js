@@ -24,14 +24,14 @@ module.exports = {
           key: 'id'
         }
       },
-      district_code:{
-        type: Sequelize.STRING(20),
-        allowNull: true,
-        references:{
-          model: 'districts',
-          key: 'code'
-        }
-      },
+      // district_code:{
+      //   type: Sequelize.STRING(20),
+      //   allowNull: true,
+      //   references:{
+      //     model: 'districts',
+      //     key: 'code'
+      //   }
+      // },
 
       
       job_id: {
@@ -44,26 +44,26 @@ module.exports = {
         onDelete: "SET NULL",
         onUpdate: "CASCADE"
       },
-      farm_id: {
-        allowNull: true,
-        type: Sequelize.INTEGER.UNSIGNED,
-        references: {
-          model: 'farmstays',
-          key: 'id'
-        },
-        onDelete: "SET NULL",
-        onUpdate: "CASCADE"
-      },
-      manager_id: {
-        allowNull: true,
-        type: Sequelize.INTEGER.UNSIGNED,
-        references: {
-          model: 'employees',
-          key: 'id',
-        },
-        onDelete: "SET NULL",
-        onUpdate: "CASCADE"
-      },
+      // farm_id: {
+      //   allowNull: true,
+      //   type: Sequelize.INTEGER.UNSIGNED,
+      //   references: {
+      //     model: 'farmstays',
+      //     key: 'id'
+      //   },
+      //   onDelete: "SET NULL",
+      //   onUpdate: "CASCADE"
+      // },
+      // manager_id: {
+      //   allowNull: true,
+      //   type: Sequelize.INTEGER.UNSIGNED,
+      //   references: {
+      //     model: 'employees',
+      //     key: 'id',
+      //   },
+      //   onDelete: "SET NULL",
+      //   onUpdate: "CASCADE"
+      // },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -72,10 +72,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      deletedAt: {
-        allowNull: true,
-        type: Sequelize.DATE
-      }
+      
     });
   },
   async down(queryInterface, Sequelize) {

@@ -60,6 +60,20 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.DATEONLY
     },
+    deposit_amount: {
+      allowNull: false,
+      defaultValue: 0,
+      type: DataTypes.INTEGER
+    },
+    is_deposit: {
+      allowNull: false,
+      defaultValue: false,
+      type: DataTypes.BOOLEAN
+    },
+    vnp_txnref:{
+      allowNull: false,
+      type: DataTypes.STRING
+    },
     // expiration_date: {
     //   allowNull: false,
     //   type: DataTypes.DATEONLY

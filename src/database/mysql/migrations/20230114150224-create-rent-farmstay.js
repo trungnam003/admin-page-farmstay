@@ -35,6 +35,20 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATEONLY
       },
+      deposit_amount: {
+        allowNull: false,
+        defaultValue: 0,
+        type: Sequelize.INTEGER
+      },
+      is_deposit: {
+        allowNull: false,
+        defaultValue: false,
+        type: Sequelize.BOOLEAN
+      },
+      vnp_txnref:{
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       // expiration_date: {
       //   allowNull: false,
       //   type: Sequelize.DATEONLY
