@@ -27,12 +27,12 @@ class FarmstayController{
             const [farmstays, total_farmstay_deleted ] = await Promise.all([
                 Farmstay.findAll({
                     attributes: ['id', 'name', 'uuid', 'rent_cost_per_day', 'updatedAt'],
-                    // include: [
-                    //     {
-                    //         model: Employee,
-                    //         as: 'management_staff'
-                    //     }
-                    // ],
+                    include: [
+                        {
+                            model: Employee,
+                            as: 'management_staff'
+                        }
+                    ],
                     // limit: limit,
                     // offset: limit*(page-1)
                 }),
@@ -311,7 +311,6 @@ class FarmstayController{
                 ],
             })
             
-            
             if(farmstay){
                 const farmstay_id = farmstay['uuid'];
                 const {name: farmstay_name} = farmstay
@@ -366,12 +365,12 @@ class FarmstayController{
                     
                     await farmstayConfig.save()
                     await FarmstayData.insertMany(equipmentsData)
-                    res.redirect('back')
+                    res.json(farmstayConfig);
                 } catch (error) {
                     FarmstayConfig.findOne({
                         farmstay_id
                     }).then((config)=>{
-                        res.status(400).json({
+                        res.json({
                             msg: "Tạo thất bại hoặc config đã tồn tại",
                             config
                         })
