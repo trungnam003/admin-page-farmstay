@@ -425,12 +425,12 @@ class FarmstayController {
       const [farmstays] = await Promise.all([
         Farmstay.findAll({
           attributes: ["id", "name", "uuid", "rent_cost_per_day", "deletedAt"],
-          include: [
-            {
-              model: Employee,
-              as: "management_staff",
-            },
-          ],
+          // include: [
+          //   {
+          //     model: Employee,
+          //     as: "management_staff",
+          //   },
+          // ],
           where: {
             deletedAt: {
               [Op.not]: null,
